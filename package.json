@@ -1,0 +1,29 @@
+{
+  "name": "terraflux",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TERRAFLUX - Circular Carbon Network Operating System. HackOut'26 PS11.",
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "workspaces": [
+    "packages/engine",
+    "packages/api",
+    "packages/web"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:api": "npm run dev -w @terraflux/api",
+    "dev:web": "npm run dev -w @terraflux/web",
+    "build": "npm run build -w @terraflux/web",
+    "start": "npm run build && node --experimental-strip-types packages/api/src/index.ts",
+    "test": "node --experimental-strip-types --test \"packages/engine/tests/*.test.ts\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:watch": "node --experimental-strip-types --test --watch \"packages/engine/tests/*.test.ts\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "typescript": "^5.6.3"
+  }
+}
