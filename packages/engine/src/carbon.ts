@@ -764,8 +764,19 @@ export function networkLedger(
   facilities: Facility[],
   vehicles: VehicleType[],
   assumptions: Assumptions,
+  /**
+   * The permanence feedstock to use, when this call is decomposing a larger whole.
+   *
+   * Without it, a slice derives its own dominant biochar stream and therefore its
+   * own BC100, so the parts stop summing to the whole — per-pathway bands came out
+   * 54 tCO2e short of the network before this existed. Callers splitting a plan
+   * pass the plan's dominant stream; callers evaluating a plan in its own right
+   * omit it.
+   */
+  dominantOverride?: StreamId | null,
 ): CarbonLedger {
-  const dominant = dominantBiocharStream(allocations);
+  const dominant =
+    dominantOverride !== undefined ? dominantOverride : dominantBiocharStream(allocations);
   const permanence = dominant ? permanenceFor(dominant, assumptions.soilTempC) : null;
   return buildLedger(
     aggregateAllocations(allocations, facilities, vehicles, assumptions),

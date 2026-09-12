@@ -42,6 +42,7 @@ import {
 } from './bottleneck.ts';
 import { forecastNetwork, type NetworkForecast } from './forecast.ts';
 import { carbonHistory, type CarbonHistory } from './history.ts';
+import { buildBrief, type CarbonBrief } from './brief.ts';
 import {
   compareObjectives,
   runShock,
@@ -133,6 +134,7 @@ export class Twin {
   private cacheHistory: CarbonHistory | null = null;
   private cacheFacilityRank: FacilityRankRow[] | null = null;
   private cacheOpportunityReport: OpportunityReport | null = null;
+  private cacheBrief: CarbonBrief | null = null;
   private cacheEvidence: {
     records: EvidenceRecord[];
     health: EvidenceHealth;
@@ -176,6 +178,7 @@ export class Twin {
     this.cacheFacilityRank = null;
     this.cacheEvidence = null;
     this.cacheOpportunityReport = null;
+    this.cacheBrief = null;
     if (!keepForecast) this.cacheForecast = null;
   }
 
@@ -383,6 +386,41 @@ export class Twin {
     return res;
   }
 
+  /**
+   * The Carbon Intelligence Brief.
+   *
+   * Pure composition: every artefact below is already memoised by its own
+   * accessor, so a reader arriving here first pays for them once and every other
+   * Carbon screen is then warm. The brief itself computes nothing.
+   */
+  getBrief(): CarbonBrief {
+    if (!this.cacheBrief) {
+      const result = this.getResult();
+      const resilience = this.getResilience();
+      // The worst contingency is selected by the existing N-1 analysis and then
+      // measured by the shock engine, so the figure shown is ledger-based.
+      const worst = resilience.worstCaseFacilityId
+        ? this.runShock({
+            kind: 'facility_offline',
+            params: { facilityId: resilience.worstCaseFacilityId },
+          })
+        : null;
+      this.cacheBrief = buildBrief({
+        state: this.state,
+        result,
+        version: this.version,
+        ledger: this.getLedger(),
+        history: this.getCarbonHistory(),
+        opportunities: this.getCarbonOpportunities().opportunities,
+        ranking: this.getFacilityRanking(),
+        evidence: this.getEvidence().health,
+        resilience,
+        worstShock: worst,
+        objectives: worst ? this.compareShockObjectives(worst.scenario) : null,
+      });
+    }
+    return this.cacheBrief;
+  }
   /** The same shock under every objective, each against its own baseline. */
   compareShockObjectives(scenario: ScenarioInstance): ObjectiveOutcome[] {
     return compareObjectives(this.state, scenario, this.objective);

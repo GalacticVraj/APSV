@@ -48,6 +48,7 @@ const NAV: Array<{ group: string; items: Array<{ to: string; label: string }> }>
       { to: '/carbon/opportunities', label: 'Opportunities' },
       { to: '/carbon/scenarios', label: 'Scenarios' },
       { to: '/carbon/evidence', label: 'Evidence (MRV)' },
+      { to: '/carbon/report', label: 'Intelligence Brief' },
     ],
   },
   {

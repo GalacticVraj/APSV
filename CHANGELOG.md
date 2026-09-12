@@ -433,6 +433,41 @@ report the identical change, that drivers reconcile with no residual, that avoid
 substitution stay separate across the diff, and that a constraint is only reported as
 flipped when the optimiser says it flipped. **224 tests.**
 
+## Phase 19 — Carbon Intelligence Brief
+
+The synthesis layer. A judge should be able to answer six questions here in a minute
+without opening another screen, then open the module that owns each detail.
+
+- **The brief computes nothing.** Every figure is read from the module that already owns
+  it — ledger, history, opportunity sweep, shock engine, facility ranking, evidence
+  register, N-1 resilience. A report that recomputes anything is a second opinion with
+  editorial authority, and it will eventually disagree with the screen it summarises.
+- Written as a document rather than a dashboard: one column, editorial rules, capped
+  measure, and a reading order that matches how the decision is made. No cards, no KPI grid.
+- The resilience section reuses the existing N-1 analysis for **selection** and the shock
+  engine for **measurement**, so the figure shown is ledger-based.
+- Empty states are honest and tested: with no opportunity, no contingency and no history,
+  the brief says so in three specific sentences rather than rendering blanks.
+
+**A third instance of the permanence-basis bug, and a fourth.**
+
+- `resilienceReport` ranked contingencies on `totals.netCarbonT`, so it reported the worst
+  case as a **18.3%** loss where the ledger says **20.2%**. The winner was unchanged
+  (Panipat either way), but the figure would have contradicted the tCO₂e beside it. Now
+  ledger-based.
+- **The pathway bands did not sum to the network** — 34,866 against 34,921. `networkLedger()`
+  derives the dominant biochar feedstock from whatever slice it is handed, so each band
+  picked its own BC₁₀₀. It now takes an optional permanence override: callers decomposing a
+  whole pass the whole's feedstock, callers evaluating a plan in its own right omit it.
+  Caught by the reconciliation test, not by eye.
+
+**19 brief tests**, every one asserting that the brief's number *is* the owning module's
+number: net carbon is `networkLedger()`, the action is the top opportunity including its
+`ScenarioInstance`, the action's CTA simulates to the figure printed beside it, the risk is
+the shock engine's, facility values are Carbon Facilities', evidence counts are MRV's, the
+trend is Carbon Home's, and the objective sweep is the shock engine's. Plus: the brief never
+mutates the network or the solve. **243 tests.**
+
 ## Documentation
 
 - `README.md` — how to run it and what it does.

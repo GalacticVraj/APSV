@@ -23,6 +23,7 @@ import { COUNTERFACTUALS, STREAMS, dryFraction } from './streams.ts';
 import { PATHWAYS, suitability } from './pathways.ts';
 import { buildArcs, objectiveScale, optimize, type ArcSet } from './optimizer.ts';
 import { cloneNetwork } from './network.ts';
+import { networkLedger } from './carbon.ts';
 import { roadDistanceKm } from './geo.ts';
 
 function inr(n: number): string {
@@ -358,7 +359,16 @@ export function resilienceReport(
   base: OptimizationResult,
   mode: ObjectiveMode,
 ): ResilienceReport {
-  const baseCarbon = base.totals.netCarbonT;
+  // The ledger's net, not `totals.netCarbonT`: the optimiser's aggregate uses
+  // per-arc permanence and reads about a tenth lower, which would make the loss
+  // percentages here disagree with the tCO₂e figures every Carbon screen shows.
+  // The ranking is unaffected — Panipat is worst either way — but the numbers are not.
+  const baseCarbon = networkLedger(
+    base.allocations,
+    net.facilities,
+    net.vehicles,
+    net.assumptions,
+  ).netT;
   const n1: ResilienceReport['n1Results'] = [];
 
   const operating = net.facilities.filter((f) => base.openFacilities.includes(f.id));
@@ -375,8 +385,14 @@ export function resilienceReport(
       skipShadowPrices: true,
       skipAlternatives: true,
     });
+    const trialCarbon = networkLedger(
+      r.allocations,
+      trial.facilities,
+      trial.vehicles,
+      trial.assumptions,
+    ).netT;
     const lossPct =
-      baseCarbon > 0 ? Math.max(0, ((baseCarbon - r.totals.netCarbonT) / baseCarbon) * 100) : 0;
+      baseCarbon > 0 ? Math.max(0, ((baseCarbon - trialCarbon) / baseCarbon) * 100) : 0;
 
     // Which facilities picked up the slack?
     const beforeByFac = new Map<string, number>();

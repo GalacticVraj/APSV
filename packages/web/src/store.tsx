@@ -40,6 +40,7 @@ import type {
   WasteSource,
 } from '../../engine/src/types.ts';
 import type { CarbonHistory } from '../../engine/src/history.ts';
+import type { CarbonBrief } from '../../engine/src/brief.ts';
 import type { OpportunityReport } from '../../engine/src/opportunity.ts';
 import type { ObjectiveOutcome, ShockResult } from '../../engine/src/shock.ts';
 import type {
@@ -121,6 +122,7 @@ export const api = {
       totals: NetworkTotals;
       provenance: Record<string, ProvenanceRow[]>;
     }>('/api/carbon'),
+  brief: () => req<CarbonBrief>('/api/brief'),
   opportunities: () => req<OpportunityReport>('/api/opportunities'),
   shock: (scenario: ScenarioInstance, compareObjectives: boolean) =>
     req<{ shock: ShockResult; objectives: ObjectiveOutcome[] | null }>('/api/shock', {
