@@ -59,7 +59,7 @@ type MapPlan = { label: string; allocations: Allocation[] } | null;
 
 export default function CarbonCommand() {
   const { boot, state, optimization, version, setObjective, busy } = useTwin();
-  const { navigate } = useRouter();
+  const { navigate, search } = useRouter();
 
   const brief = useResource(() => api.brief(), [version], [
     'Reading the carbon position…',
@@ -67,6 +67,16 @@ export default function CarbonCommand() {
   ]);
 
   const [overlay, setOverlay] = useState<Overlay>(null);
+
+  // Another screen can hand work over with ?do=simulate. Without this, the risk
+  // card on Facilities lands the reader here and then asks them to find the
+  // button themselves — which is the context loss drawers exist to avoid.
+  useEffect(() => {
+    const want = new URLSearchParams(search).get('do');
+    if (want === 'simulate' || want === 'optimise' || want === 'follow' || want === 'why') {
+      setOverlay(want === 'optimise' ? 'optimise' : (want as Overlay));
+    }
+  }, [search]);
   const [selection, setSelection] = useState<Selection>(null);
 
   /** A completed shock, kept so the map can be flipped between its two plans. */

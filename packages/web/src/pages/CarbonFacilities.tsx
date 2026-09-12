@@ -165,7 +165,7 @@ export default function CarbonFacilities() {
           >
             Follow flow
           </button>
-          <button className="cf-btn" onClick={() => navigate('/carbon')}>
+          <button className="cf-btn" onClick={() => navigate('/carbon?do=simulate')}>
             Simulate
           </button>
         </div>
@@ -211,7 +211,7 @@ export default function CarbonFacilities() {
 
         <Position rows={rows} netT={netT} openId={openId} onPick={(id) => onSelect({ kind: 'facility', id })} />
 
-        <WhatMatters b={b} onExplore={() => navigate('/carbon/opportunities')} onSimulate={() => navigate('/carbon')} />
+        <WhatMatters b={b} onExplore={() => navigate('/carbon/opportunities')} onSimulate={() => navigate('/carbon?do=simulate')} />
 
         <Capacity rows={rows} onPick={(id) => onSelect({ kind: 'facility', id })} />
 
