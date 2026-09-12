@@ -32,7 +32,12 @@ import {
   VEHICLES,
 } from '../../engine/src/constants.ts';
 import { PRODUCT } from '../../engine/src/index.ts';
-import type { ObjectiveMode, ScenarioInstance, StreamId } from '../../engine/src/types.ts';
+import type {
+  ObjectiveMode,
+  PathwayId,
+  ScenarioInstance,
+  StreamId,
+} from '../../engine/src/types.ts';
 import { DEMO_SCRIPT } from './demo.ts';
 
 const PORT = Number(process.env.PORT ?? 5174);
@@ -196,6 +201,54 @@ const GET: Record<string, Handler> = {
       // evidence panel cannot describe a different plan than the lines above it.
       provenance: twin.getProvenance(),
     }),
+
+  '/api/materials': (_req, res) => json(res, 200, twin.getMaterials()),
+
+  '/api/pathways/decision': (_req, res, url) => {
+    const sourceId = url.searchParams.get('sourceId');
+    if (!sourceId) return json(res, 400, { error: 'A "sourceId" is required.' });
+    const lens = String(url.searchParams.get('lens') ?? 'carbon_first');
+    if (!VALID_OBJECTIVES.has(lens)) {
+      return json(res, 400, {
+        error: `Unknown lens "${lens}". Expected one of: ${[...VALID_OBJECTIVES].join(', ')}.`,
+      });
+    }
+    const decision = twin.getPathwayDecision(sourceId, lens as ObjectiveMode);
+    if (!decision) return json(res, 404, { error: `No source "${sourceId}" in the network.` });
+    json(res, 200, decision);
+  },
+
+  '/api/pathways/diff': (_req, res, url) => {
+    const sourceId = url.searchParams.get('sourceId');
+    const from = url.searchParams.get('from');
+    const to = url.searchParams.get('to');
+    if (!sourceId || !from || !to) {
+      return json(res, 400, { error: '"sourceId", "from" and "to" are all required.' });
+    }
+    const lens = String(url.searchParams.get('lens') ?? 'carbon_first');
+    if (!VALID_OBJECTIVES.has(lens)) {
+      return json(res, 400, { error: `Unknown lens "${lens}".` });
+    }
+    if (!(from in PATHWAYS) || !(to in PATHWAYS)) {
+      return json(res, 400, {
+        error: `Unknown pathway. Expected one of: ${Object.keys(PATHWAYS).join(', ')}.`,
+      });
+    }
+    const diff = twin.getPathwayDiff(
+      sourceId,
+      lens as ObjectiveMode,
+      from as PathwayId,
+      to as PathwayId,
+    );
+    if (!diff) {
+      // Both pathways exist but at least one produced no result for this material.
+      return json(res, 404, {
+        error:
+          'Those two pathways cannot be compared for this material: at least one has no feasible destination in the current network.',
+      });
+    }
+    json(res, 200, diff);
+  },
 
   '/api/trace/candidates': (_req, res) => json(res, 200, twin.getTraceCandidates()),
 

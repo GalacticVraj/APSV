@@ -41,6 +41,11 @@ import type {
 } from '../../engine/src/types.ts';
 import type { CarbonHistory } from '../../engine/src/history.ts';
 import type {
+  PathwayDecision,
+  PathwayDiff,
+  MaterialCandidate,
+} from '../../engine/src/pathwaychoice.ts';
+import type {
   AllocationTrace,
   ProvenanceRow,
   TraceCandidate,
@@ -103,6 +108,16 @@ export const api = {
       totals: NetworkTotals;
       provenance: Record<string, ProvenanceRow[]>;
     }>('/api/carbon'),
+  materials: () => req<MaterialCandidate[]>('/api/materials'),
+  pathwayDecision: (sourceId: string, lens: ObjectiveMode) =>
+    req<PathwayDecision>(
+      `/api/pathways/decision?sourceId=${encodeURIComponent(sourceId)}&lens=${lens}`,
+    ),
+  pathwayDiff: (sourceId: string, lens: ObjectiveMode, from: string, to: string) =>
+    req<PathwayDiff>(
+      `/api/pathways/diff?sourceId=${encodeURIComponent(sourceId)}&lens=${lens}` +
+        `&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`,
+    ),
   traceCandidates: () => req<TraceCandidate[]>('/api/trace/candidates'),
   trace: (sourceId: string, facilityId: string) =>
     req<AllocationTrace>(

@@ -16,6 +16,7 @@ import type {
   NetworkState,
   ObjectiveMode,
   OpportunityScore,
+  PathwayId,
   OptimizationResult,
   ResilienceReport,
   RoutingResult,
@@ -41,6 +42,13 @@ import {
 } from './bottleneck.ts';
 import { forecastNetwork, type NetworkForecast } from './forecast.ts';
 import { carbonHistory, type CarbonHistory } from './history.ts';
+import {
+  comparePathwayPair,
+  materialCandidates,
+  pathwayDecision,
+  type PathwayDecision,
+  type PathwayDiff,
+} from './pathwaychoice.ts';
 import {
   provenanceFor,
   traceAllocation,
@@ -292,6 +300,30 @@ export class Twin {
     );
   }
 
+  /** Sources offered as a material context for the pathway decision. */
+  getMaterials() {
+    return materialCandidates(this.state);
+  }
+
+  /**
+   * Every pathway evaluated for one source's material under a comparison lens.
+   * Not memoised: it is keyed by source and lens rather than by version alone,
+   * and one call costs a single arc build.
+   */
+  getPathwayDecision(sourceId: string, lens: ObjectiveMode): PathwayDecision | null {
+    return pathwayDecision(this.state, this.getResult(), sourceId, lens);
+  }
+
+  /** What switching between two pathways changes for that material. */
+  getPathwayDiff(
+    sourceId: string,
+    lens: ObjectiveMode,
+    from: PathwayId,
+    to: PathwayId,
+  ): PathwayDiff | null {
+    const decision = this.getPathwayDecision(sourceId, lens);
+    return decision ? comparePathwayPair(decision, from, to) : null;
+  }
   /** Allocations offered for tracing, largest carbon contribution first. */
   getTraceCandidates(): TraceCandidate[] {
     return traceCandidates(this.state, this.getResult());

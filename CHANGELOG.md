@@ -237,6 +237,52 @@ Caught in review:
 stages, every factor row cites a source, provenance never describes a line the plan did not
 produce, and the generated explanation never claims verification or measurement. **124 tests.**
 
+## Phase 14 — Carbon Pathways
+
+A decision instrument, not a catalogue of waste-treatment methods. The page answers:
+given THIS material at THIS source, under the network as it stands, which feasible
+pathway produces the best carbon outcome, and what is given up by choosing it.
+
+- **The decision unit is a source, not a stream.** A stream has no geography; a source
+  has a tonnage, a road and a set of reachable plants, which is what makes the question
+  answerable at all.
+- **Everything is read from the optimiser's own arc set.** `buildArcs` already decides
+  which pairs are legal, which gates fail, which vehicle can run the road and what a
+  tonne is worth. `pathwaychoice.ts` picks among those arcs under the chosen lens and
+  builds the carbon breakdown from `ArcSet.physical` through the same `buildLedger` the
+  network ledger uses. The ledger and the arc valuation agree to **2.2e-16**.
+- **Lenses reuse the real objective modes** — the same `arcValue` scalarisation the solver
+  uses, so switching to Economic genuinely reorders the ranking rather than re-sorting a
+  column.
+- Infeasible pathways are shown with the gate that excluded them ("Moisture: 13% vs window
+  55–95%"), and pathways that pass their gates but have no destination say which of the
+  five possible reasons applies. "No result" and "excluded because…" are different answers.
+- The flip shows what changed in the network, not just a number: facility, haul distance
+  and carbon outcome all move, and only the components that **actually differ** are listed
+  as drivers.
+- Carbon best and economic best are named separately, with the exchange rate between them
+  stated when they diverge. No threshold for "what would change the decision" is asserted,
+  because the engine cannot solve for one — the page says so and links to Scenarios.
+
+Caught in review:
+
+- **Avoidance and substitution were double-counted.** `Arc.avoidedPerT` is
+  `avoided + substitution` — a sound simplification for ranking arcs, but this screen
+  reported avoidance with substitution folded inside it and then reported substitution
+  again alongside. The flip showed both drivers with identical values, which is what gave
+  it away. Every component now comes from the ledger; components reconcile to net at 2.2e-16.
+- `.rk-name > :first-child` styled the **tag row** rather than the pathway name, because
+  the name was a bare text node. Found by querying the DOM, not by looking.
+- Dimming the unselected row to 0.5 made the comparison hard to read — a comparison that
+  dims its alternatives stops being a comparison.
+- Source and facility often share a district, so the route drew two dots both labelled
+  "Sangrur". The plant is now named.
+
+**22 decision tests**, including that avoidance and substitution are never taken from the
+arc field, that an infeasible pathway carries no partial result, that a trade-off is stated
+only when the two bests genuinely differ, and that no explanation claims verification or
+credits. **146 tests.**
+
 ## Documentation
 
 - `README.md` — how to run it and what it does.
