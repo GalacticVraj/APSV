@@ -442,6 +442,22 @@ const POST: Record<string, Handler> = {
     json(res, 200, ask(twin, question));
   },
 
+  '/api/ai/insights': async (req, res) => {
+    const { generateStructuredInsight } = await import('./ai-insights/ai.ts');
+    const body = await readBody(req);
+    const templateKey = String(body.templateKey ?? '');
+    const dataPackage = typeof body.dataPackage === 'object' ? (body.dataPackage as Record<string, unknown>) : {};
+    
+    if (!templateKey) return json(res, 400, { error: 'templateKey is required.' });
+    
+    try {
+      const { insight, provider } = await generateStructuredInsight(templateKey as any, dataPackage);
+      json(res, 200, { insight, provider });
+    } catch (err: any) {
+      json(res, 500, { error: err.message || 'Failed to generate insight' });
+    }
+  },
+
   '/api/reset': async (_req, res) => {
     twin.reset();
     json(res, 200, { ok: true, version: twin.getVersion() });

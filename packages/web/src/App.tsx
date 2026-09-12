@@ -155,11 +155,14 @@ function Boot() {
   );
 }
 
+import GlobalAIButton from './components/ai/GlobalAIButton';
+
 export default function App() {
   return (
     <RouterProvider>
       <TwinProvider>
         <Boot />
+        <GlobalAIButton />
       </TwinProvider>
     </RouterProvider>
   );
