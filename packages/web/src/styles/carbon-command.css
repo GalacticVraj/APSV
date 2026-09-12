@@ -95,39 +95,19 @@
 .cc-cmd.primary { background: var(--green-700); border-color: var(--green-700); color: #fff; }
 .cc-cmd.primary:hover:not(:disabled) { background: var(--green-900); border-color: var(--green-900); }
 
-/* ── Stage: network edge to edge, rail over it ─────────────────────────────── */
+/* ── Stage: the network is the ground ──────────────────────────────────────── */
 
+/*
+ * `flex: 1 1 0` rather than `1 1 auto`: the stage should take whatever is left
+ * after the bar and the river, not size itself from its own content and then
+ * push the river off the bottom of the window — which is exactly what a 520px
+ * min-height did.
+ */
 .cc-stage {
   position: relative;
-  flex: 1 1 auto;
-  min-height: 520px;
+  flex: 1 1 0;
+  min-height: 240px;
 }
-
-.cc-rail {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: min(346px, 34vw);
-  padding: 18px 18px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
-  z-index: 2;
-  /* Sits over the network, so the region reads *through* it at the edge. */
-  background: linear-gradient(
-    to right,
-    rgba(252, 251, 248, 0.55) 0%,
-    rgba(252, 251, 248, 0.93) 14%,
-    rgba(252, 251, 248, 0.97) 100%
-  );
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  border-left: 1px solid var(--rule);
-  animation: ccRail 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-@keyframes ccRail { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
 
 .cc-k {
   font-size: 9px;
@@ -137,55 +117,129 @@
   color: var(--ink-3);
 }
 
-/* ── Position ──────────────────────────────────────────────────────────────── */
+/* ── Marks on the network ──────────────────────────────────────────────────── */
+
+/*
+ * The position and the two decisions float on the network. No panels, no cards,
+ * no labels above them — the unit says what the number is and the network
+ * behind it says what it is about. Each one is a button, because each one opens
+ * the thing that explains it.
+ */
+
+.cc-pos {
+  position: absolute;
+  top: 26px;
+  left: 30px;
+  z-index: 2;
+  display: block;
+  padding: 0;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  /* Legible over whatever the region is doing underneath. */
+  text-shadow: 0 1px 0 rgba(252, 251, 248, 0.9), 0 0 14px rgba(252, 251, 248, 0.85);
+  animation: ccIn 460ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes ccIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
 .cc-figure {
   display: flex;
   align-items: baseline;
   gap: 2px;
-  margin-top: 6px;
-  padding: 0;
-  background: none;
-  border: 0;
   font-family: var(--font-mono);
-  font-size: clamp(34px, 3.4vw, 50px);
-  line-height: 1;
+  font-size: clamp(40px, 5vw, 74px);
+  line-height: 0.95;
   font-weight: 600;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.045em;
   color: var(--green-700);
-  cursor: pointer;
-  text-align: left;
   transition: color var(--t-fast);
 }
-.cc-figure:hover { color: var(--green-900); }
-.cc-sign { opacity: 0.45; }
+.cc-pos:hover .cc-figure { color: var(--green-900); }
+.cc-sign { opacity: 0.42; }
 .cc-unit {
   font-family: var(--font-sans, inherit);
-  font-size: 12px;
+  font-size: clamp(12px, 1.2vw, 16px);
   font-weight: 500;
   color: var(--ink-3);
   letter-spacing: 0;
-  margin-left: 5px;
+  margin-left: 7px;
 }
 
-.cc-trend { margin-top: 8px; font-size: 12px; font-weight: 500; }
+.cc-sub {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 7px;
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+.cc-trend { font-weight: 600; }
 .cc-trend.up { color: var(--green-700); }
 .cc-trend.down { color: var(--neg); }
-.cc-basis { margin-top: 4px; font-size: 11px; color: var(--ink-3); }
 
+/* The two decisions, bottom left, out of the region's busiest quarter. */
+.cc-marks {
+  position: absolute;
+  left: 30px;
+  bottom: 24px;
+  z-index: 2;
+  display: flex;
+  gap: 26px;
+  flex-wrap: wrap;
+}
+
+.cc-mark {
+  display: block;
+  padding: 0 0 0 11px;
+  background: none;
+  border: 0;
+  border-left: 2px solid;
+  text-align: left;
+  cursor: pointer;
+  text-shadow: 0 1px 0 rgba(252, 251, 248, 0.9), 0 0 12px rgba(252, 251, 248, 0.8);
+  animation: ccIn 460ms cubic-bezier(0.2, 0.7, 0.2, 1) 90ms both;
+}
+.cc-mark.up { border-left-color: var(--green-700); }
+.cc-mark.risk { border-left-color: var(--neg); }
+
+.cc-mark-v {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: clamp(20px, 2vw, 28px);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.cc-mark.up .cc-mark-v { color: var(--green-700); }
+.cc-mark.risk .cc-mark-v { color: var(--neg); }
+
+.cc-mark-t { display: block; margin-top: 4px; font-size: 12px; font-weight: 600; color: var(--ink); }
+.cc-mark-k {
+  display: block; margin-top: 2px;
+  font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase;
+  font-weight: 700; color: var(--ink-4);
+}
+.cc-mark:hover .cc-mark-k { color: var(--ink-2); }
+
+/* Outcome of a command — announced top right, dismissable. */
 .cc-result {
-  margin-top: 12px;
+  position: absolute;
+  top: 24px;
+  right: 26px;
+  z-index: 3;
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 4px 9px;
+  gap: 2px 10px;
   align-items: baseline;
-  padding: 9px 11px;
+  max-width: 330px;
+  padding: 10px 12px;
   background: var(--green-100);
   border: 1px solid var(--green-300);
-  animation: ccRail 300ms ease both;
+  animation: ccIn 300ms ease both;
 }
 .cc-result.shock { background: var(--warn-bg); border-color: #ddc79a; }
-.cc-res-d { font-family: var(--font-mono); font-size: 16px; font-weight: 600; }
+.cc-res-d { font-family: var(--font-mono); font-size: 19px; font-weight: 600; }
 .cc-res-d.pos { color: var(--green-700); }
 .cc-res-d.neg { color: var(--neg); }
 .cc-res-t { grid-column: 2 / -1; font-size: 11px; line-height: 1.5; color: var(--ink-2); }
@@ -195,72 +249,86 @@
   color: var(--ink-3); cursor: pointer;
 }
 
-/* ── Signals ───────────────────────────────────────────────────────────────── */
+/* ── The carbon river ──────────────────────────────────────────────────────── */
 
-.cc-sig {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 1px 6px;
-  width: 100%;
-  text-align: left;
-  padding: 11px 13px;
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  border-left-width: 2px;
-  font: inherit;
-  cursor: pointer;
-  transition: border-color var(--t-fast), background var(--t-fast);
-}
-.cc-sig:hover { background: var(--surface-sunken); }
-.cc-sig.up { border-left-color: var(--green-700); }
-.cc-sig.risk { border-left-color: var(--neg); }
-
-.cc-sig-k {
-  grid-column: 1 / -1;
-  font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase;
-  font-weight: 700; color: var(--ink-3); margin-bottom: 3px;
-}
-.cc-sig-v {
-  font-family: var(--font-mono); font-size: 24px; font-weight: 600;
-  letter-spacing: -0.025em; line-height: 1.05;
-}
-.cc-sig.up .cc-sig-v { color: var(--green-700); }
-.cc-sig.risk .cc-sig-v { color: var(--neg); }
-.cc-sig-u { font-size: 10px; color: var(--ink-3); align-self: end; padding-bottom: 3px; }
-.cc-sig-t { grid-column: 1 / -1; font-size: 12px; font-weight: 600; color: var(--ink); line-height: 1.35; margin-top: 5px; }
-.cc-sig-m { grid-column: 1 / -1; font-size: 11px; color: var(--ink-3); margin-top: 2px; }
-
-/* ── Chain ─────────────────────────────────────────────────────────────────── */
-
-.cc-chain { margin-top: 2px; }
-.cc-chain-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 52px minmax(34px, 0.8fr) 52px;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--rule);
-}
-.cc-chain-row:last-child { border-bottom: 0; }
-.cc-chain-n { font-size: 11.5px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cc-chain-t { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); text-align: right; }
-.cc-chain-track { height: 6px; background: var(--surface-sunken); position: relative; }
-.cc-chain-fill {
-  position: absolute; inset: 0 auto 0 0; height: 100%; background: var(--green-500);
-  transform-origin: 0 50%;
-  animation: ccGrow 620ms cubic-bezier(0.2, 0.72, 0.2, 1) both;
-}
-@keyframes ccGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.cc-chain-v { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--green-700); text-align: right; }
-
-.cc-note {
-  margin-top: auto;
-  padding-top: 12px;
-  font-size: 10px;
-  line-height: 1.55;
-  color: var(--ink-4);
+/*
+ * Material becomes carbon, to scale. Replaced a four-row table of twelve
+ * numbers; carries the same idea as one shape.
+ */
+.cc-river {
+  flex: none;
+  position: relative;
   border-top: 1px solid var(--rule);
+  background: var(--surface);
+  padding: 0 26px 12px;
 }
+.cc-river svg {
+  width: 100%;
+  height: clamp(84px, 13vh, 140px);
+  display: block;
+  overflow: visible;
+}
+
+.riv-in { fill: var(--ink-4); }
+
+.riv-band {
+  cursor: pointer;
+  transition: opacity var(--t-fast);
+  opacity: 0.88;
+  animation: rivIn 760ms cubic-bezier(0.2, 0.72, 0.2, 1) both;
+  transform-origin: 0 50%;
+}
+@keyframes rivIn { from { opacity: 0; transform: scaleX(0.72); } to { opacity: 0.88; transform: none; } }
+.cc-river:hover .riv-band { opacity: 0.55; }
+.cc-river .riv-band:hover { opacity: 1; }
+
+/* Three commodities, three greens. Never merged into one band — they are
+   different things with roughly a twentyfold price gap between them. */
+.riv-band.k-removal { fill: var(--green-900); }
+.riv-band.k-avoided { fill: var(--green-500); }
+.riv-band.k-substitution { fill: var(--green-300); }
+
+.riv-charge { fill: var(--neg); opacity: 0.8; cursor: pointer; }
+
+.riv-labels {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 2px;
+}
+.riv-labels button { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-align: left; }
+
+.riv-in-l b, .riv-out b {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.riv-out b { color: var(--green-700); font-size: 21px; }
+.riv-in-l span, .riv-out span {
+  display: block;
+  font-size: 9.5px; letter-spacing: 0.13em; text-transform: uppercase;
+  color: var(--ink-4); font-weight: 700; margin-top: 3px;
+}
+
+.riv-mid { display: flex; gap: 18px; flex-wrap: wrap; flex: 1 1 auto; }
+.riv-l {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--ink-2);
+}
+.riv-l b { font-family: var(--font-mono); font-weight: 600; color: var(--ink); }
+.riv-l i { width: 9px; height: 9px; flex: none; }
+.riv-l.k-removal i { background: var(--green-900); }
+.riv-l.k-avoided i { background: var(--green-500); }
+.riv-l.k-substitution i { background: var(--green-300); }
+.riv-l.k-charge i { background: var(--neg); }
+.riv-l.k-charge b { color: var(--neg); }
+
+.riv-out { margin-left: auto; text-align: right; }
+.riv-out b, .riv-out span { text-align: right; }
+
 
 /* ── Drawer contents ───────────────────────────────────────────────────────── */
 
@@ -326,19 +394,15 @@
 /* ── Narrow ────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 1080px) {
+  .cc-pos { position: static; padding: 16px 18px 0; }
+  .cc-marks { position: static; padding: 12px 18px 16px; gap: 20px; }
+  .cc-result { position: static; margin: 0 18px 12px; max-width: none; }
+  .cc-stage { display: flex; flex-direction: column; min-height: 0; }
+  .cc-stage > .ln { min-height: 300px; flex: 1 1 auto; order: -1; }
+
   /* The rail stops floating and becomes a band under the network, because at
      this width it would cover half the region it is describing. */
   .cc-stage { display: flex; flex-direction: column; min-height: 0; }
-  .cc-rail {
-    position: static;
-    width: auto;
-    border-left: 0;
-    border-top: 1px solid var(--rule);
-    background: var(--surface);
-    backdrop-filter: none;
-    animation: none;
-  }
-  .cc-stage > .ln { min-height: 340px; flex: 1 1 auto; }
 }
 
 @media (max-width: 680px) {

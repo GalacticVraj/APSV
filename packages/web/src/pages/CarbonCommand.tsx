@@ -137,10 +137,6 @@ export default function CarbonCommand() {
   return (
     <div className="cc">
       <CommandBar
-        b={b}
-        flows={plan.length}
-        movingT={movingT}
-        plants={boot.network.facilities.length}
         busy={busy !== null}
         shock={shock}
         shockSide={shockSide}
@@ -152,6 +148,7 @@ export default function CarbonCommand() {
         onTrace={() => setOverlay('why')}
       />
 
+      {/* The network is the ground. Everything else is a mark on it. */}
       <div className="cc-stage">
         <LiveNetwork
           sources={boot.network.sources}
@@ -163,16 +160,30 @@ export default function CarbonCommand() {
           offlineIds={offline}
         />
 
-        <SignalRail
+        <Position b={b} onTrace={() => setOverlay('why')} />
+
+        <Marks
           b={b}
-          result={result}
-          onDismiss={() => setResult(null)}
-          onTrace={() => setOverlay('why')}
           onExplore={() => navigate('/carbon/opportunities')}
           onSimulate={() => setOverlay('simulate')}
-          shock={shock}
         />
+
+        {result && (
+          <div className="cc-result" role="status">
+            <span className={`cc-res-d ${result.deltaT >= 0 ? 'pos' : 'neg'}`}>
+              {result.deltaT >= 0 ? '+' : '−'}
+              {num(Math.abs(result.deltaT))}
+            </span>
+            <span className="cc-res-t">re-solved on {result.to.toLowerCase()}</span>
+            <button onClick={() => setResult(null)} aria-label="Dismiss">
+              ×
+            </button>
+          </div>
+        )}
+        {shock && <ShockReadout shock={shock} />}
       </div>
+
+      <CarbonRiver b={b} onTrace={() => setOverlay('why')} />
 
       {overlay === 'why' && <WhyPanel b={b} onClose={() => setOverlay(null)} />}
       {overlay === 'follow' && <FollowPanel version={version} onClose={() => setOverlay(null)} />}
@@ -219,10 +230,6 @@ export default function CarbonCommand() {
  * space on before the reader reached anything worth looking at.
  */
 function CommandBar({
-  b,
-  flows,
-  movingT,
-  plants,
   busy,
   shock,
   shockSide,
@@ -233,10 +240,6 @@ function CommandBar({
   onFollow,
   onTrace,
 }: {
-  b: CarbonBrief;
-  flows: number;
-  movingT: number;
-  plants: number;
   busy: boolean;
   shock: ScenarioResult | null;
   shockSide: 'before' | 'after';
@@ -249,12 +252,12 @@ function CommandBar({
 }) {
   return (
     <header className="cc-bar">
+      {/* The flow count, the tonnage and the plant count used to be printed here.
+          The network draws all three — arc thickness, node count, material in
+          transit — so printing them was the same information twice. */}
       <div className="cc-id">
         <span className="cc-name">Carbon Control</span>
         <span className="cc-live" aria-hidden />
-        <span className="cc-status">
-          {num(movingT)} t moving · {num(flows)} flows · {num(plants)} plants
-        </span>
       </div>
 
       {shock && (
@@ -291,107 +294,214 @@ function CommandBar({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// The signal rail
+// Marks over the network
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * The position, and the two signals worth acting on, over the network.
+ * The position, floating on the network rather than in a panel beside it.
  *
- * Deliberately a rail rather than a row of cards under the map. A number sitting
- * on top of the system it measures reads as that system's state; the same number
- * in a box below reads as a report about it.
+ * There is no card here, no label strip and no basis line. The unit says what
+ * the number is; the network behind it says what it is about. Everything that
+ * used to sit around this figure — the objective, the window, the solver, the
+ * uncertainty range — is one click away behind the number itself.
  */
-function SignalRail({
-  b,
-  result,
-  onDismiss,
-  onTrace,
-  onExplore,
-  onSimulate,
-  shock,
-}: {
-  b: CarbonBrief;
-  result: { deltaT: number; from: string; to: string } | null;
-  onDismiss: () => void;
-  onTrace: () => void;
-  onExplore: () => void;
-  onSimulate: () => void;
-  shock: ScenarioResult | null;
-}) {
+function Position({ b, onTrace }: { b: CarbonBrief; onTrace: () => void }) {
   const p = b.position;
   const t = b.trend;
-
   return (
-    <aside className="cc-rail">
-      <section className="cc-pos">
-        <div className="cc-k">Net carbon position</div>
-        <button className="cc-figure" onClick={onTrace} title="Why this number?">
-          <span className="cc-sign">{p.netT >= 0 ? '+' : '−'}</span>
-          <CountUp value={Math.abs(p.netT)} />
-          <span className="cc-unit">tCO₂e</span>
-        </button>
+    <button className="cc-pos" onClick={onTrace} title="Why this number?">
+      <span className="cc-figure">
+        <span className="cc-sign">{p.netT >= 0 ? '+' : '−'}</span>
+        <CountUp value={Math.abs(p.netT)} />
+        <span className="cc-unit">tCO₂e</span>
+      </span>
+      <span className="cc-sub">
+        {b.windowDays}-day network position
         {t && (
-          <div className={`cc-trend ${t.improving ? 'up' : 'down'}`}>
-            {t.improving ? '↑' : '↓'} {pct(Math.abs(t.deltaPct), 1)} vs the previous {t.weeks} weeks
-          </div>
-        )}
-        <div className="cc-basis">
-          {b.windowDays}-day window · {b.objectiveLabel.toLowerCase()} objective
-        </div>
-
-        {result && (
-          <div className="cc-result" role="status">
-            <span className={`cc-res-d ${result.deltaT >= 0 ? 'pos' : 'neg'}`}>
-              {result.deltaT >= 0 ? '+' : '−'}
-              {num(Math.abs(result.deltaT))}
-            </span>
-            <span className="cc-res-t">
-              measured, re-solving from {result.from} to {result.to.toLowerCase()}
-            </span>
-            <button onClick={onDismiss} aria-label="Dismiss">
-              ×
-            </button>
-          </div>
-        )}
-
-        {shock && <ShockReadout shock={shock} />}
-      </section>
-
-      {b.action && (
-        <button className="cc-sig up" onClick={onExplore}>
-          <span className="cc-sig-k">Opportunity</span>
-          <span className="cc-sig-v">+{num(b.action.carbonDeltaT)}</span>
-          <span className="cc-sig-u">tCO₂e</span>
-          <span className="cc-sig-t">{b.action.headline}</span>
-          <span className="cc-sig-m">
-            {b.action.marginDeltaInr >= 0 ? '+' : '−'}
-            {inr(Math.abs(b.action.marginDeltaInr))} margin
+          <span className={`cc-trend ${t.improving ? 'up' : 'down'}`}>
+            {t.improving ? '↑' : '↓'} {pct(Math.abs(t.deltaPct), 0)}
           </span>
-        </button>
-      )}
-
-      {b.risk && (
-        <button className="cc-sig risk" onClick={onSimulate}>
-          <span className="cc-sig-k">Risk</span>
-          <span className="cc-sig-v">−{num(Math.abs(b.risk.carbonDeltaT))}</span>
-          <span className="cc-sig-u">tCO₂e</span>
-          <span className="cc-sig-t">{b.risk.facilityName} offline</span>
-          <span className="cc-sig-m">
-            {pct(Math.abs(b.risk.carbonLossPct), 1)} of the network · {b.risk.resilienceGrade}
-          </span>
-        </button>
-      )}
-
-      <Chain b={b} />
-
-      <p className="cc-note">
-        Modelled network activity. Material moves on the routes the optimiser allocated it to —
-        there is no live telemetry in this product.
-      </p>
-    </aside>
+        )}
+      </span>
+    </button>
   );
 }
 
+/**
+ * The two decisions, as two marks.
+ *
+ * One line each. The opportunity's full reasoning, the risk's resilience grade
+ * and the flows each would move all live behind the click — on screens that
+ * exist to explain them.
+ */
+function Marks({
+  b,
+  onExplore,
+  onSimulate,
+}: {
+  b: CarbonBrief;
+  onExplore: () => void;
+  onSimulate: () => void;
+}) {
+  return (
+    <div className="cc-marks">
+      {b.action && (
+        <button className="cc-mark up" onClick={onExplore}>
+          <span className="cc-mark-v">+{num(b.action.carbonDeltaT)}</span>
+          <span className="cc-mark-t">
+            {shortName(b.action.facilityId, b.action.headline)} · {inr(b.action.marginDeltaInr)}
+          </span>
+          <span className="cc-mark-k">Best opportunity</span>
+        </button>
+      )}
+      {b.risk && (
+        <button className="cc-mark risk" onClick={onSimulate}>
+          <span className="cc-mark-v">−{num(Math.abs(b.risk.carbonDeltaT))}</span>
+          <span className="cc-mark-t">{shorten(b.risk.facilityName)} offline</span>
+          <span className="cc-mark-k">Major risk</span>
+        </button>
+      )}
+    </div>
+  );
+}
+
+/** "Commission 40 t/day more at Jagraon Pellet Plant" → "Jagraon". */
+function shortName(_id: string | null | undefined, headline: string): string {
+  const at = headline.match(/\bat\s+(.+)$/i);
+  return shorten(at ? at[1] : headline);
+}
+
+/** First word of a plant name is the town, which is how anyone refers to it. */
+function shorten(name: string): string {
+  return name.split(/\s+/)[0] ?? name;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// The carbon river
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Material becomes carbon, drawn to scale.
+ *
+ * This replaced a four-row table of twelve numbers. It carries the same idea in
+ * one shape: the tonnes on the left, the three commodities they produce as
+ * ribbons whose thickness IS their magnitude, the emissions charge notched out
+ * below, and the net on the right.
+ *
+ * Removal, avoidance and substitution stay three separate ribbons and are never
+ * merged into one. They are different commodities with roughly a twentyfold
+ * price gap, and a single fat green band would be the most flattering and least
+ * honest drawing available.
+ *
+ * Every figure is read from the brief's position; nothing is recomputed here.
+ */
+function CarbonRiver({ b, onTrace }: { b: CarbonBrief; onTrace: () => void }) {
+  const p = b.position;
+
+  const bands = useMemo(() => {
+    const rows = [
+      { k: 'removal', label: 'Durable removal', v: p.removalT },
+      { k: 'avoided', label: 'Avoided emissions', v: p.avoidedT },
+      { k: 'substitution', label: 'Fossil substitution', v: p.substitutionT },
+    ].filter((r) => r.v > 0);
+    const total = rows.reduce((a, r) => a + r.v, 0) || 1;
+    return { rows, total };
+  }, [p]);
+
+  const W = 1000;
+  const H = 150;
+  const padY = 16;
+  const usable = H - padY * 2;
+  const charge = p.transportT + p.processT;
+  // The emissions charge is drawn against the same scale as the benefits, so the
+  // notch is honestly proportional rather than a token sliver.
+  const chargeH = Math.max(2, (charge / bands.total) * usable);
+
+  const xIn = 58;
+  const xOut = W - 62;
+
+  let y = padY;
+  const ribbons = bands.rows.map((r) => {
+    const h = (r.v / bands.total) * usable;
+    const seg = { ...r, y, h, mid: y + h / 2 };
+    y += h;
+    return seg;
+  });
+
+  return (
+    <section className="cc-river" aria-label="Material to carbon">
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img">
+        <defs>
+          <linearGradient id="riv-flow" x1="0" x2="1">
+            <stop offset="0%" stopColor="var(--green-300)" stopOpacity="0.42" />
+            <stop offset="100%" stopColor="var(--green-500)" stopOpacity="0.9" />
+          </linearGradient>
+        </defs>
+
+        {/* Material in: one block, height = the whole benefit scale. */}
+        <rect className="riv-in" x={xIn - 12} y={padY} width={10} height={usable} />
+
+        {ribbons.map((r) => {
+          const c1 = xIn + (xOut - xIn) * 0.42;
+          const c2 = xIn + (xOut - xIn) * 0.58;
+          const yIn = padY + usable / 2;
+          const d =
+            `M${xIn},${yIn - r.h / 2} C${c1},${yIn - r.h / 2} ${c2},${r.y} ${xOut},${r.y}` +
+            ` L${xOut},${r.y + r.h} C${c2},${r.y + r.h} ${c1},${yIn + r.h / 2} ${xIn},${yIn + r.h / 2} Z`;
+          return (
+            <path
+              key={r.k}
+              className={`riv-band k-${r.k}`}
+              d={d}
+              onClick={onTrace}
+            >
+              <title>{`${r.label}: ${num(r.v)} tCO₂e`}</title>
+            </path>
+          );
+        })}
+
+        {/* What the network spent to do it. */}
+        <path
+          className="riv-charge"
+          d={`M${xOut},${padY + usable + 6} L${xOut},${padY + usable + 6 + chargeH} L${xIn},${padY + usable + 6 + chargeH} Z`}
+          onClick={onTrace}
+        >
+          <title>{`Transport and processing: ${num(charge)} tCO₂e`}</title>
+        </path>
+      </svg>
+
+      <div className="riv-labels">
+        <button className="riv-in-l" onClick={onTrace}>
+          <b>{num(p.divertedT)}</b>
+          <span>t material</span>
+        </button>
+
+        <div className="riv-mid">
+          {ribbons.map((r) => (
+            <button key={r.k} className={`riv-l k-${r.k}`} onClick={onTrace}>
+              <i />
+              {r.label}
+              <b>{num(r.v)}</b>
+            </button>
+          ))}
+          <button className="riv-l k-charge" onClick={onTrace}>
+            <i />
+            Transport &amp; processing
+            <b>−{num(charge)}</b>
+          </button>
+        </div>
+
+        <button className="riv-out" onClick={onTrace}>
+          <b>
+            {p.netT >= 0 ? '+' : '−'}
+            {num(Math.abs(p.netT))}
+          </b>
+          <span>tCO₂e net</span>
+        </button>
+      </div>
+    </section>
+  );
+}
 
 /**
  * What the shock cost, on the ledger basis.
@@ -421,31 +531,6 @@ function ShockReadout({ shock }: { shock: ScenarioResult }) {
         . {shock.flowChanges.length} flows moved. The live network is untouched.
       </span>
     </div>
-  );
-}
-
-/**
- * Material → pathway → carbon, as one band per conversion route.
- *
- * The brief already groups the network this way, so this selects and formats;
- * it does not re-derive anything.
- */
-function Chain({ b }: { b: CarbonBrief }) {
-  const max = Math.max(...b.flow.map((f) => f.netT), 1);
-  return (
-    <section className="cc-chain">
-      <div className="cc-k">Material → pathway → carbon</div>
-      {b.flow.map((f) => (
-        <div className="cc-chain-row" key={f.pathway}>
-          <span className="cc-chain-n">{f.label}</span>
-          <span className="cc-chain-t">{num(f.tonnes)} t</span>
-          <span className="cc-chain-track">
-            <span className="cc-chain-fill" style={{ width: `${(f.netT / max) * 100}%` }} />
-          </span>
-          <span className="cc-chain-v">+{num(f.netT)}</span>
-        </div>
-      ))}
-    </section>
   );
 }
 
