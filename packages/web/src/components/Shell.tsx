@@ -12,57 +12,99 @@ import { useTwin } from '../store.tsx';
 import type { ObjectiveMode } from '../../../engine/src/types.ts';
 import { dateFull, num, pct } from '../format.ts';
 
-const NAV: Array<{ group: string; items: Array<{ to: string; label: string }> }> = [
-  {
-    group: 'Operations',
-    items: [
-      { to: '/', label: 'Overview' },
-      { to: '/map', label: 'Network Map' },
-      { to: '/activity', label: 'Network Activity' },
+interface NavGroup {
+  group: string;
+  items: Array<{ to: string; label: string }>;
+  /** rendered larger and first: the workspace's primary surface */
+  primary?: boolean;
+}
+
+/**
+ * Two workspaces, not one menu.
+ *
+ * A Carbon Manager's job is not a subset of network operations, and a rail that
+ * lists both as peers makes the product feel like an admin tool with a carbon
+ * section. Selecting CARBON makes the whole rail carbon-first: one command
+ * surface, with the analytical modules beneath it as supporting capability.
+ *
+ * The structure is deliberately extensible — GENERATOR, FACILITY, ECONOMICS and
+ * DIRECTOR workspaces slot in beside these without touching the shell.
+ */
+const WORKSPACES: Record<string, { label: string; tagline: string; nav: NavGroup[] }> = {
+  carbon: {
+    label: 'Carbon',
+    tagline: 'Carbon Network',
+    nav: [
+      {
+        group: 'Command',
+        primary: true,
+        items: [{ to: '/carbon', label: 'Carbon Command' }],
+      },
+      {
+        group: 'Explore',
+        items: [
+          { to: '/carbon/impact', label: 'Impact' },
+          { to: '/carbon/facilities', label: 'Network' },
+          { to: '/carbon/pathways', label: 'Pathways' },
+          { to: '/carbon/ledger', label: 'Trace' },
+          { to: '/carbon/opportunities', label: 'Opportunities' },
+          { to: '/carbon/scenarios', label: 'Scenarios' },
+          { to: '/carbon/evidence', label: 'Evidence' },
+          { to: '/carbon/report', label: 'Brief' },
+        ],
+      },
     ],
   },
-  {
-    group: 'Assets',
-    items: [
-      { to: '/sources', label: 'Waste Sources' },
-      { to: '/facilities', label: 'Facilities' },
-      { to: '/logistics', label: 'Logistics' },
+  network: {
+    label: 'Network',
+    tagline: 'Operations',
+    nav: [
+      {
+        group: 'Operations',
+        items: [
+          { to: '/', label: 'Overview' },
+          { to: '/map', label: 'Network Map' },
+          { to: '/activity', label: 'Network Activity' },
+        ],
+      },
+      {
+        group: 'Assets',
+        items: [
+          { to: '/sources', label: 'Waste Sources' },
+          { to: '/facilities', label: 'Facilities' },
+          { to: '/logistics', label: 'Logistics' },
+        ],
+      },
+      {
+        group: 'Intelligence',
+        items: [
+          { to: '/optimization', label: 'Optimization' },
+          { to: '/scenarios', label: 'Scenarios' },
+          { to: '/bottlenecks', label: 'Bottlenecks' },
+          { to: '/copilot', label: 'Copilot' },
+        ],
+      },
+      {
+        group: 'Accounting',
+        items: [
+          { to: '/economics', label: 'Economics' },
+          { to: '/system', label: 'System & Data' },
+        ],
+      },
     ],
   },
-  {
-    group: 'Intelligence',
-    items: [
-      { to: '/optimization', label: 'Optimization' },
-      { to: '/scenarios', label: 'Scenarios' },
-      { to: '/bottlenecks', label: 'Bottlenecks' },
-      { to: '/copilot', label: 'Copilot' },
-    ],
-  },
-  {
-    group: 'Carbon',
-    items: [
-      { to: '/carbon', label: 'Carbon Home' },
-      { to: '/carbon/ledger', label: 'Carbon Ledger' },
-      { to: '/carbon/pathways', label: 'Pathways' },
-      { to: '/carbon/facilities', label: 'Facilities' },
-      { to: '/carbon/opportunities', label: 'Opportunities' },
-      { to: '/carbon/scenarios', label: 'Scenarios' },
-      { to: '/carbon/evidence', label: 'Evidence (MRV)' },
-      { to: '/carbon/report', label: 'Intelligence Brief' },
-    ],
-  },
-  {
-    group: 'Accounting',
-    items: [
-      { to: '/economics', label: 'Economics' },
-      { to: '/system', label: 'System & Data' },
-    ],
-  },
-];
+};
+
+/** The workspace a path belongs to, so a deep link lands in the right rail. */
+function workspaceFor(path: string): 'carbon' | 'network' {
+  return path.startsWith('/carbon') ? 'carbon' : 'network';
+}
 
 export function Shell({ children, demoActive }: { children: ReactNode; demoActive: boolean }) {
   const { boot, state, optimization, busy, setObjective, reset } = useTwin();
-  const { navigate } = useRouter();
+  const { navigate, path } = useRouter();
+  const workspace = workspaceFor(path);
+  const ws = WORKSPACES[workspace];
 
   const objectives = boot?.reference.objectives ?? {};
   const current = state?.objective ?? 'balanced';
@@ -163,9 +205,24 @@ export function Shell({ children, demoActive }: { children: ReactNode; demoActiv
 
       <div className="body">
         <nav className="rail" aria-label="Sections">
-          {NAV.map((g) => (
-            <div className="rail-group" key={g.group}>
-              <div className="rail-group-label">{g.group}</div>
+          <div className="wsswitch" role="tablist" aria-label="Workspace">
+            {(Object.keys(WORKSPACES) as Array<'carbon' | 'network'>).map((k) => (
+              <button
+                key={k}
+                role="tab"
+                aria-selected={workspace === k}
+                className={`wss-btn ${workspace === k ? 'on' : ''}`}
+                onClick={() => navigate(k === 'carbon' ? '/carbon' : '/')}
+              >
+                {WORKSPACES[k].label}
+              </button>
+            ))}
+          </div>
+          <div className="ws-tagline">{ws.tagline}</div>
+
+          {ws.nav.map((g) => (
+            <div className={`rail-group ${g.primary ? 'primary' : ''}`} key={g.group}>
+              {!g.primary && <div className="rail-group-label">{g.group}</div>}
               {g.items.map((it) => (
                 <Link key={it.to} to={it.to}>
                   <span>{it.label}</span>

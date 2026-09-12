@@ -10,7 +10,8 @@ import Sources from './pages/Sources.tsx';
 import Facilities from './pages/Facilities.tsx';
 import Optimization from './pages/Optimization.tsx';
 import Scenarios from './pages/Scenarios.tsx';
-import Carbon from './pages/Carbon.tsx';
+import CarbonImpact from './pages/Carbon.tsx';
+import CarbonCommand from './pages/CarbonCommand.tsx';
 import CarbonLedger from './pages/CarbonLedger.tsx';
 import CarbonPathways from './pages/CarbonPathways.tsx';
 import CarbonFacilities from './pages/CarbonFacilities.tsx';
@@ -32,7 +33,8 @@ const ROUTES: Record<string, () => JSX.Element | null> = {
   '/facilities': Facilities,
   '/optimization': Optimization,
   '/scenarios': Scenarios,
-  '/carbon': Carbon,
+  '/carbon': CarbonCommand,
+  '/carbon/impact': CarbonImpact,
   '/carbon/ledger': CarbonLedger,
   '/carbon/pathways': CarbonPathways,
   '/carbon/facilities': CarbonFacilities,

@@ -502,6 +502,37 @@ per-pathway, per-facility, evidence contributors, brief bands, shock facility de
 Opportunities, Scenarios, Evidence and the Brief was captured before the refactor and
 compared after: **26 identical, 0 changed.** **260 tests.**
 
+## Phase 21 — Carbon Command (UX transformation)
+
+The eight Carbon modules were correct but presented as eight dashboards. This turns them
+into one workspace. No calculation, endpoint or module was added — the command surface
+reads `/api/brief`, which already composes everything.
+
+- **Two workspaces, not one menu.** Selecting CARBON makes the whole rail carbon-first:
+  *Carbon Command* as the single primary surface, with the eight analytical modules beneath
+  it under *Explore*. The structure is extensible — Generator, Facility, Economics and
+  Director workspaces slot in beside these without touching the shell.
+- **`/carbon` is now the Command Center**; the previous Carbon Home moved intact to
+  `/carbon/impact`. Nothing was deleted.
+- The signature visual is the **existing** `NetworkMap` over real district geometry, drawing
+  the real allocation set. Its arcs already redraw when the plan changes — so the "live"
+  feeling is the optimiser's own output moving, not an animation loop. Selecting a plant,
+  source or flow opens the module that owns it.
+- **Depth is opt-in.** Level 1 is four numbers and a map. "Why this number?" opens the
+  decomposition in a drawer; that opens the Ledger; that opens Evidence. Nothing technical
+  appears until asked for.
+- **Optimise for carbon** is a real mutation: it re-solves the live twin on the carbon
+  objective and reports the measured difference. Verified end to end from a real click —
+  **34,921 → 35,195 (+275 tCO₂e)**, objective Balanced → Carbon First, and the map went from
+  **36 to 41 flows**. The opportunity sweep then re-ranked itself against the new baseline
+  (+1,410 → +1,379), which is the whole system responding coherently to one click.
+- **Follow a tonne** reuses the Ledger's trace endpoint verbatim — the stages, figures and
+  wording are the engine's; the drawer is a shortcut into that experience, not a copy.
+- The **Carbon Pulse** is the twin's recorded event log with real timestamps. Not a ticker,
+  and nothing is fabricated: no GPS, no telemetry, no sensor readings.
+
+No calculation logic touched. **260 tests** unchanged and passing.
+
 ## Documentation
 
 - `README.md` — how to run it and what it does.
