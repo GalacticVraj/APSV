@@ -24,6 +24,8 @@ import {
   StatStrip,
   Tag,
   CountUp,
+  DecisionBanner,
+  ValueFlowChain,
 } from '../components/Primitives.tsx';
 import { NetworkMap } from '../components/NetworkMap.tsx';
 import { BarList, StackedBar, seriesColor } from '../components/Charts.tsx';
@@ -91,8 +93,46 @@ export default function Overview() {
 
       {/* ── WHAT IS HAPPENING ─────────────────────────────────────────────── */}
       <div className="section">
+        <DecisionBanner
+          badge="Control Tower Operating State"
+          happening={
+            <>
+              <strong>{num(T.divertedT)} t waste</strong> ({pct(T.divertedPct, 0)}) routed to{' '}
+              <strong>{r.openFacilities.length} active facilities</strong> out of {state.facilities.length} available.
+            </>
+          }
+          why={
+            <>
+              Optimised allocation delivers <strong>{signedPct(deltaVsBaseline(T.netCarbonT, B.netCarbonT))} carbon gain</strong> ({num(T.netCarbonT)} tCO₂e) and{' '}
+              <strong>{signedPct(deltaVsBaseline(T.marginInr, B.marginInr))} margin</strong> ({inr(T.marginInr)}) over status-quo.
+            </>
+          }
+          action={
+            topBottleneck ? (
+              <>
+                <strong>{topBottleneck.title}:</strong> {topBottleneck.recommendation}
+              </>
+            ) : (
+              'Network routing operating at mathematical optimum. Review shadow prices to allocate capital.'
+            )
+          }
+          actionLabel="View Bottlenecks →"
+          to="/bottlenecks"
+        />
+
+        <ValueFlowChain
+          title="Value Storytelling — Primary Waste-to-Carbon Pathway"
+          steps={[
+            { label: 'Feedstock Supply', value: `${num(T.divertedT)} t Waste`, sub: `${num(state.sources.length)} District Sources` },
+            { label: 'Network Routing', value: `${r.openFacilities.length} Plants Running`, sub: 'Min-Cost Flow Solver' },
+            { label: 'Primary Pathway', value: byPathway[0]?.label ?? 'Pyrolysis', sub: `${pct(((byPathway[0]?.value ?? 0) / Math.max(1, T.divertedT)) * 100, 0)} Vol Share` },
+            { label: 'Carbon Impact', value: `${num(T.netCarbonT)} tCO₂e`, sub: `${signedPct(deltaVsBaseline(T.netCarbonT, B.netCarbonT))} vs Baseline`, tone: 'pos' },
+            { label: 'Economic Value', value: `${inr(T.marginInr)} Margin`, sub: `${inr(T.marginPerTonneInr)}/t Net`, tone: 'pos' },
+          ]}
+        />
+
         <SectionHead
-          title="What is happening"
+          title="Network Performance Metrics"
           note={`Solved in ${r.telemetry.solveMs} ms · seed ${r.seed}`}
         />
         <StatStrip>

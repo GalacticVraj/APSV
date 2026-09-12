@@ -21,6 +21,8 @@ import {
   Panel,
   SectionHead,
   Tag,
+  DecisionBanner,
+  ValueFlowChain,
 } from '../components/Primitives.tsx';
 import { inr, num, signedPct, deltaClass, km } from '../format.ts';
 import type { ScenarioDef, ScenarioResult } from '../../../engine/src/types.ts';
@@ -317,7 +319,38 @@ export default function Scenarios() {
               </div>
 
               <div style={{ padding: 14 }}>
-                <div className="stat-label">What happened</div>
+                {(() => {
+                  const carbonDelta = sc.deltas.find((d) => d.key === 'netCarbonT')?.deltaPct ?? 0;
+                  const marginDelta = sc.deltas.find((d) => d.key === 'marginInr')?.deltaPct ?? 0;
+                  return (
+                    <>
+                      <DecisionBanner
+                        badge="Scenario Impact State"
+                        happening={sc.narrative[0] ?? sc.label}
+                        why={
+                          <>
+                            Carbon shift: <strong>{signedPct(carbonDelta)}</strong> ({num(sc.after.totals.netCarbonT - sc.before.totals.netCarbonT)} tCO₂e), Margin shift: <strong>{signedPct(marginDelta)}</strong> ({inr(sc.after.totals.marginInr - sc.before.totals.marginInr)}).
+                          </>
+                        }
+                        action="Press 'Apply' to commit this scenario state to the live network digital twin."
+                        actionLabel="Apply to Network"
+                        onAction={() => commitScenario(sc.scenario)}
+                      />
+
+                      <ValueFlowChain
+                        title="Scenario Shift Flow"
+                        steps={[
+                          { label: 'Shock Type', value: sc.label, sub: 'State Mutation' },
+                          { label: 'Flow Changes', value: `${sc.flowChanges.length} Arcs`, sub: `${sc.after.telemetry.solveMs} ms Re-solve` },
+                          { label: 'Net Carbon Shift', value: `${signedPct(carbonDelta)}`, sub: `${num(sc.after.totals.netCarbonT)} tCO₂e After`, tone: carbonDelta >= 0 ? 'pos' : 'neg' },
+                          { label: 'Margin Impact', value: `${signedPct(marginDelta)}`, sub: `${inr(sc.after.totals.marginInr)} After`, tone: marginDelta >= 0 ? 'pos' : 'neg' },
+                        ]}
+                      />
+                    </>
+                  );
+                })()}
+
+                <div className="stat-label">Detailed Narrative</div>
                 <ul style={{ margin: '7px 0 0', paddingLeft: 16, fontSize: 12, lineHeight: 1.6 }}>
                   {sc.narrative.slice(1).map((n, i) => (
                     <li key={i} style={{ marginBottom: 4 }}>

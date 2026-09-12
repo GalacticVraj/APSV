@@ -60,6 +60,14 @@ const WORKSPACES: Record<string, { label: string; tagline: string; nav: NavGroup
     tagline: 'Operations',
     nav: [
       {
+        group: 'Portals',
+        items: [
+          { to: '/welcome', label: 'Landing' },
+          { to: '/entry', label: 'Choose Persona' },
+          { to: '/generator', label: 'Farmer Waste App' },
+        ],
+      },
+      {
         group: 'Operations',
         items: [
           { to: '/', label: 'Overview' },
@@ -194,6 +202,14 @@ export function Shell({ children, demoActive }: { children: ReactNode; demoActiv
             Reset
           </button>
         )}
+
+        <button
+          className="topbtn accent"
+          onClick={() => navigate('/generator')}
+          title="Open the Farmer Waste Generator module"
+        >
+          Farmer App 🌾
+        </button>
 
         <button
           className="topbtn accent"

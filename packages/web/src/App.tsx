@@ -28,8 +28,16 @@ import System from './pages/System.tsx';
 import Copilot from './pages/Copilot.tsx';
 import SitingPage from './pages/SitingPage.tsx';
 
+import PersonaLanding from './pages/PersonaLanding.tsx';
+import GeneratorModule from './pages/GeneratorModule.tsx';
+import TrueLanding from './pages/TrueLanding.tsx';
+
 const ROUTES: Record<string, () => JSX.Element | null> = {
   '/': Overview,
+  '/welcome': TrueLanding,
+  '/landing': TrueLanding,
+  '/entry': PersonaLanding,
+  '/generator': GeneratorModule,
   '/map': MapPage,
   '/sources': Sources,
   '/facilities': Facilities,
@@ -117,6 +125,18 @@ function Boot() {
         </div>
       </div>
     );
+  }
+
+  if (path === '/welcome' || path === '/landing') {
+    return <TrueLanding />;
+  }
+
+  if (path === '/entry') {
+    return <PersonaLanding />;
+  }
+
+  if (path === '/generator') {
+    return <GeneratorModule />;
   }
 
   return (

@@ -18,6 +18,7 @@ import {
   Stat,
   StatStrip,
   Tag,
+  DecisionBanner,
 } from '../components/Primitives.tsx';
 import { inr, num, pct } from '../format.ts';
 import type { Assumptions } from '../../../engine/src/types.ts';
@@ -68,6 +69,17 @@ export default function System() {
       </div>
 
       <div className="section">
+        <DecisionBanner
+          badge="Live Model Parameters & Provenance"
+          happening={
+            <>
+              Operating on <strong>{state.assumptions.windowDays}-day planning horizon</strong> at {state.assumptions.soilTempC}°C ambient Indian soil temperature.
+            </>
+          }
+          why="Modifying sliders below directly updates domain parameters and re-solves the mathematical model."
+          action="Adjust CDR prices, diesel costs, or haul limits to perform real-time sensitivity analysis."
+        />
+
         <Notice>
           <strong>All demo data is synthetic.</strong> {boot.product.dataNotice}
         </Notice>

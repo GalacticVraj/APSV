@@ -24,6 +24,8 @@ import {
   StatStrip,
   StatusDot,
   Tag,
+  DecisionBanner,
+  ValueFlowChain,
 } from '../components/Primitives.tsx';
 import { FleetBar, type FleetSegment, FacilityCard, type FacilityCardData, CapacityHeatmap, type HeatmapCell } from '../components/FacilityCharts.tsx';
 import { MunicipalSitingScreener } from '../components/MunicipalSitingScreener.tsx';
@@ -285,6 +287,38 @@ export default function Facilities() {
           </div>
         </div>
       </div>
+
+      {/* Sukruti's decision banner: the fleet state stated in words before any chart. */}
+      {viewMode !== 'siting' && (
+        <div className="section">
+          <DecisionBanner
+            badge="Facility Operations State"
+            happening={
+              <>
+                <strong>
+                  {r.openFacilities.length} of {rows.length} facilities active
+                </strong>
+                , processing <strong>{num(rows.reduce((a, f) => a + f.load, 0))} t</strong> (
+                {pct(
+                  (rows.reduce((a, f) => a + f.load, 0) /
+                    Math.max(1, rows.reduce((a, f) => a + f.capWindow, 0))) * 100,
+                  1,
+                )}{' '}
+                utilisation).
+              </>
+            }
+            why={
+              <>
+                {rows.filter((f) => f.util >= 97).length} facilities are capacity-bound. Idle plants (
+                {r.idleFacilities.length}) lack the feedstock density to reach minimum viable feed.
+              </>
+            }
+            action="Examine binding facility shadow prices before allocating headroom or de-bottlenecking capital."
+            actionLabel="Inspect shadow prices →"
+            to="/bottlenecks"
+          />
+        </div>
+      )}
 
       {viewMode === 'siting' ? (
         <div className="section">
