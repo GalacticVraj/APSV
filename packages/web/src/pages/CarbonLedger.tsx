@@ -24,7 +24,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api, useResource, useTwin } from '../store.tsx';
 import { ErrorState, Loading, Panel, SectionHead, Tag } from '../components/Primitives.tsx';
-import { useRouter } from '../router.tsx';
+import { Link, useRouter } from '../router.tsx';
 import { dateFull, num, pct } from '../format.ts';
 import type {
   AllocationTrace,
@@ -554,6 +554,14 @@ function Evidence({
           <p className="ev-source mono">{line.key}</p>
         </section>
       )}
+
+      {/* The same line, in the module built for defending it. One key, one
+          calculation — Evidence reads this line from the ledger, not a copy. */}
+      <div className="ev-tomrv">
+        <Link to={`/carbon/evidence?line=${encodeURIComponent(line.key)}`} className="btn sm">
+          Open in Evidence
+        </Link>
+      </div>
 
       <div className="ev-status">
         <span className="q-tag">Modelled estimate</span>

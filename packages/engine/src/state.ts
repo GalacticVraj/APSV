@@ -43,6 +43,16 @@ import {
 import { forecastNetwork, type NetworkForecast } from './forecast.ts';
 import { carbonHistory, type CarbonHistory } from './history.ts';
 import {
+  evidenceHealth,
+  evidenceRegister,
+  lineContributors,
+  modelBasis,
+  type EvidenceHealth,
+  type EvidenceRecord,
+  type LineContributor,
+  type ModelBasis,
+} from './evidence.ts';
+import {
   compareFacilities,
   facilityCarbon,
   facilityRanking,
@@ -111,6 +121,11 @@ export class Twin {
   private cachePareto: ParetoPoint[] | null = null;
   private cacheHistory: CarbonHistory | null = null;
   private cacheFacilityRank: FacilityRankRow[] | null = null;
+  private cacheEvidence: {
+    records: EvidenceRecord[];
+    health: EvidenceHealth;
+    basis: ModelBasis;
+  } | null = null;
   private lastScenario: ScenarioResult | null = null;
 
   constructor() {
@@ -147,6 +162,7 @@ export class Twin {
     // changes the plan changes the trend too.
     this.cacheHistory = null;
     this.cacheFacilityRank = null;
+    this.cacheEvidence = null;
     if (!keepForecast) this.cacheForecast = null;
   }
 
@@ -310,6 +326,26 @@ export class Twin {
     );
   }
 
+  /**
+   * The evidence register: every ledger line with its inputs, factor and citation.
+   * Memoised because it runs one ledger per allocation to count contributors.
+   */
+  getEvidence(): { records: EvidenceRecord[]; health: EvidenceHealth; basis: ModelBasis } {
+    if (!this.cacheEvidence) {
+      const records = evidenceRegister(this.state, this.getResult(), this.getLedger());
+      this.cacheEvidence = {
+        records,
+        health: evidenceHealth(records),
+        basis: modelBasis(this.state, this.getResult(), this.version),
+      };
+    }
+    return this.cacheEvidence;
+  }
+
+  /** Which allocations produced one ledger line, and in what proportion. */
+  getLineContributors(lineKey: string): LineContributor[] {
+    return lineContributors(this.state, this.getResult(), lineKey);
+  }
   /** Every facility ranked by its contribution to the network's net carbon. */
   getFacilityRanking(): FacilityRankRow[] {
     if (!this.cacheFacilityRank) {

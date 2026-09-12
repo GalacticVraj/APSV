@@ -14,6 +14,7 @@ import Carbon from './pages/Carbon.tsx';
 import CarbonLedger from './pages/CarbonLedger.tsx';
 import CarbonPathways from './pages/CarbonPathways.tsx';
 import CarbonFacilities from './pages/CarbonFacilities.tsx';
+import CarbonEvidence from './pages/CarbonEvidence.tsx';
 import Economics from './pages/Economics.tsx';
 import Logistics from './pages/Logistics.tsx';
 import Bottlenecks from './pages/Bottlenecks.tsx';
@@ -32,6 +33,7 @@ const ROUTES: Record<string, () => JSX.Element | null> = {
   '/carbon/ledger': CarbonLedger,
   '/carbon/pathways': CarbonPathways,
   '/carbon/facilities': CarbonFacilities,
+  '/carbon/evidence': CarbonEvidence,
   '/economics': Economics,
   '/logistics': Logistics,
   '/bottlenecks': Bottlenecks,

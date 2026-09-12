@@ -45,6 +45,7 @@ const NAV: Array<{ group: string; items: Array<{ to: string; label: string }> }>
       { to: '/carbon/ledger', label: 'Carbon Ledger' },
       { to: '/carbon/pathways', label: 'Pathways' },
       { to: '/carbon/facilities', label: 'Facilities' },
+      { to: '/carbon/evidence', label: 'Evidence (MRV)' },
     ],
   },
   {

@@ -41,6 +41,12 @@ import type {
 } from '../../engine/src/types.ts';
 import type { CarbonHistory } from '../../engine/src/history.ts';
 import type {
+  EvidenceHealth,
+  EvidenceRecord,
+  LineContributor,
+  ModelBasis,
+} from '../../engine/src/evidence.ts';
+import type {
   FacilityCarbon,
   FacilityComparison,
   FacilityRankRow,
@@ -113,6 +119,12 @@ export const api = {
       totals: NetworkTotals;
       provenance: Record<string, ProvenanceRow[]>;
     }>('/api/carbon'),
+  evidence: () =>
+    req<{ records: EvidenceRecord[]; health: EvidenceHealth; basis: ModelBasis }>('/api/evidence'),
+  lineContributors: (line: string) =>
+    req<{ line: string; contributors: LineContributor[]; note: string | null }>(
+      `/api/evidence/contributors?line=${encodeURIComponent(line)}`,
+    ),
   facilityCarbon: () => req<FacilityRankRow[]>('/api/facilities/carbon'),
   facilityProfile: (id: string) =>
     req<FacilityCarbon>(`/api/facilities/profile?id=${encodeURIComponent(id)}`),

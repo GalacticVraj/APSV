@@ -322,6 +322,46 @@ facility) and by an explicit cross-check that an arc shows the same figure here 
 Ledger trace. Also: opportunities only where headroom or a binding constraint actually
 exists, offline plants given no advice, and idle plants never implying a result. **166 tests.**
 
+## Phase 16 — Carbon Evidence (MRV)
+
+"Can I defend the basis of this number." Deliberately plainer than the rest of Carbon:
+type, rules and status words, because a page about evidence that looks like a marketing
+dashboard has already lost the argument.
+
+- **Backward tracing**, the mirror of the Ledger's forward trace. Given a ledger line,
+  which allocations produced it and in what proportion — built by running each allocation
+  through the same `buildLedger` and reading the same line key, so contributors sum to the
+  line exactly (3.6e-12) and shares total 100%.
+- **No trust score.** Nothing defensible compresses into a percentage, so the health view
+  counts what is countable and says the rest in a sentence. It prints **0 measured, 0
+  estimated, 13 modelled, 0 missing** — a page about evidence has to be willing to print zeros.
+- What *can* be classified honestly is each **input**: 14 apply a factor with a published
+  citation, 1 is a modelling assumption stated at the point of use, 16 are quantities the
+  model itself produced. Read off the data rather than hand-tagged.
+- The "no gaps" result is stated with its caveat: it checks provenance coverage, not data
+  quality, and the absence of a missing-input model is a property of a generated dataset
+  rather than a clean bill of health.
+- Audit timeline uses the timestamps the twin actually recorded. No history is reconstructed
+  for periods the twin did not run.
+- The Ledger's evidence panel now links to the same record here — one key, one calculation,
+  one trace. Verified end to end: a ledger line opens in Evidence with the same value and the
+  same calculation string.
+
+**The trust invariant** (`invariant.test.ts`, 18 cross-module tests) is the important
+addition. Per-module suites check each piece is internally consistent; this one checks the
+pieces agree with each other, which is the failure they cannot see. It verifies the whole
+network reconciles from **three independent decompositions** — by facility, by allocation and
+by ledger line — plus the six required components, that avoidance and substitution are never
+the same quantity, that transport and processing partition the emission lines with nothing
+left over, and that no module reports a charge as a benefit. **184 tests.**
+
+Caught by looking, not by asserting:
+
+- **`button.btn` excluded anchors.** Every `<Link className="btn">` across Pathways,
+  Facilities and Evidence — seven of them — rendered as plain text. Only visible in a
+  screenshot; no DOM assertion would have flagged it.
+- Count chips read "14 published **factor**" and "16 model-derived **quantity**".
+
 ## Documentation
 
 - `README.md` — how to run it and what it does.

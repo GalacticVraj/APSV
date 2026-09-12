@@ -202,6 +202,20 @@ const GET: Record<string, Handler> = {
       provenance: twin.getProvenance(),
     }),
 
+  '/api/evidence': (_req, res) => json(res, 200, twin.getEvidence()),
+
+  '/api/evidence/contributors': (_req, res, url) => {
+    const line = url.searchParams.get('line');
+    if (!line) return json(res, 400, { error: 'A ledger line "line" key is required.' });
+    const rows = twin.getLineContributors(line);
+    if (rows.length === 0) {
+      // Not an error: the line may exist but be produced by no allocation in this
+      // plan, which is a real answer about the plan rather than a lookup failure.
+      return json(res, 200, { line, contributors: [], note: 'No allocation in the current plan contributes to this line.' });
+    }
+    json(res, 200, { line, contributors: rows, note: null });
+  },
+
   '/api/facilities/carbon': (_req, res) => json(res, 200, twin.getFacilityRanking()),
 
   '/api/facilities/profile': (_req, res, url) => {
