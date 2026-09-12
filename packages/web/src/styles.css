@@ -3597,3 +3597,85 @@ a.cd-item:hover { background: var(--surface-sunken); }
 
 .cnav-tabs { align-items: center; }
 .cnav-spacer { flex: 1 1 auto; }
+
+/* ── Calibration: this model against published work ────────────────────────── */
+
+.cal-intro {
+  font-size: 12.5px; line-height: 1.65; color: var(--ink-2);
+  max-width: 80ch; margin-bottom: 16px;
+}
+
+.cal-rows { display: flex; flex-direction: column; }
+
+.cal-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr) 112px;
+  grid-template-areas:
+    'param ours published verdict'
+    'note  note published-note src';
+  gap: 4px 16px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+  border-left: 2px solid transparent;
+  padding-left: 12px;
+  margin-left: -12px;
+}
+.cal-row:last-child { border-bottom: 0; }
+/* Only a real disagreement earns a colour. */
+.cal-row.v-differs { border-left-color: var(--warn); background: var(--warn-bg); }
+
+.cal-p { grid-area: param; font-size: 13px; font-weight: 600; color: var(--ink); }
+.cal-v { font-size: 12.5px; color: var(--ink-2); font-family: var(--font-mono); }
+.cal-k {
+  display: block; font-family: var(--font-sans, inherit);
+  font-size: 9px; letter-spacing: 0.13em; text-transform: uppercase;
+  color: var(--ink-4); font-weight: 700; margin-bottom: 3px;
+}
+
+.cal-verdict {
+  grid-area: verdict; justify-self: end;
+  font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+  padding: 3px 8px; white-space: nowrap;
+}
+.cal-verdict.v-agrees, .cal-verdict.v-within { background: var(--green-100); color: var(--green-700); }
+.cal-verdict.v-differs { background: var(--warn); color: #fff; }
+.cal-verdict.v-method { background: var(--surface-sunken); color: var(--ink-3); }
+
+.cal-note {
+  grid-area: note; font-size: 11.5px; line-height: 1.6; color: var(--ink-3);
+  max-width: 92ch; margin-top: 4px;
+}
+.cal-src {
+  grid-area: src; justify-self: end; align-self: end;
+  font-size: 10.5px; font-weight: 600; color: var(--green-700); text-decoration: none;
+  white-space: nowrap;
+}
+.cal-src:hover { text-decoration: underline; }
+
+/* Real plants */
+.cal-real { margin-top: 14px; }
+.cal-toggle {
+  background: none; border: 0; padding: 8px 0; font: inherit;
+  font-size: 12px; font-weight: 600; color: var(--ink-2); cursor: pointer;
+  border-bottom: 1px solid var(--rule); width: 100%; text-align: left;
+}
+.cal-toggle:hover { color: var(--green-700); }
+
+.cal-real-body { padding-top: 12px; }
+.cal-plants { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 12px; }
+.cal-plants li { border: 1px solid var(--rule); padding: 12px 14px; background: var(--surface); }
+.cal-plant-n { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.3; }
+.cal-plant-m { font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+.cal-plant-note { font-size: 11px; line-height: 1.55; color: var(--ink-3); margin: 8px 0 8px; }
+.cal-plants a { font-size: 10.5px; font-weight: 600; color: var(--green-700); text-decoration: none; }
+.cal-plants a:hover { text-decoration: underline; }
+
+@media (max-width: 900px) {
+  .cal-row {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 'param param' 'ours published' 'verdict src' 'note note';
+    gap: 8px 14px;
+  }
+  .cal-verdict { justify-self: start; }
+}
