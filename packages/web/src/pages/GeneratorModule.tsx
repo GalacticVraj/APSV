@@ -5,16 +5,18 @@
  *   "I have waste. What is the best thing I can do with it?"
  *
  * Implements:
- * - Section 2: Language Selector Screen (English, हिन्दी, ਪੰਜਾਬੀ, मराठी)
- * - Change 8: Waste Intake Questionnaire v2
- *     - Step 0: Category Selection 2x2 Grid (Agricultural, Municipal, Livestock, Industrial) with halftone SVG icons
- *     - Dynamic 1-step-at-a-time wizard with step counter, Back navigation, inline "Other" text, numeric + unit toggles, Village/District + map location
- *     - Collapsed "Why we ask ⓘ" helper hints
- * - Section 3: "My Material" Hero & Recommendation (populated by intake answers)
- * - Section 4: "Best Pathway" comparison cards (Biochar, Biogas, Compost)
- * - Section 5: "Follow My Tonne" interactive material journey flow
- * - Section 8: Pathway Switch micro-interaction with CountUp & "What changed?" callouts
- * - Section 9: 64dp+ tap targets, high contrast outdoor legibility, persistent nav
+ * - CHANGE 9: Visual Theme Consistency
+ *     - Real paper texture ground across all screens
+ *     - Smooth scalloped corner accents top-left and bottom-right (matching /welcome exactly)
+ * - CHANGE 10: Persistent Top-Right Language Control
+ *     - Compact "🌐 EN ▾" dropdown control on top-right of every screen
+ *     - Removed "Language" item from bottom nav bar (now 3 clean items)
+ * - CHANGE 8: Waste Intake Questionnaire v2 (4-category 2x2 grid, dynamic 1-step-at-a-time wizard)
+ * - CHANGE 11: "Follow My Tonne" Material Journey Redesign
+ *     - Single-page vertical connected timeline (dot markers + continuous connecting line)
+ *     - All 6 steps visible at once (MY WASTE → COLLECTION → FACILITY → PROCESSING → CARBON → VALUE)
+ *     - Always-visible inline detail chips (no "Tap for Facts" click required)
+ *     - Step 4 active view highlight
  */
 
 import { useState } from 'react';
@@ -40,7 +42,7 @@ import {
   HalftoneMunicipalWasteIcon,
   HalftoneLivestockWasteIcon,
   HalftoneIndustrialWasteIcon,
-  TornGinghamCorner,
+  ScallopedGinghamCorner,
   GoldSpark,
 } from '../components/FarmerIcons.tsx';
 
@@ -61,6 +63,7 @@ export default function GeneratorModule() {
   const { state, optimization } = useTwin();
   const { navigate } = useRouter();
   const [lang, setLang] = useState<LanguageCode>(getSavedLanguage);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
   // Default tab flow: if lang saved -> category intake, else lang selection
   const [tab, setTab] = useState<TabView>(() => {
@@ -93,6 +96,7 @@ export default function GeneratorModule() {
   const onSelectLanguage = (code: LanguageCode) => {
     setLang(code);
     saveLanguage(code);
+    setLangDropdownOpen(false);
     setTab('intake_cat');
   };
 
@@ -102,7 +106,6 @@ export default function GeneratorModule() {
     setAnswers({});
     setOtherText({});
     setWhyAskOpen(false);
-    // Set default unit/period based on category
     if (cat === 'agri') setUnitVal('tonnes');
     else if (cat === 'muni') setUnitVal('tonnes/day');
     else if (cat === 'live') setUnitVal('per day');
@@ -161,50 +164,61 @@ export default function GeneratorModule() {
 
   const activeP = pathwayData[selectedPathway];
 
-  // Material Journey Stepper
-  const [journeyStep, setJourneyStep] = useState<number>(0);
+  // CHANGE 11: All 6 Material Journey Connected Timeline Nodes (Inline Detail, No Tap Needed)
   const journeyNodes = [
     {
       id: 'waste',
+      stepNum: 1,
       title: t(lang, 'step_waste'),
       desc: `${intakeSummary.quantity} ${intakeSummary.unit} of ${intakeSummary.materialType} collected at ${intakeSummary.location}.`,
-      icon: <HalftoneGeneratorIcon size={36} />,
+      icon: <HalftoneGeneratorIcon size={32} />,
       facts: [`${intakeSummary.quantity} ${intakeSummary.unit} Available`, `Moisture: ${intakeSummary.moisture}`, 'Gate Price: ₹1,200/t'],
+      active: false,
     },
     {
       id: 'collection',
+      stepNum: 2,
       title: t(lang, 'step_collection'),
       desc: t(lang, 'step_collection_desc'),
-      icon: <HalftoneGeneratorIcon size={36} />,
+      icon: <HalftoneGeneratorIcon size={32} />,
       facts: ['16t Baled Truck Dispatched', 'Haul Radius: 18.4 km', 'ETA Pickup: Today 2:00 PM'],
+      active: false,
     },
     {
       id: 'facility',
+      stepNum: 3,
       title: t(lang, 'step_facility'),
       desc: t(lang, 'step_facility_desc'),
-      icon: <HalftoneFacilityIcon size={36} />,
+      icon: <HalftoneFacilityIcon size={32} />,
       facts: ['Batala Pyrolysis Unit', 'Nameplate: 150 t/day', 'Utilisation: 92%'],
+      active: false,
     },
     {
       id: 'processing',
+      stepNum: 4,
       title: t(lang, 'step_processing'),
       desc: t(lang, 'step_processing_desc'),
-      icon: <HalftoneFacilityIcon size={36} />,
+      icon: <HalftoneFacilityIcon size={32} />,
       facts: ['Slow Pyrolysis @ 550°C', 'Char Yield: 34%', 'Fixed Carbon: 62%'],
+      active: true, // Visual emphasis highlight as active processing stage
     },
     {
       id: 'carbon',
+      stepNum: 5,
       title: t(lang, 'step_carbon'),
       desc: t(lang, 'step_carbon_desc'),
-      icon: <HalftoneCarbonIcon size={36} />,
+      icon: <HalftoneCarbonIcon size={32} />,
       facts: ['+4.8 tCO₂e Removal', 'Permanence: 100 Years', 'Q10 Soil Harmonised'],
+      active: false,
     },
     {
       id: 'value',
+      stepNum: 6,
       title: t(lang, 'step_value'),
       desc: t(lang, 'step_value_desc'),
-      icon: <HalftoneEconomyIcon size={36} />,
+      icon: <HalftoneEconomyIcon size={32} />,
       facts: ['₹12,400 Net Credit', 'Direct Farmer Payout', 'Carbon Credit Verified'],
+      active: false,
     },
   ];
 
@@ -223,7 +237,6 @@ export default function GeneratorModule() {
       setWizardStep(wizardStep + 1);
       setWhyAskOpen(false);
     } else {
-      // Final step complete: save summary and route to home (My Material)
       const selectedType = answers['q1'] === 'opt_other' ? (otherText['q1'] || 'Other Waste') : (t(lang, answers['q1']) || 'Residue');
       setIntakeSummary({
         category: activeCat,
@@ -252,12 +265,82 @@ export default function GeneratorModule() {
   };
 
   return (
-    <div className="generator-app">
-      {/* Signature Torn Paper Edge Flourish */}
-      <TornGinghamCorner position="top-right" />
+    <div className="generator-app" style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+      {/* CHANGE 9: Smooth Scalloped Corner Accents Top-Left and Bottom-Right (Matching /welcome) */}
+      <ScallopedGinghamCorner position="top-left" />
+      <ScallopedGinghamCorner position="bottom-right" />
+
+      {/* CHANGE 10: Persistent Top-Right Language Selector Dropdown (🌐 EN ▾) */}
+      <div style={{ position: 'absolute', top: 24, right: 28, zIndex: 30 }}>
+        <button
+          onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            background: 'var(--g-white)',
+            border: '1.5px solid var(--g-border)',
+            borderRadius: 20,
+            padding: '6px 14px',
+            fontSize: 13,
+            fontWeight: 700,
+            color: 'var(--g-ink)',
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+            transition: 'all 140ms ease',
+          }}
+          aria-label="Select Language"
+        >
+          <span style={{ fontSize: 14 }}>🌐</span>
+          <span>{lang.toUpperCase()}</span>
+          <span style={{ fontSize: 10, opacity: 0.7 }}>▾</span>
+        </button>
+
+        {langDropdownOpen && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '100%',
+              right: 0,
+              marginTop: 6,
+              background: 'var(--g-white)',
+              border: '1.5px solid var(--g-border)',
+              borderRadius: 12,
+              padding: '6px 0',
+              boxShadow: '0 8px 24px rgba(42, 42, 34, 0.14)',
+              minWidth: 160,
+              zIndex: 40,
+              textAlign: 'left',
+            }}
+          >
+            {LANGUAGES.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => onSelectLanguage(l.code)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  padding: '8px 16px',
+                  border: 0,
+                  background: l.code === lang ? '#F0F6F2' : 'transparent',
+                  color: l.code === lang ? 'var(--g-forest)' : 'var(--g-ink)',
+                  fontWeight: l.code === lang ? 700 : 500,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                }}
+              >
+                <span>{l.nativeName}</span>
+                <span style={{ fontSize: 11, color: 'var(--g-ink-muted)' }}>{l.code.toUpperCase()}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Persistent Farmer Header */}
-      <header className="gen-header">
+      <header className="gen-header" style={{ position: 'relative', zIndex: 10 }}>
         <div className="gen-brand">
           <h1>TERRAFLUX</h1>
           <span className="gen-brand-sub">{t(lang, 'farmer_module_title')}</span>
@@ -277,9 +360,9 @@ export default function GeneratorModule() {
         </div>
       </header>
 
-      {/* ── SECTION 2: LANGUAGE SELECTION ─────────────────────────────────── */}
+      {/* ── SECTION 2: DEDICATED LANGUAGE SELECTION ────────────────────────── */}
       {tab === 'lang' && (
-        <div className="lang-select-container">
+        <div className="lang-select-container" style={{ position: 'relative', zIndex: 10 }}>
           <div className="persona-head">
             <GoldSpark style={{ width: 36, height: 36, margin: '0 auto 8px' }} />
             <h2>{t(lang, 'select_language')}</h2>
@@ -314,7 +397,7 @@ export default function GeneratorModule() {
 
       {/* ── CHANGE 8: STEP 0 — CATEGORY SELECTION SCREEN ────────────────────── */}
       {tab === 'intake_cat' && (
-        <div className="lang-select-container" style={{ maxWidth: 740 }}>
+        <div className="lang-select-container" style={{ maxWidth: 740, position: 'relative', zIndex: 10 }}>
           <div className="persona-head">
             <GoldSpark style={{ width: 36, height: 36, margin: '0 auto 8px' }} />
             <h2>{t(lang, 'intake_cat_heading')}</h2>
@@ -382,7 +465,7 @@ export default function GeneratorModule() {
 
       {/* ── CHANGE 8: DYNAMIC QUESTION WIZARD (ONE STEP AT A TIME) ─────────── */}
       {tab === 'intake_wizard' && (
-        <div className="gen-container" style={{ maxWidth: 680 }}>
+        <div className="gen-container" style={{ maxWidth: 680, position: 'relative', zIndex: 10 }}>
           {/* Top Wizard Bar */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
             <button
@@ -452,9 +535,9 @@ export default function GeneratorModule() {
         </div>
       )}
 
-      {/* ── SECTION 3: HOME — "MY MATERIAL" (INTAKE POPULATED) ─────────────── */}
+      {/* ── SECTION 3: HOME — "MY MATERIAL" ───────────────────────────────── */}
       {tab === 'home' && (
-        <div className="gen-container">
+        <div className="gen-container" style={{ position: 'relative', zIndex: 10 }}>
           <div className="hero-card">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
               <div className="hero-k">{t(lang, 'hero_available_label')}</div>
@@ -497,9 +580,9 @@ export default function GeneratorModule() {
         </div>
       )}
 
-      {/* ── SECTION 4 & 8: "BEST PATHWAY" & MICRO-INTERACTION ─────────────── */}
+      {/* ── SECTION 4 & 8: "BEST PATHWAY" ─────────────────────────────────── */}
       {tab === 'pathways' && (
-        <div className="gen-container">
+        <div className="gen-container" style={{ position: 'relative', zIndex: 10 }}>
           <div className="persona-head" style={{ textAlign: 'left', marginBottom: 16 }}>
             <h2>{t(lang, 'pathways_title')}</h2>
             <p>{t(lang, 'pathways_sub')}</p>
@@ -594,79 +677,126 @@ export default function GeneratorModule() {
         </div>
       )}
 
-      {/* ── SECTION 5: "FOLLOW MY TONNE" (MATERIAL JOURNEY) ───────────────── */}
+      {/* ── CHANGE 11: "FOLLOW MY TONNE" (MATERIAL JOURNEY CONNECTED TIMELINE) ─ */}
       {tab === 'journey' && (
-        <div className="gen-container">
-          <div className="persona-head" style={{ textAlign: 'left', marginBottom: 16 }}>
+        <div className="gen-container" style={{ maxWidth: 720, position: 'relative', zIndex: 10 }}>
+          <div className="persona-head" style={{ textAlign: 'left', marginBottom: 24 }}>
             <h2>{t(lang, 'journey_title')}</h2>
             <p>{t(lang, 'journey_sub')}</p>
           </div>
 
-          <div className="journey-flow">
-            {journeyNodes.map((node, i) => {
-              const isSel = journeyStep === i;
-              return (
-                <div
-                  key={node.id}
-                  className={`journey-node ${isSel ? 'selected' : ''}`}
-                  onClick={() => setJourneyStep(i)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') setJourneyStep(i);
-                  }}
-                >
-                  <div className="node-icon-wrap">{node.icon}</div>
-                  <div className="node-content" style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <h4>
-                        Step {i + 1}: {node.title}
-                      </h4>
-                      <span
-                        style={{
-                          fontSize: 11,
-                          fontWeight: 700,
-                          color: isSel ? 'var(--g-forest)' : 'var(--g-ink-muted)',
-                        }}
-                      >
-                        {isSel ? '● Active View' : 'Tap for Facts'}
-                      </span>
-                    </div>
-                    <p>{node.desc}</p>
+          {/* Single-Page Connected Vertical Timeline Container */}
+          <div style={{ position: 'relative', paddingLeft: 44, paddingBottom: 10 }}>
+            {/* Continuous Vertical Guide Line linking all 6 step markers */}
+            <div
+              style={{
+                position: 'absolute',
+                left: 19,
+                top: 24,
+                bottom: 60,
+                width: 3,
+                background: 'var(--g-forest)',
+                opacity: 0.35,
+                borderRadius: 2,
+              }}
+            />
 
-                    {isSel && (
-                      <div
-                        style={{
-                          marginTop: 12,
-                          paddingTop: 10,
-                          borderTop: '1px solid var(--g-border)',
-                          display: 'flex',
-                          flexWrap: 'wrap',
-                          gap: 8,
-                        }}
-                      >
-                        {node.facts.map((fact, idx) => (
-                          <span
-                            key={idx}
-                            style={{
-                              background: 'var(--g-white)',
-                              border: '1px solid var(--g-border)',
-                              padding: '4px 10px',
-                              borderRadius: 6,
-                              fontSize: 12,
-                              fontWeight: 700,
-                              color: 'var(--g-forest-dark)',
-                            }}
-                          >
-                            ✓ {fact}
-                          </span>
-                        ))}
+            {/* Render all 6 steps visible at once */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {journeyNodes.map((node) => (
+                <div key={node.id} style={{ position: 'relative' }}>
+                  {/* Step Dot Marker on Vertical Line */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: -44,
+                      top: 18,
+                      width: 34,
+                      height: 34,
+                      borderRadius: '50%',
+                      background: node.active ? 'var(--g-forest)' : '#EDE7DC',
+                      border: `3px solid ${node.active ? 'var(--g-gold)' : 'var(--g-forest)'}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 13,
+                      fontWeight: 800,
+                      color: node.active ? '#FFFFFF' : 'var(--g-forest)',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                      zIndex: 2,
+                    }}
+                  >
+                    {node.stepNum}
+                  </div>
+
+                  {/* Step Card with Always-Visible Inline Facts */}
+                  <div
+                    style={{
+                      background: 'var(--g-white)',
+                      border: `2px solid ${node.active ? 'var(--g-forest)' : 'var(--g-border)'}`,
+                      borderRadius: 14,
+                      padding: 20,
+                      boxShadow: node.active ? '0 6px 18px rgba(61,107,78,0.14)' : 'var(--g-shadow)',
+                      transition: 'all 160ms ease',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                      <div className="node-icon-wrap" style={{ width: 44, height: 44, borderRadius: 10, background: '#F0F6F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+                        {node.icon}
                       </div>
-                    )}
+
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                          <h4 style={{ fontSize: 17, fontWeight: 800, color: 'var(--g-forest)', margin: 0 }}>
+                            Step {node.stepNum}: {node.title}
+                          </h4>
+                          {node.active && (
+                            <span
+                              style={{
+                                background: 'var(--g-forest)',
+                                color: '#FFFFFF',
+                                fontSize: 10,
+                                fontWeight: 800,
+                                padding: '3px 10px',
+                                borderRadius: 12,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.06em',
+                              }}
+                            >
+                              ● Active Processing Stage
+                            </span>
+                          )}
+                        </div>
+
+                        <p style={{ fontSize: 14, color: 'var(--g-ink)', margin: '0 0 12px', lineHeight: 1.45 }}>
+                          {node.desc}
+                        </p>
+
+                        {/* Always-Visible Inline Stat Chips (No Tap Needed) */}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingTop: 8, borderTop: '1px solid var(--g-border)' }}>
+                          {node.facts.map((fact, idx) => (
+                            <span
+                              key={idx}
+                              style={{
+                                background: '#F0F6F2',
+                                border: '1px solid #C4DCCE',
+                                padding: '4px 10px',
+                                borderRadius: 6,
+                                fontSize: 12,
+                                fontWeight: 700,
+                                color: 'var(--g-forest-dark)',
+                              }}
+                            >
+                              ✓ {fact}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
 
           <button
@@ -679,7 +809,7 @@ export default function GeneratorModule() {
         </div>
       )}
 
-      {/* ── SECTION 10: FARMER PERSISTENT BOTTOM NAVIGATION BAR ───────────── */}
+      {/* ── CHANGE 10: FARMER PERSISTENT BOTTOM NAV BAR (3 CLEAN ITEMS) ─────── */}
       <nav className="gen-bottom-nav">
         <button
           className={`gen-nav-item ${tab === 'home' ? 'active' : ''}`}
@@ -703,14 +833,6 @@ export default function GeneratorModule() {
         >
           <HalftoneFacilityIcon size={26} />
           <span>{t(lang, 'nav_journey')}</span>
-        </button>
-
-        <button
-          className={`gen-nav-item ${tab === 'lang' ? 'active' : ''}`}
-          onClick={() => setTab('lang')}
-        >
-          <span style={{ fontSize: 18, fontWeight: 800 }}>🌐</span>
-          <span>{t(lang, 'nav_lang')}</span>
         </button>
       </nav>
     </div>
@@ -753,7 +875,6 @@ function WizardStepContent({
   mapCaptured,
   setMapCaptured,
 }: WizardStepProps) {
-  // Option Card Helper Render
   const renderOptionCards = (
     stepKey: string,
     options: { key: string; labelKey: string }[]
@@ -793,7 +914,6 @@ function WizardStepContent({
     );
   };
 
-  // Inline "Other" Free Text Field
   const renderOtherText = (stepKey: string) => {
     if (answers[stepKey] !== 'opt_other') return null;
     return (
@@ -818,7 +938,6 @@ function WizardStepContent({
     );
   };
 
-  // Standard Location Step
   const renderLocationStep = (titleKey: string) => {
     return (
       <div>
@@ -858,7 +977,6 @@ function WizardStepContent({
     );
   };
 
-  // Numeric Quantity Step
   const renderQuantityStep = (
     titleKey: string,
     unitOptions: string[]
@@ -903,7 +1021,6 @@ function WizardStepContent({
     );
   };
 
-  // ── CATEGORY 1: AGRICULTURAL WASTE (6 STEPS) ─────────────────────────────
   if (cat === 'agri') {
     if (step === 1) {
       return (
@@ -927,10 +1044,8 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 2) return renderQuantityStep('agri_q2_title', ['unit_tonnes', 'unit_kg']);
     if (step === 3) return renderLocationStep('agri_q3_title');
-
     if (step === 4) {
       return (
         <div>
@@ -946,7 +1061,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 5) {
       return (
         <div>
@@ -962,7 +1076,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 6) {
       return (
         <div>
@@ -982,7 +1095,6 @@ function WizardStepContent({
     }
   }
 
-  // ── CATEGORY 2: MUNICIPAL ORGANIC WASTE (8 STEPS) ─────────────────────────
   if (cat === 'muni') {
     if (step === 1) {
       return (
@@ -1004,10 +1116,8 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 2) return renderLocationStep('muni_q2_title');
     if (step === 3) return renderQuantityStep('muni_q3_title', ['unit_tonnes_day', 'unit_tonnes_week', 'unit_tonnes_month']);
-
     if (step === 4) {
       return (
         <div>
@@ -1022,7 +1132,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 5) {
       return (
         <div>
@@ -1038,7 +1147,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 6) {
       return (
         <div>
@@ -1054,7 +1162,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 7) {
       return (
         <div>
@@ -1070,7 +1177,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 8) {
       return (
         <div>
@@ -1089,7 +1195,6 @@ function WizardStepContent({
     }
   }
 
-  // ── CATEGORY 3: LIVESTOCK / ANIMAL WASTE (7 STEPS) ────────────────────────
   if (cat === 'live') {
     if (step === 1) {
       return (
@@ -1110,9 +1215,7 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 2) return renderQuantityStep('live_q2_title', ['unit_per_day', 'unit_per_month']);
-
     if (step === 3) {
       return (
         <div>
@@ -1132,7 +1235,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 4) {
       return (
         <div>
@@ -1150,7 +1252,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 5) {
       return (
         <div>
@@ -1166,7 +1267,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 6) {
       return (
         <div>
@@ -1181,7 +1281,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 7) {
       return (
         <div>
@@ -1200,7 +1299,6 @@ function WizardStepContent({
     }
   }
 
-  // ── CATEGORY 4: INDUSTRIAL / AGRO-INDUSTRIAL WASTE (8 STEPS) ─────────────
   if (cat === 'ind') {
     if (step === 1) {
       return (
@@ -1223,10 +1321,8 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 2) return renderQuantityStep('ind_q2_title', ['unit_tonnes_day', 'unit_tonnes_month']);
     if (step === 3) return renderLocationStep('ind_q3_title');
-
     if (step === 4) {
       return (
         <div>
@@ -1242,7 +1338,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 5) {
       return (
         <div>
@@ -1258,7 +1353,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 6) {
       return (
         <div>
@@ -1273,7 +1367,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 7) {
       return (
         <div>
@@ -1289,7 +1382,6 @@ function WizardStepContent({
         </div>
       );
     }
-
     if (step === 8) {
       return (
         <div>
