@@ -21,6 +21,8 @@ import {
   Stat,
   StatStrip,
   Tag,
+  DecisionBanner,
+  ValueFlowChain,
 } from '../components/Primitives.tsx';
 import { BarList } from '../components/Charts.tsx';
 import { inr, num, pct, km } from '../format.ts';
@@ -58,6 +60,34 @@ export default function Logistics() {
       </div>
 
       <div className="section">
+        <DecisionBanner
+          badge="Logistics & Fleet Decision State"
+          happening={
+            <>
+              <strong>{num(R.totalTrips)} vehicle trips</strong> executed covering {num(R.totalDistanceKm)} km. Bulk density limits {pct(R.volumeLimitedSharePct, 0)} of moved tonnage.
+            </>
+          }
+          why={
+            <>
+              Low bulk density (e.g. baled straw at 0.15 t/m³) forces <strong>{num(R.extraTripsFromVolume)} extra trips</strong>, adding fuel cost and transport emissions ({num(T.transportEmissionsT)} tCO₂e).
+            </>
+          }
+          action="Deploy mobile densification / briquetting at high-volume hubs to collapse trip penalties."
+          actionLabel="View Network Activity →"
+          to="/activity"
+        />
+
+        <ValueFlowChain
+          title="Fleet Transport Flow Chain"
+          steps={[
+            { label: 'Fleet Trips', value: `${num(R.totalTrips)} Tours`, sub: `${pct((R.vehicleDaysUsed / Math.max(1, R.fleetCapacityDays)) * 100, 0)} Fleet Util` },
+            { label: 'Distance Covered', value: `${num(R.totalDistanceKm)} km`, sub: `${num(T.tkm / 1000)}k t·km` },
+            { label: 'Payload Constraint', value: `${pct(R.volumeLimitedSharePct, 0)} Vol-Limited`, sub: `Deck fills before mass` },
+            { label: 'Density Penalty', value: `+${num(R.extraTripsFromVolume)} Extra Trips`, sub: `Over mass-equivalent`, tone: 'warn' },
+            { label: 'Transport Footprint', value: `${num(T.transportEmissionsT)} tCO₂e`, sub: `Fuel emissions`, tone: 'pos' },
+          ]}
+        />
+
         <StatStrip>
           <Stat label="Trips" value={num(R.totalTrips)} sub={`${num(R.routes.length)} route groups`} />
           <Stat label="Distance" value={num(R.totalDistanceKm)} unit="km" sub={`${num(T.tkm / 1000)}k tonne-km`} />

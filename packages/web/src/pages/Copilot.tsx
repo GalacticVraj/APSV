@@ -9,7 +9,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { api, useTwin, type CopilotAnswer } from '../store.tsx';
-import { Loading, Panel, SectionHead, Tag } from '../components/Primitives.tsx';
+import { Loading, Panel, SectionHead, Tag, DecisionBanner } from '../components/Primitives.tsx';
 
 interface Turn {
   id: number;
@@ -73,7 +73,17 @@ export default function Copilot() {
 
       <div className="cp-thread" ref={threadRef}>
         {turns.length === 0 && (
-          <div style={{ maxWidth: '78ch' }}>
+          <div style={{ maxWidth: '78ch', marginBottom: 14 }}>
+            <DecisionBanner
+              badge="Grounded Copilot Intelligence"
+              happening={
+                <>
+                  Operational query assistant backed by <strong>{boot.copilot.tools.length} grounded tools</strong>.
+                </>
+              }
+              why="The LLM never fabricates numbers. All quantitative claims are read directly from tool call traces over the twin."
+              action="Select an operational question below or type your query in the terminal input."
+            />
             <div className="empty">
               <h4>Ask about the network</h4>
               <p>

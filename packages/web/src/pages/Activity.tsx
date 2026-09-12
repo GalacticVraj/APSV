@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { useTwin } from '../store.tsx';
-import { DataTable, Empty, Loading, Panel, SectionHead, Tag } from '../components/Primitives.tsx';
+import { DataTable, Empty, Loading, Panel, SectionHead, Tag, DecisionBanner } from '../components/Primitives.tsx';
 import { timeShort, titleCase } from '../format.ts';
 import type { NetworkEvent } from '../../../engine/src/types.ts';
 
@@ -50,6 +50,19 @@ export default function Activity() {
       </div>
 
       <div className="section">
+        <DecisionBanner
+          badge="Audit Trail & Telemetry State"
+          happening={
+            <>
+              Recorded <strong>{state.events.length} system events</strong> this session across solver executions, scenario shocks, and forecast updates.
+            </>
+          }
+          why="Every state mutation is logged deterministically with its timestamp, seed, and tool-call attribution."
+          action="Review latest solver telemetry or run scenarios to observe real-time audit logging."
+          actionLabel="Run Optimization →"
+          to="/optimization"
+        />
+
         <SectionHead title="Event log" note={`${events.length} events`} />
         <Panel flush>
           {events.length === 0 ? (

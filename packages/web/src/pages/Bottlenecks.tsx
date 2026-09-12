@@ -19,6 +19,8 @@ import {
   StatStrip,
   Tag,
   MiniBar,
+  DecisionBanner,
+  ValueFlowChain,
 } from '../components/Primitives.tsx';
 import { BarList } from '../components/Charts.tsx';
 import { inr, num, pct, titleCase, km } from '../format.ts';
@@ -62,8 +64,44 @@ export default function Bottlenecks() {
         </div>
       </div>
 
-      {/* Shadow prices — the most actionable output in the product */}
       <div className="section">
+        <DecisionBanner
+          badge="Network Constrained State"
+          happening={
+            <>
+              <strong>{shadow.length} capacity-bound facilities</strong> identified. Top binding asset:{' '}
+              <strong>{shadow[0]?.facilityName ?? 'None'}</strong>.
+            </>
+          }
+          why={
+            shadow[0] ? (
+              <>
+                Adding 1 t/day capacity at {shadow[0].facilityName} unlocks{' '}
+                <strong>{shadow[0].carbonPerExtraTonne.toFixed(3)} tCO₂e/t</strong> and{' '}
+                <strong>{inr(shadow[0].marginPerExtraTonne)}/t margin</strong>.
+              </>
+            ) : (
+              'Network is currently unconstrained by facility capacity.'
+            )
+          }
+          action="Direct capital expenditure to the highest shadow price facility to maximize return per rupee."
+          actionLabel="Inspect Facility Details →"
+          to="/facilities"
+        />
+
+        {shadow[0] && (
+          <ValueFlowChain
+            title="Highest Marginal Value Expansion Flow"
+            steps={[
+              { label: 'Binding Asset', value: shadow[0].facilityName, sub: `${pct(shadow[0].utilisationPct, 0)} Utilised` },
+              { label: 'Expansion Headroom', value: '+10 t/day Test', sub: `${windowDays}-day planning window` },
+              { label: 'Reallocation Flow', value: 'Min-Cost Re-solve', sub: 'Knock-on arcs captured' },
+              { label: 'Marginal Carbon', value: `+${shadow[0].carbonPerExtraTonne.toFixed(3)} tCO₂e/t`, sub: `${num(shadow[0].carbonPerExtraTonne * 10 * windowDays)} tCO₂e total`, tone: 'pos' },
+              { label: 'Marginal Revenue', value: `${inr(shadow[0].marginPerExtraTonne)}/t`, sub: `${inr(shadow[0].marginPerExtraTonne * 10 * windowDays)} value`, tone: 'pos' },
+            ]}
+          />
+        )}
+
         <SectionHead
           title="Where the next tonne of capacity is worth most"
           note="Measured by re-optimisation, not read off a dual"

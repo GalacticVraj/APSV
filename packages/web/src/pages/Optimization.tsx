@@ -21,6 +21,8 @@ import {
   Stat,
   StatStrip,
   Tag,
+  DecisionBanner,
+  ValueFlowChain,
 } from '../components/Primitives.tsx';
 import { ParetoChart, BarList, StackedBar, seriesColor } from '../components/Charts.tsx';
 import { inr, num, pct, signedPct, deltaClass } from '../format.ts';
@@ -73,6 +75,38 @@ export default function Optimization() {
 
       {/* Objective selector with full descriptions */}
       <div className="section">
+        <DecisionBanner
+          badge="Solver Engine State"
+          happening={
+            <>
+              Objective set to <strong>{objectives[state.objective]?.label}</strong>. Solved in{' '}
+              <strong>{t.solveMs} ms</strong> ({t.bnbNodesExplored} branch-and-bound nodes explored, optimality gap{' '}
+              {t.gapPct.toFixed(2)}%).
+            </>
+          }
+          why={
+            <>
+              {t.provenOptimal
+                ? 'Mathematical global optimum proven. No alternative allocation can improve the objective.'
+                : `Branch-and-bound bound within ${t.gapPct.toFixed(2)}% of theoretical LP relaxation.`}
+            </>
+          }
+          action="Compare Pareto frontier points to evaluate the ₹2,600/tCO₂e trade-off between profit and carbon."
+          actionLabel="View Scenarios →"
+          to="/scenarios"
+        />
+
+        <ValueFlowChain
+          title="Optimization Decision Trade-off"
+          steps={[
+            { label: 'Generated Arcs', value: `${num(t.arcsGenerated)} Arcs`, sub: `${num(t.arcsFeasible)} Feasible` },
+            { label: 'Solver Bound', value: `${t.provenOptimal ? 'Optimal' : 'Bounded'}`, sub: `${t.solveMs} ms Execution` },
+            { label: 'Active Objective', value: objectives[state.objective]?.short ?? state.objective, sub: 'Scalarised Cost' },
+            { label: 'Net Carbon Output', value: `${num(r.totals.netCarbonT)} tCO₂e`, sub: 'Proven Net Impact', tone: 'pos' },
+            { label: 'Economic Margin', value: `${inr(r.totals.marginInr)}`, sub: `${inr(r.totals.marginPerTonneInr)}/t Net`, tone: 'pos' },
+          ]}
+        />
+
         <SectionHead title="Objective" note="Switching re-solves the whole network" />
         <div className="grid g4">
           {(Object.keys(objectives) as ObjectiveMode[]).map((k) => {

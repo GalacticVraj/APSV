@@ -23,6 +23,8 @@ import {
   Stat,
   StatStrip,
   Tag,
+  DecisionBanner,
+  ValueFlowChain,
 } from '../components/Primitives.tsx';
 import { DecayCurve, Histogram, StackedBar, Waterfall } from '../components/Charts.tsx';
 import { inr, num, pct } from '../format.ts';
@@ -69,6 +71,34 @@ export default function Carbon() {
       </div>
 
       <div className="section">
+        <DecisionBanner
+          badge="Carbon Accounting & Credit Decision State"
+          happening={
+            <>
+              Net carbon impact: <strong>{num(ledger.netT)} tCO₂e</strong> ({num(ledger.durableRemovalT)} t durable removal + {num(ledger.avoidedEmissionsT)} t avoided emissions).
+            </>
+          }
+          why={
+            <>
+              Biochar 100-year permanence rate is <strong>{pct((perm?.bc100 ?? 0.74) * 100, 1)}</strong> (Q10 soil temperature corrected for India @ 26°C).
+            </>
+          }
+          action="Monetize durable biochar removal at high-tier CDR pricing (₹10,800/tCO₂e) vs standard avoided emissions credits."
+          actionLabel="View Economic Valuation →"
+          to="/economics"
+        />
+
+        <ValueFlowChain
+          title="Carbon Value Creation Ledger Chain"
+          steps={[
+            { label: 'Feedstock Input', value: `${num(totals.divertedT)} t Residue`, sub: 'Biogenic CO₂ Excluded' },
+            { label: 'Avoided Burning', value: `${num(ledger.avoidedEmissionsT)} tCO₂e`, sub: 'Avoided CH₄/N₂O Open Burning', tone: 'pos' },
+            { label: 'Durable Removal', value: `${num(ledger.durableRemovalT)} tCO₂e`, sub: `Biochar ${pct((perm?.bc100 ?? 0.74) * 100, 0)} Permanence`, tone: 'pos' },
+            { label: 'Net Ledger', value: `${num(ledger.netT)} tCO₂e`, sub: `P50 Monte Carlo Estimate`, tone: 'pos' },
+            { label: 'Credit Valuation', value: `${inr(ledger.durableRemovalT * markets.durableCdr.price)}`, sub: `@ ${inr(markets.durableCdr.price)}/t CDR Price`, tone: 'pos' },
+          ]}
+        />
+
         <StatStrip>
           <Stat
             label="Net carbon impact"

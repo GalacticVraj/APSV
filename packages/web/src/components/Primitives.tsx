@@ -355,3 +355,104 @@ export function Hairline() {
 export function Notice({ children, tone }: { children: ReactNode; tone?: 'info' }) {
   return <div className={`notice ${tone ?? ''}`}>{children}</div>;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Decision Banner — answers What is happening -> Why it matters -> What to do
+// ─────────────────────────────────────────────────────────────────────────────
+
+import { Link } from '../router.tsx';
+
+export interface DecisionBannerProps {
+  happening: ReactNode;
+  why: ReactNode;
+  action: ReactNode;
+  actionLabel?: string;
+  to?: string;
+  onAction?: () => void;
+  badge?: string;
+}
+
+export function DecisionBanner({
+  happening,
+  why,
+  action,
+  actionLabel,
+  to,
+  onAction,
+  badge,
+}: DecisionBannerProps) {
+  return (
+    <div className="decision-banner">
+      {badge && <div className="db-badge">{badge}</div>}
+      <div className="db-grid">
+        <div className="db-col db-happening">
+          <div className="db-k">What is happening</div>
+          <div className="db-v">{happening}</div>
+        </div>
+        <div className="db-col db-why">
+          <div className="db-k">Why it matters</div>
+          <div className="db-v">{why}</div>
+        </div>
+        <div className="db-col db-action">
+          <div className="db-k">What to do</div>
+          <div className="db-v">{action}</div>
+          {(to || onAction) && (
+            <div className="db-act-btn">
+              {to ? (
+                <Link to={to} className="btn sm primary">
+                  {actionLabel ?? 'Take Action →'}
+                </Link>
+              ) : (
+                <button className="btn sm primary" onClick={onAction}>
+                  {actionLabel ?? 'Execute'}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Visual Storytelling Flow Chain — Flow -> Comparison -> Decision -> Impact
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface FlowStep {
+  label: string;
+  value: string;
+  sub?: string;
+  tone?: 'pos' | 'neg' | 'warn' | 'muted';
+}
+
+export function ValueFlowChain({
+  title,
+  steps,
+}: {
+  title?: string;
+  steps: FlowStep[];
+}) {
+  return (
+    <div className="flow-chain-wrap">
+      {title && <div className="flow-chain-title">{title}</div>}
+      <div className="flow-chain">
+        {steps.map((s, i) => (
+          <div key={i} className="flow-step-container">
+            <div className="flow-step">
+              <div className="fs-label">{s.label}</div>
+              <div className={`fs-value ${s.tone ?? ''}`}>{s.value}</div>
+              {s.sub && <div className="fs-sub">{s.sub}</div>}
+            </div>
+            {i < steps.length - 1 && (
+              <div className="flow-arrow" aria-hidden="true">
+                →
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+

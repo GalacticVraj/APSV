@@ -18,6 +18,8 @@ import {
   SectionHead,
   Stat,
   StatStrip,
+  DecisionBanner,
+  ValueFlowChain,
 } from '../components/Primitives.tsx';
 import { BarList, StackedBar, seriesColor } from '../components/Charts.tsx';
 import { PATHWAY_SHORT } from '../components/NetworkMap.tsx';
@@ -94,6 +96,34 @@ export default function Economics() {
       </div>
 
       <div className="section">
+        <DecisionBanner
+          badge="Unit Economics & Margin Decision State"
+          happening={
+            <>
+              Total net margin: <strong>{inr(T.marginInr)}</strong> ({inr(T.marginPerTonneInr)}/t) over the {state.assumptions.windowDays}-day planning window.
+            </>
+          }
+          why={
+            <>
+              <strong>{num(freeCo2)} tCO₂e</strong> ({pct(totalCo2 > 0 ? (freeCo2 / totalCo2) * 100 : 0, 0)}) of carbon abatement is <strong>self-funding</strong> (negative abatement cost before carbon credit sales).
+            </>
+          }
+          action="Execute self-funding conversion pathways first, then apply carbon revenue to bridge positive abatement cost routes."
+          actionLabel="View Carbon Offsets →"
+          to="/carbon"
+        />
+
+        <ValueFlowChain
+          title="Unit Economics & Value Rollup Chain"
+          steps={[
+            { label: 'Gross Sales', value: inr(T.revenueInr), sub: 'Products + Carbon Credits' },
+            { label: 'Feedstock Cost', value: `−${inr(T.feedstockCostInr)}`, sub: 'Gate Price & Aggregation' },
+            { label: 'Processing Opex', value: `−${inr(T.processingCostInr)}`, sub: 'Plant Operations' },
+            { label: 'Transport Cost', value: `−${inr(T.transportCostInr)}`, sub: 'Haulage & Fuel' },
+            { label: 'Net Operating Margin', value: inr(T.marginInr), sub: `${inr(T.marginPerTonneInr)}/t Net Profit`, tone: 'pos' },
+          ]}
+        />
+
         <StatStrip>
           <Stat label="Revenue" value={inr(T.revenueInr)} sub="products plus carbon" size="lg" />
           <Stat label="Carbon revenue" value={inr(T.carbonRevenueInr)} sub={`${pct((T.carbonRevenueInr / Math.max(1, T.revenueInr)) * 100, 0)} of revenue`} />

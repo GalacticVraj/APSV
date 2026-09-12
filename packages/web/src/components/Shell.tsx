@@ -14,6 +14,14 @@ import { dateFull, num, pct } from '../format.ts';
 
 const NAV: Array<{ group: string; items: Array<{ to: string; label: string }> }> = [
   {
+    group: 'Farmer & Portals',
+    items: [
+      { to: '/welcome', label: 'True Landing' },
+      { to: '/entry', label: 'Persona Landing' },
+      { to: '/generator', label: 'Farmer Waste App' },
+    ],
+  },
+  {
     group: 'Operations',
     items: [
       { to: '/', label: 'Overview' },
@@ -139,6 +147,14 @@ export function Shell({ children, demoActive }: { children: ReactNode; demoActiv
             Reset
           </button>
         )}
+
+        <button
+          className="topbtn accent"
+          onClick={() => navigate('/generator')}
+          title="Open the Farmer Waste Generator module"
+        >
+          Farmer App 🌾
+        </button>
 
         <button
           className="topbtn accent"

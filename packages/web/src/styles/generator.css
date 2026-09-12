@@ -1,0 +1,535 @@
+/* ===========================================================================
+   TERRAFLUX WASTE GENERATOR MODULE — FARMER-FIRST UX STYLES
+   ===========================================================================
+   Visual Specifications from Reference Images:
+   - Ground: Linen/paper texture background (~#EDE7DC)
+   - Accent motif: Forest Green (#3D6B4E) & White gingham checkerboard
+   - Headline typography: Heavyweight rounded forest green (#3D6B4E)
+   - Body typography: High-contrast dark brown/charcoal (#2A2A22) for outdoor legibility
+   - Accent spark: Sparing gold/yellow (#F2B84C)
+   - Tap targets: min 64dp for zero mis-taps
+   =========================================================================== */
+
+:root {
+  --g-forest: #3D6B4E;
+  --g-forest-dark: #2E523B;
+  --g-paper: #EDE7DC;
+  --g-paper-sunken: #E5DFD4;
+  --g-white: #FFFFFF;
+  --g-gold: #F2B84C;
+  --g-ink: #2A2A22;
+  --g-ink-muted: #5C5A4F;
+  --g-border: #D6CFBF;
+  --g-border-strong: #3D6B4E;
+  --g-shadow: 0 4px 12px rgba(42, 42, 34, 0.08);
+}
+
+.generator-app {
+  background-color: var(--g-paper);
+  background-image: radial-gradient(#3d6b4e 0.45px, transparent 0.45px);
+  background-size: 24px 24px;
+  background-opacity: 0.04;
+  color: var(--g-ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  padding-bottom: 76px; /* space for bottom nav */
+}
+
+/* Header */
+.gen-header {
+  background: var(--g-paper);
+  border-bottom: 2px solid var(--g-border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.gen-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gen-brand h1 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--g-forest);
+  letter-spacing: 0.04em;
+  margin: 0;
+  line-height: 1;
+}
+
+.gen-brand-sub {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--g-ink-muted);
+  letter-spacing: 0.08em;
+}
+
+/* Offline sync badge */
+.sync-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #E8F0EA;
+  border: 1px solid #B8D4C1;
+  color: var(--g-forest-dark);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 16px;
+}
+.sync-badge .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--g-forest);
+}
+
+/* Landing / Role Entry 4-Tile Screen */
+.persona-landing {
+  padding: 24px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.persona-head {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.persona-head h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--g-forest);
+  margin-bottom: 6px;
+}
+
+.persona-head p {
+  font-size: 15px;
+  color: var(--g-ink-muted);
+  margin: 0;
+}
+
+.persona-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+@media (max-width: 600px) {
+  .persona-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.persona-tile {
+  background: var(--g-white);
+  border: 2px solid var(--g-border);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 150px;
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--g-shadow);
+}
+
+.persona-tile:hover, .persona-tile:focus {
+  transform: translateY(-2px);
+  border-color: var(--g-forest);
+  box-shadow: 0 8px 20px rgba(61, 107, 78, 0.16);
+}
+
+.persona-tile.active-module {
+  border-color: var(--g-forest);
+  border-width: 3px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F5FAF6 100%);
+}
+
+.persona-tile .tile-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--g-forest);
+  letter-spacing: 0.03em;
+  margin-top: 12px;
+}
+
+.persona-tile .tile-sub {
+  font-size: 12px;
+  color: var(--g-ink-muted);
+  margin-top: 4px;
+}
+
+/* Language Selection Grid */
+.lang-select-container {
+  padding: 24px 20px;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.lang-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.lang-card {
+  background: var(--g-white);
+  border: 2px solid var(--g-border);
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+  cursor: pointer;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 140ms ease;
+}
+
+.lang-card:hover, .lang-card.selected {
+  border-color: var(--g-forest);
+  background: #F0F6F2;
+}
+
+.lang-card .native-script {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--g-forest);
+}
+
+.lang-card .lang-english {
+  font-size: 12px;
+  color: var(--g-ink-muted);
+  margin-top: 4px;
+}
+
+/* Farmer Cards & Container */
+.gen-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero-card {
+  background: var(--g-white);
+  border: 2px solid var(--g-forest);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 6px 18px rgba(61, 107, 78, 0.12);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.hero-k {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--g-ink-muted);
+}
+
+.hero-v {
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--g-forest);
+  margin: 4px 0;
+  line-height: 1.15;
+}
+
+.hero-type {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--g-ink);
+}
+
+.rec-box {
+  background: #F4FAF6;
+  border: 2px solid var(--g-forest);
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 18px;
+  position: relative;
+}
+
+.rec-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--g-gold);
+  color: var(--g-ink);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.rec-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--g-forest);
+}
+
+.rec-meta {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--g-ink);
+  margin-top: 6px;
+}
+
+/* Primary Big Button (Farmer 64dp Target) */
+.btn-farmer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 60px;
+  background: var(--g-forest);
+  color: var(--g-white);
+  font-size: 18px;
+  font-weight: 700;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(61, 107, 78, 0.25);
+  transition: background 140ms ease, transform 140ms ease;
+  padding: 12px 20px;
+  margin-top: 16px;
+  text-decoration: none;
+}
+
+.btn-farmer:hover {
+  background: var(--g-forest-dark);
+  transform: translateY(-1px);
+}
+
+.btn-farmer.secondary {
+  background: var(--g-white);
+  color: var(--g-forest);
+  border: 2px solid var(--g-forest);
+  box-shadow: none;
+}
+
+/* Best Pathway Cards */
+.pathway-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.pathway-card {
+  background: var(--g-white);
+  border: 2px solid var(--g-border);
+  border-radius: 14px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 160ms ease;
+  position: relative;
+}
+
+.pathway-card:hover {
+  border-color: var(--g-forest);
+}
+
+.pathway-card.recommended {
+  border-color: var(--g-forest);
+  border-width: 3px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F5FAF6 100%);
+  box-shadow: 0 6px 16px rgba(61, 107, 78, 0.12);
+}
+
+.pathway-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.pathway-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--g-forest);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pathway-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--g-border);
+}
+
+@media (max-width: 600px) {
+  .pathway-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pm-item .pm-label {
+  font-size: 11px;
+  color: var(--g-ink-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.pm-item .pm-value {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--g-ink);
+  margin-top: 2px;
+}
+
+.pathway-reason {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #FFF9E8;
+  border-left: 4px solid var(--g-gold);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--g-ink);
+}
+
+/* What Changed Delta Callout (Section 8) */
+.what-changed-box {
+  background: #EFF6F1;
+  border: 2px dashed var(--g-forest);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.what-changed-box .wc-title {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--g-forest);
+}
+
+.what-changed-box .wc-desc {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--g-ink);
+}
+
+/* Journey Stepper Flow (Section 5) */
+.journey-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+  position: relative;
+}
+
+.journey-node {
+  background: var(--g-white);
+  border: 2px solid var(--g-border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.journey-node.selected, .journey-node:hover {
+  border-color: var(--g-forest);
+  background: #F4FAF6;
+}
+
+.node-icon-wrap {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  background: #EDE7DC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.node-content h4 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--g-forest);
+  margin: 0 0 4px;
+}
+
+.node-content p {
+  font-size: 13px;
+  color: var(--g-ink);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Bottom Nav Bar */
+.gen-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--g-paper);
+  border-top: 2px solid var(--g-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 68px;
+  z-index: 40;
+  box-shadow: 0 -4px 14px rgba(0,0,0,0.06);
+}
+
+.gen-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex: 1;
+  height: 100%;
+  color: var(--g-ink-muted);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 700;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.gen-nav-item.active {
+  color: var(--g-forest);
+  border-top: 3px solid var(--g-forest);
+  background: #E5DFD4;
+}

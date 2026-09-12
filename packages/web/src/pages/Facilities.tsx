@@ -20,6 +20,8 @@ import {
   StatStrip,
   StatusDot,
   Tag,
+  DecisionBanner,
+  ValueFlowChain,
 } from '../components/Primitives.tsx';
 import { BarList } from '../components/Charts.tsx';
 import { PATHWAY_SHORT } from '../components/NetworkMap.tsx';
@@ -99,6 +101,37 @@ export default function Facilities() {
       </div>
 
       <div className="section">
+        <DecisionBanner
+          badge="Facility Operations State"
+          happening={
+            <>
+              <strong>{r.openFacilities.length} of {rows.length} facilities active</strong>, processing{' '}
+              <strong>{num(rows.reduce((a, f) => a + f.load, 0))} t</strong> ({pct((rows.reduce((a, f) => a + f.load, 0) / Math.max(1, rows.reduce((a, f) => a + f.capWindow, 0))) * 100, 1)} utilisation).
+            </>
+          }
+          why={
+            <>
+              {rows.filter((f) => f.util >= 97).length} facilities are capacity-bound. Idle plants ({r.idleFacilities.length}) lack feedstock density to reach minimum viable feed.
+            </>
+          }
+          action="Examine binding facility shadow prices before allocating headroom or de-bottlenecking capital."
+          actionLabel="Inspect Shadow Prices →"
+          to="/bottlenecks"
+        />
+
+        {sel && (
+          <ValueFlowChain
+            title={`Selected Asset Flow Chain — ${sel.name}`}
+            steps={[
+              { label: 'Asset Location', value: sel.district, sub: `${sel.operator}` },
+              { label: 'Conversion Pathway', value: pathways[sel.pathway]?.short ?? sel.pathway, sub: `${num(sel.capacityTpd)} t/d Cap` },
+              { label: 'Utilisation', value: `${pct(sel.util, 0)} Utilised`, sub: `${num(sel.load)} / ${num(sel.capWindow)} t` },
+              { label: 'Net Carbon Impact', value: sel.load > 0 ? `${sel.intensity.toFixed(2)} tCO₂e/t` : '0 tCO₂e', sub: `${num(sel.carbon)} t Net`, tone: 'pos' },
+              { label: 'Unit Economics', value: sel.load > 0 ? `${inr(sel.marginPerT)}/t` : '—', sub: `${inr(sel.margin)} Total`, tone: sel.marginPerT < 0 ? 'neg' : 'pos' },
+            ]}
+          />
+        )}
+
         <StatStrip>
           <Stat
             label="Total capacity"

@@ -20,6 +20,8 @@ import {
   Stat,
   StatStrip,
   Tag,
+  DecisionBanner,
+  ValueFlowChain,
 } from '../components/Primitives.tsx';
 import { ForecastChart } from '../components/Charts.tsx';
 import { inr, num, pct, dateShort } from '../format.ts';
@@ -89,6 +91,36 @@ export default function Sources() {
       </div>
 
       <div className="section">
+        <DecisionBanner
+          badge="Waste Inventory & Supply State"
+          happening={
+            <>
+              <strong>{num(totalAvail)} t available</strong> across {rows.length} aggregation points. {num(totalAlloc)} t ({pct(totalAvail > 0 ? (totalAlloc / totalAvail) * 100 : 0, 0)}) collected.
+            </>
+          }
+          why={
+            <>
+              {num(totalAvail - totalAlloc)} t remains unplaced due to transport radius limits or C:N/ash chemistry mismatches.
+            </>
+          }
+          action="Examine supply forecasts and gate prices to contract high-density seasonal crop residues."
+          actionLabel="View Optimization Strategy →"
+          to="/optimization"
+        />
+
+        {sel && (
+          <ValueFlowChain
+            title={`Source Inventory Flow Chain — ${sel.name}`}
+            steps={[
+              { label: 'Origin Point', value: sel.district, sub: `${sel.clusterCount} Aggregation Hubs` },
+              { label: 'Feedstock Stream', value: streams[sel.stream]?.label ?? sel.stream, sub: `${streams[sel.stream]?.bulkDensityTPerM3} t/m³ Density` },
+              { label: 'Availability', value: `${num(sel.availableT)} t Window`, sub: `${num(sel.annualT)} t/yr Annual` },
+              { label: 'Collection Rate', value: `${pct(sel.availableT > 0 ? ((allocated.get(sel.id) ?? 0) / sel.availableT) * 100 : 0, 0)} Routed`, sub: `${num(allocated.get(sel.id) ?? 0)} t Placed`, tone: 'pos' },
+              { label: 'Economics', value: `${inr(streams[sel.stream]?.gatePriceInrPerT ?? 0)}/t Gate`, sub: `Agg Cost ${inr(streams[sel.stream]?.aggregationCostInrPerT ?? 0)}/t` },
+            ]}
+          />
+        )}
+
         <StatStrip>
           <Stat label="Sources shown" value={num(rows.length)} sub={`of ${num(state.sources.length)}`} />
           <Stat label="Available" value={num(totalAvail)} unit="t" sub="this window" />
