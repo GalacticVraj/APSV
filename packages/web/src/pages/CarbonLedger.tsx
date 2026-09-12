@@ -1,56 +1,161 @@
 /**
- * Carbon — the ledger, not an ESG dashboard.
+ * Carbon Ledger — the trust surface.
  *
- * Three claims this screen has to survive scrutiny on:
- *   - every line is traceable to a physical quantity, a factor and a citation
- *   - durable removal and avoided emissions are never added together
- *   - the headline is a distribution, not a point estimate
+ * Carbon Home answers "how much". This screen answers "where exactly did that
+ * number come from", and it has to survive someone who does not believe it.
  *
- * The permanence panel is the part worth arguing with, and it is built to be
- * argued with: the model form, the H/Corg ratio, the Q10 correction and the two
- * decay curves are all on the page.
+ * The structure follows how a sceptic actually reads a number: the total, what
+ * created it, where that came from, and only then the arithmetic. So the page is
+ * one decomposition, one trace, and one evidence panel — not a wall of widgets:
+ *
+ *   Basis strip     what is being measured, before any number is shown
+ *   Net carbon      the figure under examination
+ *   Decomposition   the ledger's own groups, expanding to its own lines
+ *   Evidence        contextual panel: contribution, why, inputs, citations
+ *   Follow carbon   one contribution traced from field to net result
+ *
+ * The thing that makes this defensible rather than decorative: a traced
+ * contribution is built by the engine from the same three functions the network
+ * ledger uses, so traced lines sum into network lines exactly. Following a tonne
+ * dims the ledger lines it does not touch — the connection between the trace and
+ * the total is shown, not asserted.
  */
 
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api, useResource, useTwin } from '../store.tsx';
-import {
-  Empty,
-  ErrorState,
-  Loading,
-  Notice,
-  Panel,
-  SectionHead,
-  Stat,
-  StatStrip,
-  Tag,
-} from '../components/Primitives.tsx';
-import { DecayCurve, Histogram, StackedBar, Waterfall } from '../components/Charts.tsx';
-import { inr, num, pct } from '../format.ts';
+import { ErrorState, Loading, Panel, SectionHead, Tag } from '../components/Primitives.tsx';
+import { dateFull, num, pct } from '../format.ts';
+import type {
+  AllocationTrace,
+  ProvenanceRow,
+  TraceCandidate,
+} from '../../../engine/src/trace.ts';
+import type { CarbonLedger as Ledger, LedgerLine } from '../../../engine/src/types.ts';
 
-export default function Carbon() {
+// ─────────────────────────────────────────────────────────────────────────────
+// Grouping
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * The ledger's own kinds, in reading order. Removal, avoidance and substitution
+ * stay apart: they are different commodities and merging them to tidy the UI
+ * would destroy the distinction the engine works hardest to preserve.
+ */
+const GROUPS: Array<{
+  kind: LedgerLine['kind'];
+  label: string;
+  note: string;
+  sign: 'plus' | 'minus';
+}> = [
+  {
+    kind: 'removal',
+    label: 'Durable removal',
+    note: 'Carbon taken out of the atmosphere and held in solid form.',
+    sign: 'plus',
+  },
+  {
+    kind: 'avoided',
+    label: 'Avoided emissions',
+    note: 'Gases the counterfactual fate would have released. Not a removal.',
+    sign: 'plus',
+  },
+  {
+    kind: 'substitution',
+    label: 'Fossil displacement',
+    note: 'Fossil energy and synthetic nitrogen the products replaced.',
+    sign: 'plus',
+  },
+  {
+    kind: 'emission',
+    label: 'Emissions caused',
+    note: 'What the network itself burned, drew and vented to do the work.',
+    sign: 'minus',
+  },
+  {
+    kind: 'adjustment',
+    label: 'Adjustments',
+    note: 'Corrections applied to gross figures, such as 100-year permanence.',
+    sign: 'minus',
+  },
+];
+
+interface Group {
+  kind: LedgerLine['kind'];
+  label: string;
+  note: string;
+  sign: 'plus' | 'minus';
+  lines: LedgerLine[];
+  valueT: number;
+}
+
+function groupLedger(ledger: Ledger): Group[] {
+  return GROUPS.map((g) => {
+    const lines = ledger.lines.filter((l) => l.kind === g.kind);
+    return { ...g, lines, valueT: lines.reduce((a, l) => a + l.valueT, 0) };
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Page
+// ─────────────────────────────────────────────────────────────────────────────
+
+export default function CarbonLedger() {
   const { boot, state, version } = useTwin();
-  const res = useResource(() => api.carbon(), [version], [
+  const carbon = useResource(() => api.carbon(), [version], [
     'Aggregating physical inventory across allocations…',
-    'Applying Q10 permanence correction…',
-    'Running 2,000 Monte Carlo draws over every emission factor…',
+    'Applying the Q10 permanence correction…',
+    'Running Monte Carlo over every emission factor…',
   ]);
+
   const [openLine, setOpenLine] = useState<string | null>(null);
+  const [following, setFollowing] = useState(false);
+  const [trace, setTrace] = useState<AllocationTrace | null>(null);
+  const [traceError, setTraceError] = useState<string | null>(null);
+
+  // Following a contribution clears any open evidence panel: they compete for
+  // the same attention and the trace is the larger idea.
+  const startFollow = useCallback(() => {
+    setOpenLine(null);
+    setFollowing(true);
+  }, []);
+
+  const stopFollow = useCallback(() => {
+    setFollowing(false);
+    setTrace(null);
+    setTraceError(null);
+  }, []);
 
   if (!boot || !state) return <Loading message="Loading…" />;
-  if (res.loading) return <Loading message={res.message} />;
-  if (res.error) return <ErrorState message={res.error} onRetry={res.reload} />;
-  if (!res.data) return null;
+  if (carbon.loading) return <Loading message={carbon.message} />;
+  if (carbon.error) return <ErrorState message={carbon.error} onRetry={carbon.reload} />;
+  if (!carbon.data) return null;
 
-  const { ledger, totals } = res.data;
-  const perm = ledger.permanence;
-  const unc = ledger.uncertainty;
-  const markets = boot.reference.carbonMarkets;
+  const { ledger, totals, provenance } = carbon.data;
 
-  const waterfallItems = ledger.lines
-    .filter((l) => l.kind !== 'total')
-    .map((l) => ({ label: l.label, value: l.valueT, kind: l.kind }));
+  if (ledger.lines.length === 0) {
+    return (
+      <div className="page">
+        <div className="page-head">
+          <h1>Carbon Ledger</h1>
+        </div>
+        <div className="section">
+          <div className="empty">
+            <h4>No ledger for this plan</h4>
+            <p>
+              The optimiser placed no material in the current window, so there is nothing to
+              account for. Nothing is being hidden — there is genuinely no carbon to report.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const maxAbs = Math.max(...ledger.lines.map((l) => Math.abs(l.valueT)), 1);
+  const groups = groupLedger(ledger);
+  const selected = openLine ? ledger.lines.find((l) => l.key === openLine) ?? null : null;
+
+  // When a trace is active, the lines it feeds stay lit and the rest recede.
+  const tracedKeys = trace ? new Set(trace.ledger.lines.map((l) => l.key)) : null;
 
   return (
     <div className="page">
@@ -58,358 +163,718 @@ export default function Carbon() {
         <div>
           <h1>Carbon Ledger</h1>
           <div className="lede">
-            Every figure below is derived from a physical quantity and a cited factor. Biogenic CO₂
-            is excluded — residue carbon that burns returns to the atmosphere it came from in the
-            same season, so only CH₄ and N₂O represent a genuine addition.
+            Every figure here resolves to a physical quantity, a published factor and a citation.
+            Open any line for its evidence, or follow a single contribution from the field to the
+            net result.
           </div>
         </div>
         <div className="head-actions">
-          <Tag tone="green">{state.assumptions.windowDays}-day window</Tag>
+          <button
+            className={`btn ${following ? '' : 'primary'}`}
+            onClick={following ? stopFollow : startFollow}
+          >
+            {following ? 'Close trace' : 'Follow carbon'}
+          </button>
         </div>
       </div>
 
-      <div className="section">
-        <StatStrip>
-          <Stat
-            label="Net carbon impact"
-            value={num(ledger.netT)}
-            unit="tCO₂e"
-            sub={unc ? `90% interval ${num(unc.p5)} – ${num(unc.p95)}` : undefined}
-            size="lg"
-          />
-          <Stat
-            label="Durable removal"
-            value={num(ledger.durableRemovalT)}
-            unit="tCO₂e"
-            sub={`Priced at ${inr(markets.durableCdr.price)}/t`}
-            tone="pos"
-          />
-          <Stat
-            label="Avoided emissions"
-            value={num(ledger.avoidedEmissionsT)}
-            unit="tCO₂e"
-            sub={`Priced at ${inr(markets.avoidedEmission.price)}/t`}
-          />
-          <Stat
-            label="Fossil substitution"
-            value={num(ledger.substitutionT)}
-            unit="tCO₂e"
-            sub="Coal, CNG and grid power displaced"
-          />
-          <Stat
-            label="Emissions caused"
-            value={num(ledger.emissionsT)}
-            unit="tCO₂e"
-            sub="Transport, aggregation, process, slip"
-            tone="neg"
-          />
-          <Stat
-            label="Carbon revenue"
-            value={inr(totals.carbonRevenueInr)}
-            sub={`${inr(totals.abatementCostInrPerTco2e)}/tCO₂e abatement cost`}
-          />
-        </StatStrip>
-      </div>
+      <BasisStrip
+        windowDays={state.assumptions.windowDays}
+        asOf={state.asOf}
+        version={version}
+        objective={state.objective}
+        suppliedT={totals.suppliedT}
+        divertedT={totals.divertedT}
+      />
 
-      <div className="section">
-        <Notice tone="info">
-          <strong>Durable removal and avoided emissions are not the same commodity.</strong> Removal
-          trades around {inr(markets.durableCdr.price)}/tCO₂e; avoidance around{' '}
-          {inr(markets.avoidedEmission.price)}/tCO₂e — roughly a twentyfold gap. They are reported
-          on separate lines here and priced separately in the economics, because summing them into
-          a single "carbon saved" headline is the most common error in this sector and it is what
-          makes a business case unfinanceable when an auditor looks at it.
-        </Notice>
-      </div>
-
-      <div className="section">
-        <SectionHead title="How the net figure is built" note="Click any line for its basis and source" />
-        <div className="grid g-3-2">
-          <Panel title="Ledger" flush>
-            <div className="ledger">
-              {ledger.lines.map((l) => {
-                const open = openLine === l.key;
-                const isTotal = l.kind === 'total';
-                return (
-                  <div key={l.key}>
-                    <div
-                      className={`ledger-row ${isTotal ? 'total' : ''}`}
-                      onClick={() => setOpenLine(open ? null : l.key)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') setOpenLine(open ? null : l.key);
-                      }}
-                    >
-                      <span
-                        className="lr-mark"
-                        style={{
-                          background:
-                            l.kind === 'removal'
-                              ? 'var(--green-700)'
-                              : l.kind === 'avoided'
-                                ? 'var(--green-500)'
-                                : l.kind === 'substitution'
-                                  ? 'var(--s2)'
-                                  : l.kind === 'emission'
-                                    ? 'var(--neg)'
-                                    : l.kind === 'total'
-                                      ? 'var(--ink)'
-                                      : 'var(--ink-4)',
-                        }}
-                      />
-                      <span className="lr-label">{l.label}</span>
-                      <span className={`lr-val ${l.valueT < 0 ? 'neg' : isTotal ? '' : 'pos'}`}>
-                        {l.valueT >= 0 ? '+' : '−'}
-                        {num(Math.abs(l.valueT))}
-                      </span>
-                      <span className="lr-bar">
-                        <i
-                          style={{
-                            width: `${(Math.abs(l.valueT) / maxAbs) * 100}%`,
-                            left: l.valueT < 0 ? undefined : 0,
-                            right: l.valueT < 0 ? 0 : undefined,
-                            background:
-                              l.valueT < 0 ? 'var(--neg)' : isTotal ? 'var(--ink)' : 'var(--green-500)',
-                          }}
-                        />
-                      </span>
-                    </div>
-                    {open && (
-                      <div className="ledger-detail">
-                        {l.basis}
-                        <div className="src">
-                          Source: {l.source}
-                          {l.uncertaintyPct > 0 && ` · ±${l.uncertaintyPct}% (1σ)`}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </Panel>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <Panel title="Composition">
-              <StackedBar
-                segments={[
-                  { label: 'Durable removal', value: Math.max(0, ledger.durableRemovalT), color: 'var(--green-700)' },
-                  { label: 'Avoided emissions', value: Math.max(0, ledger.avoidedEmissionsT), color: 'var(--green-500)' },
-                  { label: 'Fossil substitution', value: Math.max(0, ledger.substitutionT), color: 'var(--s2)' },
-                ]}
-                format={(v) => `${num(v)} t`}
-              />
-              <hr className="hairline" />
-              <dl className="kv">
-                <dt>Gross benefit</dt>
-                <dd>
-                  {num(ledger.durableRemovalT + ledger.avoidedEmissionsT + ledger.substitutionT)}
-                </dd>
-                <dt>Less emissions caused</dt>
-                <dd className="neg">−{num(ledger.emissionsT)}</dd>
-                <dt>
-                  <strong>Net</strong>
-                </dt>
-                <dd>
-                  <strong>{num(ledger.netT)}</strong>
-                </dd>
-                <dt>Emissions as share of benefit</dt>
-                <dd>
-                  {pct(
-                    (ledger.emissionsT /
-                      Math.max(
-                        1e-9,
-                        ledger.durableRemovalT + ledger.avoidedEmissionsT + ledger.substitutionT,
-                      )) *
-                      100,
-                    1,
-                  )}
-                </dd>
-              </dl>
-            </Panel>
-
-            {unc && (
-              <Panel
-                title="Uncertainty"
-                right={`${num(unc.draws)} draws`}
-              >
-                <Histogram bins={unc.histogram} p5={unc.p5} p50={unc.p50} p95={unc.p95} />
-                <p style={{ fontSize: 11.5, color: 'var(--ink-2)', marginTop: 8, lineHeight: 1.55 }}>
-                  Every emission factor carries a published uncertainty. Propagating them through
-                  the whole ledger by seeded Monte Carlo gives a <strong>90% interval of{' '}
-                  {num(unc.p5)} to {num(unc.p95)} tCO₂e</strong> around a median of {num(unc.p50)}.
-                  A single-point carbon number is a claim this model cannot support.
-                </p>
-              </Panel>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="section">
-        <SectionHead
-          title="Cumulative build-up"
-          note="Each bar starts where the previous one ended"
+      {following && (
+        <FollowCarbon
+          trace={trace}
+          setTrace={setTrace}
+          error={traceError}
+          setError={setTraceError}
+          version={version}
         />
-        <Panel>
-          <Waterfall items={waterfallItems} />
-        </Panel>
-      </div>
-
-      {/* ── Permanence ────────────────────────────────────────────────────── */}
-      {perm ? (
-        <div className="section">
-          <SectionHead
-            title="Biochar permanence"
-            note="Azzi et al. 2024 Geoderma · Woolf et al. 2021 ES&T"
-          />
-          <div className="grid g-2-1">
-            <Panel title="100-year carbon retention">
-              <DecayCurve
-                curves={[
-                  {
-                    label: `${perm.referenceTempC} °C reference`,
-                    color: 'var(--ink-3)',
-                    points: referenceCurve(perm),
-                  },
-                  {
-                    label: `${perm.soilTempC} °C — this network`,
-                    color: 'var(--green-700)',
-                    points: perm.curve,
-                  },
-                ]}
-              />
-              <p style={{ fontSize: 12, color: 'var(--ink-2)', marginTop: 10, lineHeight: 1.6 }}>
-                The harmonised biochar decomposition dataset is reported at{' '}
-                <strong>{perm.referenceTempC} °C</strong> soil temperature — northern Europe. Indian
-                agricultural soils sit near <strong>{perm.soilTempC} °C</strong>. Applying the
-                published Q10 relation gives a decay-rate ratio of{' '}
-                <strong className="num">{perm.fT.toFixed(3)}</strong>, meaning biochar decays{' '}
-                <strong>{((perm.fT - 1) * 100).toFixed(0)}% faster here</strong>.
-              </p>
-              <p style={{ fontSize: 12, color: 'var(--ink-2)', marginTop: 6, lineHeight: 1.6 }}>
-                Importing the European default would overstate durable removal by roughly{' '}
-                {(((referenceBc100(perm) - perm.bc100) / perm.bc100) * 100).toFixed(1)}%. The ledger
-                applies the India-calibrated figure, which costs us{' '}
-                {num(
-                  (ledger.durableRemovalT / Math.max(1e-9, perm.bc100)) *
-                    (referenceBc100(perm) - perm.bc100),
-                )}{' '}
-                tCO₂e of headline removal this window.
-              </p>
-            </Panel>
-
-            <Panel title="Model parameters">
-              <dl className="kv">
-                <dt>Char H/C(org) molar ratio</dt>
-                <dd>{perm.hcOrgRatio.toFixed(3)}</dd>
-                <dt>EBC / Puro durability gate</dt>
-                <dd className="pos">&lt; 0.70 ✓</dd>
-                <dt>Labile pool fraction</dt>
-                <dd>{pct(perm.labileFraction * 100, 1)}</dd>
-                <dt>Labile decay rate</dt>
-                <dd>{perm.labileRatePerYr.toFixed(3)} /yr</dd>
-                <dt>Persistent decay rate</dt>
-                <dd>{perm.persistentRatePerYr.toFixed(5)} /yr</dd>
-                <dt>Q10</dt>
-                <dd>{perm.q10.toFixed(3)}</dd>
-                <dt>Rate ratio f(T)</dt>
-                <dd>{perm.fT.toFixed(3)}</dd>
-                <dt>
-                  <strong>BC₁₀₀ at {perm.referenceTempC} °C</strong>
-                </dt>
-                <dd>{pct(referenceBc100(perm) * 100, 1)}</dd>
-                <dt>
-                  <strong>BC₁₀₀ at {perm.soilTempC} °C</strong>
-                </dt>
-                <dd>
-                  <strong>{pct(perm.bc100 * 100, 1)}</strong>
-                </dd>
-              </dl>
-              <hr className="hairline" />
-              <p style={{ fontSize: 11, color: 'var(--ink-3)', lineHeight: 1.55, margin: 0 }}>
-                {perm.method}
-              </p>
-            </Panel>
-          </div>
-        </div>
-      ) : (
-        <div className="section">
-          <Empty
-            title="No durable removal in the current plan"
-            body="The optimiser is not routing any feedstock to a pathway that produces durable carbon. Only slow pyrolysis and gasification yield char; every other pathway produces avoided emissions or fossil substitution."
-            why="Switch the objective, or check whether the pyrolysis facilities are operating on the Facilities screen."
-          />
-        </div>
       )}
 
       <div className="section">
-        <SectionHead title="Methodology and exclusions" />
-        <div className="grid g2">
-          <Panel title="What is counted">
-            <ul style={{ margin: 0, paddingLeft: 17, fontSize: 12, lineHeight: 1.65 }}>
-              <li>
-                <strong>Durable removal</strong> — carbon fixed in biochar, adjusted to its 100-year
-                retained fraction at local soil temperature.
-              </li>
-              <li>
-                <strong>Avoided emissions</strong> — the CH₄ and N₂O the counterfactual fate would
-                have produced (field burning, open dung heap, unmanaged landfill, open dumping).
-              </li>
-              <li>
-                <strong>Fossil substitution</strong> — coal displaced by pellet co-firing, CNG
-                displaced by bio-CNG, grid power displaced by export, synthetic nitrogen displaced
-                by compost and digestate.
-              </li>
-              <li>
-                <strong>Emissions charged</strong> — well-to-wheel transport including the empty
-                return leg, field aggregation, grid electricity drawn by process, digester methane
-                slip at 2%, and windrow CH₄ and N₂O.
-              </li>
-            </ul>
-          </Panel>
-          <Panel title="What is deliberately not counted">
-            <ul style={{ margin: 0, paddingLeft: 17, fontSize: 12, lineHeight: 1.65 }}>
-              <li>
-                <strong>Biogenic CO₂</strong> from combustion, composting or digestion. It is part
-                of the annual carbon cycle, not an addition to it.
-              </li>
-              <li>
-                <strong>Soil N₂O suppression</strong> attributed to biochar. The literature is
-                contested and the effect is not durable; including it would flatter the result.
-              </li>
-              <li>
-                <strong>Embodied carbon of the plant</strong> itself. Out of scope for an
-                operating-period ledger, and it would not change any allocation decision.
-              </li>
-              <li>
-                <strong>Air-quality co-benefits.</strong> Diverting crop residue avoids roughly
-                7.4 kg of PM₂.₅ per dry tonne — the reason stubble burning is a public-health
-                emergency — but PM₂.₅ is not a greenhouse gas and is never converted into CO₂e here.
-              </li>
-            </ul>
-          </Panel>
+        <SectionHead
+          title="What created this number"
+          note={
+            tracedKeys
+              ? 'Lit lines are the ones the traced contribution feeds'
+              : 'Select any line for its inputs, factors and citation'
+          }
+        />
+        <div className={`ledger-split ${selected ? 'with-evidence' : ''}`}>
+          <Decomposition
+            ledger={ledger}
+            groups={groups}
+            openLine={openLine}
+            setOpenLine={setOpenLine}
+            tracedKeys={tracedKeys}
+          />
+          {selected && (
+            <Evidence
+              line={selected}
+              rows={provenance[selected.key] ?? null}
+              ledger={ledger}
+              onClose={() => setOpenLine(null)}
+            />
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-/** Re-derive the reference-temperature curve from the reported parameters. */
-function referenceCurve(perm: NonNullable<ReturnType<typeof Object>> & any) {
-  const kL = perm.labileRatePerYr / perm.fT;
-  const kP = perm.persistentRatePerYr / perm.fT;
-  return perm.curve.map((p: { year: number }) => ({
-    year: p.year,
-    remaining:
-      perm.labileFraction * Math.exp(-kL * p.year) +
-      (1 - perm.labileFraction) * Math.exp(-kP * p.year),
-  }));
+// ─────────────────────────────────────────────────────────────────────────────
+// Basis
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * What is being measured, stated before any number is shown.
+ *
+ * A planning-window estimate is not a historical measurement, and the fastest way
+ * to lose a carbon audit is to let someone assume it was.
+ */
+function BasisStrip({
+  windowDays,
+  asOf,
+  version,
+  objective,
+  suppliedT,
+  divertedT,
+}: {
+  windowDays: number;
+  asOf: string;
+  version: number;
+  objective: string;
+  suppliedT: number;
+  divertedT: number;
+}) {
+  const items = [
+    { label: 'Planning window', value: `${windowDays} days to ${dateFull(asOf)}` },
+    {
+      label: 'Supply basis',
+      value: `${num(divertedT)} t placed of ${num(suppliedT)} t offered`,
+    },
+    { label: 'Objective', value: objective },
+    { label: 'Twin version', value: `v${version}` },
+  ];
+  return (
+    <div className="section">
+      <div className="basis">
+        {items.map((i) => (
+          <div key={i.label} className="basis-item">
+            <span className="basis-label">{i.label}</span>
+            <span className="basis-value">{i.value}</span>
+          </div>
+        ))}
+        <div className="basis-status">
+          <span className="q-tag">Modelled estimate</span>
+          Forward-looking plan, not measured emissions. Not verified and not a carbon credit.
+        </div>
+      </div>
+    </div>
+  );
 }
 
-function referenceBc100(perm: any): number {
-  const kL = perm.labileRatePerYr / perm.fT;
-  const kP = perm.persistentRatePerYr / perm.fT;
-  return perm.labileFraction * Math.exp(-kL * 100) + (1 - perm.labileFraction) * Math.exp(-kP * 100);
+// ─────────────────────────────────────────────────────────────────────────────
+// Decomposition
+// ─────────────────────────────────────────────────────────────────────────────
+
+function Decomposition({
+  ledger,
+  groups,
+  openLine,
+  setOpenLine,
+  tracedKeys,
+}: {
+  ledger: Ledger;
+  groups: Group[];
+  openLine: string | null;
+  setOpenLine: (k: string | null) => void;
+  tracedKeys: Set<string> | null;
+}) {
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const maxAbs = Math.max(...groups.map((g) => Math.abs(g.valueT)), 1);
+
+  // A group whose lines the trace touches opens itself, so the connection is
+  // visible without the reader hunting for it.
+  useEffect(() => {
+    if (!tracedKeys) return;
+    const hit = groups.filter((g) => g.lines.some((l) => tracedKeys.has(l.key))).map((g) => g.kind);
+    setExpanded(new Set(hit));
+  }, [tracedKeys, ledger]);
+
+  const toggle = (kind: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(kind)) next.delete(kind);
+      else next.add(kind);
+      return next;
+    });
+  };
+
+  return (
+    <div className="ledger-main">
+      <div className="lhero">
+        <div className="lhero-label">Net carbon impact</div>
+        <div className="lhero-value">
+          {ledger.netT >= 0 ? '+' : '−'}
+          {num(Math.abs(ledger.netT))}
+          <span className="lhero-unit">tCO₂e</span>
+        </div>
+        {ledger.uncertainty && (
+          <div className="lhero-band">
+            <span className="mono">
+              {num(ledger.uncertainty.p5)}–{num(ledger.uncertainty.p95)}
+            </span>{' '}
+            across {num(ledger.uncertainty.draws)} Monte Carlo draws (P5–P95)
+          </div>
+        )}
+      </div>
+
+      <div className="lgroups">
+        {groups.map((g) => {
+          const open = expanded.has(g.kind);
+          const empty = g.lines.length === 0;
+          const dim = tracedKeys ? !g.lines.some((l) => tracedKeys.has(l.key)) : false;
+
+          return (
+            <div key={g.kind} className={`lgroup ${open ? 'open' : ''} ${dim ? 'dim' : ''}`}>
+              <button
+                className="lgroup-row"
+                onClick={() => !empty && toggle(g.kind)}
+                aria-expanded={open}
+                disabled={empty}
+              >
+                <span className="lg-op">{g.sign === 'plus' ? '+' : '−'}</span>
+                <span className="lg-label">
+                  {g.label}
+                  <span className="lg-note">{g.note}</span>
+                </span>
+                <span className="lg-bar">
+                  <span
+                    className={`lg-fill ${g.sign === 'plus' ? 'pos' : 'neg'}`}
+                    style={{ width: `${(Math.abs(g.valueT) / maxAbs) * 100}%` }}
+                  />
+                </span>
+                <span className={`lg-value mono ${g.sign === 'plus' ? 'pos' : 'neg'}`}>
+                  {empty ? '—' : num(Math.abs(g.valueT))}
+                </span>
+                <span className="lg-count mono">
+                  {empty ? 'none' : `${g.lines.length} line${g.lines.length > 1 ? 's' : ''}`}
+                </span>
+                <span className="lg-chev">{empty ? '' : open ? '−' : '+'}</span>
+              </button>
+
+              {empty && (
+                <div className="lgroup-empty">
+                  No {g.label.toLowerCase()} in this plan. The pathways currently operating do not
+                  produce this kind of effect — the figure is absent, not zeroed.
+                </div>
+              )}
+
+              {open && !empty && (
+                <div className="llines">
+                  {g.lines.map((l) => {
+                    const lit = tracedKeys ? tracedKeys.has(l.key) : true;
+                    return (
+                      <button
+                        key={l.key}
+                        className={`lline ${openLine === l.key ? 'sel' : ''} ${lit ? '' : 'dim'}`}
+                        onClick={() => setOpenLine(openLine === l.key ? null : l.key)}
+                      >
+                        <span className="ll-label">{l.label}</span>
+                        <span className="ll-unc mono">±{l.uncertaintyPct}%</span>
+                        <span className={`ll-value mono ${l.valueT >= 0 ? 'pos' : 'neg'}`}>
+                          {num(l.valueT)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        <div className="lgroup-total">
+          <span className="lg-op">=</span>
+          <span className="lg-label">Net carbon impact</span>
+          <span className="lg-bar" />
+          <span className="lg-value mono">{num(ledger.netT)}</span>
+          <span className="lg-count mono">tCO₂e</span>
+          <span className="lg-chev" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Evidence
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * The contextual panel. Deliberately not a modal: the reader keeps the ledger in
+ * view, so a line and its evidence are read together rather than in sequence.
+ */
+function Evidence({
+  line,
+  rows,
+  ledger,
+  onClose,
+}: {
+  line: LedgerLine;
+  rows: ProvenanceRow[] | null;
+  ledger: Ledger;
+  onClose: () => void;
+}) {
+  const [deep, setDeep] = useState(false);
+  const share = ledger.netT !== 0 ? (line.valueT / Math.abs(ledger.netT)) * 100 : 0;
+
+  return (
+    <aside className="evidence">
+      <header className="ev-head">
+        <div>
+          <div className="ev-kind">{line.kind}</div>
+          <h3>{line.label}</h3>
+        </div>
+        <button className="ev-close" onClick={onClose} aria-label="Close evidence">
+          ×
+        </button>
+      </header>
+
+      <div className="ev-value">
+        <span className={`ev-num mono ${line.valueT >= 0 ? 'pos' : 'neg'}`}>
+          {line.valueT >= 0 ? '+' : '−'}
+          {num(Math.abs(line.valueT))}
+        </span>
+        <span className="ev-unit">tCO₂e</span>
+        <span className="ev-share">
+          {pct(Math.abs(share))} of the net figure · ±{line.uncertaintyPct}% published uncertainty
+        </span>
+      </div>
+
+      <section className="ev-block">
+        <h4>Why this number?</h4>
+        <p className="ev-why">{line.basis}</p>
+      </section>
+
+      <section className="ev-block">
+        <h4>Inputs</h4>
+        {rows === null || rows.length === 0 ? (
+          <div className="ev-missing">
+            <strong>No inputs recorded for this line.</strong>
+            <p>
+              The line was produced by the ledger but no provenance mapping exists for it yet. The
+              calculation basis above is still authoritative; what is missing is the itemised
+              breakdown, and that gap is shown rather than filled with a guess.
+            </p>
+          </div>
+        ) : (
+          <table className="ev-table">
+            <thead>
+              <tr>
+                <th>Input</th>
+                <th className="r">Value</th>
+                <th>Unit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.input}>
+                  <td>
+                    {r.input}
+                    {r.factor && <span className="ev-factor">{r.factor}</span>}
+                    {deep && r.factorSource && <span className="ev-src">{r.factorSource}</span>}
+                  </td>
+                  <td className="r mono">
+                    {num(r.value, r.value !== 0 && Math.abs(r.value) < 100 ? 3 : 0)}
+                  </td>
+                  <td className="ev-unitcell">{r.unit}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      <button className="ev-deeper" onClick={() => setDeep(!deep)}>
+        {deep ? 'Hide calculation detail' : 'Calculation detail'}
+      </button>
+
+      {deep && (
+        <section className="ev-block ev-deep">
+          <h4>Source</h4>
+          <p className="ev-source">{line.source}</p>
+          <h4>Uncertainty</h4>
+          <p className="ev-source">
+            ±{line.uncertaintyPct}% at one sigma, propagated into the network band by Monte Carlo
+            over every factor simultaneously rather than added in quadrature.
+          </p>
+          <h4>Ledger key</h4>
+          <p className="ev-source mono">{line.key}</p>
+        </section>
+      )}
+
+      <div className="ev-status">
+        <span className="q-tag">Modelled estimate</span>
+        Not measured, not verified, and not a carbon credit.
+      </div>
+    </aside>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Follow carbon
+// ─────────────────────────────────────────────────────────────────────────────
+
+function FollowCarbon({
+  trace,
+  setTrace,
+  error,
+  setError,
+  version,
+}: {
+  trace: AllocationTrace | null;
+  setTrace: (t: AllocationTrace | null) => void;
+  error: string | null;
+  setError: (e: string | null) => void;
+  version: number;
+}) {
+  const cands = useResource(() => api.traceCandidates(), [version], ['Ranking contributions…']);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [revealed, setRevealed] = useState(0);
+  const timer = useRef<number | null>(null);
+
+  // The reveal is the explanation: stages arrive in causal order and the running
+  // total moves as each one lands, so the reader watches carbon accrue and be
+  // charged rather than being handed a finished figure.
+  useEffect(() => {
+    if (timer.current) window.clearInterval(timer.current);
+    if (!trace) {
+      setRevealed(0);
+      return;
+    }
+    setRevealed(0);
+    const total = trace.stages.length;
+    timer.current = window.setInterval(() => {
+      setRevealed((r) => {
+        if (r >= total) {
+          if (timer.current) window.clearInterval(timer.current);
+          return r;
+        }
+        return r + 1;
+      });
+    }, 240);
+    return () => {
+      if (timer.current) window.clearInterval(timer.current);
+    };
+  }, [trace]);
+
+  const pick = async (c: TraceCandidate) => {
+    setBusy(c.key);
+    setError(null);
+    try {
+      setTrace(await api.trace(c.sourceId, c.facilityId));
+    } catch (e) {
+      setTrace(null);
+      setError(e instanceof Error ? e.message : 'That contribution could not be traced.');
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <div className="section">
+      <SectionHead
+        title="Follow carbon"
+        note="One contribution, traced from the field to the net result"
+      />
+
+      <Panel flush>
+        <div className="follow">
+          <div className="fc-picker">
+            <div className="fc-picker-head">
+              Contributions in this plan
+              <span className="muted"> · largest first</span>
+            </div>
+            {cands.loading && <div className="fc-loading">Ranking contributions…</div>}
+            {cands.error && <div className="fc-loading neg">{cands.error}</div>}
+            {cands.data && cands.data.length === 0 && (
+              <div className="fc-loading">
+                No allocations in the current plan, so there is nothing to follow.
+              </div>
+            )}
+            <div className="fc-list">
+              {(cands.data ?? []).map((c) => (
+                <button
+                  key={c.key}
+                  className={`fc-item ${trace?.key === c.key ? 'sel' : ''} ${
+                    trace && trace.key !== c.key ? 'dim' : ''
+                  }`}
+                  onClick={() => pick(c)}
+                  disabled={busy !== null}
+                >
+                  <span className="fc-i-main">
+                    <span className="fc-i-src">{c.sourceName}</span>
+                    <span className="fc-i-sub">
+                      {c.streamLabel} → {c.facilityName}
+                    </span>
+                  </span>
+                  <span className="fc-i-nums">
+                    <span className="mono">{num(c.tonnes)} t</span>
+                    <span className={`mono ${c.netCarbonT >= 0 ? 'pos' : 'neg'}`}>
+                      {num(c.netCarbonT)}
+                    </span>
+                  </span>
+                  {busy === c.key && <span className="fc-i-busy">tracing…</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="fc-stage">
+            {error && (
+              <div className="fc-empty">
+                <h4>That contribution could not be traced</h4>
+                <p>{error}</p>
+              </div>
+            )}
+            {!error && !trace && (
+              <div className="fc-empty">
+                <h4>Choose a contribution</h4>
+                <p>
+                  Pick any row on the left. It will be followed through collection, haulage, the
+                  receiving plant and conversion, with the carbon booked at the stage that
+                  physically causes it.
+                </p>
+              </div>
+            )}
+            {!error && trace && <TraceChain trace={trace} revealed={revealed} />}
+          </div>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+/** The chain itself: stages, running total, route geometry and the plain answer. */
+function TraceChain({ trace, revealed }: { trace: AllocationTrace; revealed: number }) {
+  const running = useMemo(() => {
+    let acc = 0;
+    return trace.stages.map((s) => {
+      acc += s.carbonT ?? 0;
+      return acc;
+    });
+  }, [trace]);
+
+  const maxAbs = Math.max(...trace.stages.map((s) => Math.abs(s.carbonT ?? 0)), 1);
+  const shown = Math.min(revealed, trace.stages.length);
+  const total = shown > 0 ? running[shown - 1] : 0;
+
+  return (
+    <div className="chain">
+      <header className="chain-head">
+        <div>
+          <div className="chain-title">
+            {num(trace.tonnes)} t {trace.streamLabel.toLowerCase()}
+          </div>
+          <div className="chain-sub">
+            {trace.sourceName} → {trace.facilityName} · {trace.pathwayLabel} ·{' '}
+            {num(trace.distanceKm)} km
+          </div>
+        </div>
+        <div className="chain-total">
+          <span className="ct-label">Running total</span>
+          <span className={`ct-value mono ${total >= 0 ? 'pos' : 'neg'}`}>
+            {total >= 0 ? '+' : '−'}
+            {num(Math.abs(total))}
+          </span>
+          <span className="ct-unit">
+            tCO₂e · {pct(Math.abs(trace.sharePct))} of network net
+          </span>
+        </div>
+      </header>
+
+      <RouteInset trace={trace} active={shown >= 3} />
+
+      <ol className="chain-stages">
+        {trace.stages.map((s, i) => {
+          const on = i < shown;
+          return (
+            <li key={s.key} className={`cs ${on ? 'on' : ''} ${s.kind ? `k-${s.kind}` : ''}`}>
+              <span className="cs-rail" aria-hidden>
+                <span className="cs-dot" />
+              </span>
+              <span className="cs-body">
+                <span className="cs-label">{s.label}</span>
+                <span className="cs-headline">{s.headline}</span>
+                <span className="cs-detail">{s.detail}</span>
+              </span>
+              <span className="cs-carbon">
+                {s.carbonT === null ? (
+                  <span className="cs-none">no carbon event</span>
+                ) : (
+                  <>
+                    <span className={`cs-num mono ${s.carbonT >= 0 ? 'pos' : 'neg'}`}>
+                      {s.carbonT >= 0 ? '+' : '−'}
+                      {num(Math.abs(s.carbonT))}
+                    </span>
+                    <span className="cs-bar">
+                      <span
+                        className={`cs-fill ${s.carbonT >= 0 ? 'pos' : 'neg'}`}
+                        style={{ width: on ? `${(Math.abs(s.carbonT) / maxAbs) * 100}%` : '0%' }}
+                      />
+                    </span>
+                    <span className="cs-cl">{s.carbonLabel}</span>
+                  </>
+                )}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+
+      <div className="chain-why">
+        <h4>Why this number?</h4>
+        <p>{trace.why}</p>
+      </div>
+
+      <details className="chain-deep">
+        <summary>Calculation detail for this contribution</summary>
+        <div className="cd-grid">
+          <div>
+            <h5>Route</h5>
+            <ul className="dd-list">
+              <li>
+                <span>Road distance</span>
+                <span className="mono">{num(trace.route.roadKm, 1)} km</span>
+              </li>
+              <li>
+                <span>Straight line</span>
+                <span className="mono">{num(trace.route.straightKm, 1)} km</span>
+              </li>
+              <li>
+                <span>Circuity</span>
+                <span className="mono">{num(trace.route.circuity, 2)}×</span>
+              </li>
+              <li>
+                <span>Vehicle</span>
+                <span className="mono">{trace.vehicle.label}</span>
+              </li>
+              <li>
+                <span>Trips</span>
+                <span className="mono">{num(trace.vehicle.trips)}</span>
+              </li>
+              <li>
+                <span>Diesel</span>
+                <span className="mono">{num(trace.route.dieselL)} L</span>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h5>Counterfactual</h5>
+            <p className="cd-text">
+              <strong>{trace.counterfactual.label}</strong> — {trace.counterfactual.basis}
+            </p>
+            <p className="cd-src">{trace.counterfactual.source}</p>
+            <h5>Pathway</h5>
+            <p className="cd-text">
+              <strong>{trace.pathwayDef.label}</strong> — {trace.pathwayDef.maturity}
+            </p>
+          </div>
+          <div>
+            <h5>Ledger for this contribution</h5>
+            <table className="ev-table">
+              <tbody>
+                {trace.ledger.lines
+                  .filter((l) => l.kind !== 'total')
+                  .map((l) => (
+                    <tr key={l.key}>
+                      <td>{l.label}</td>
+                      <td className={`r mono ${l.valueT >= 0 ? 'pos' : 'neg'}`}>{num(l.valueT)}</td>
+                    </tr>
+                  ))}
+                <tr className="cd-net">
+                  <td>Net</td>
+                  <td className="r mono">{num(trace.ledger.netT)}</td>
+                </tr>
+              </tbody>
+            </table>
+            <p className="cd-src">
+              Built by the same ledger function as the network figure, on this allocation alone —
+              so these lines sum into the lines above rather than agreeing with them by
+              coincidence.
+            </p>
+          </div>
+        </div>
+      </details>
+
+      <div className="chain-status">
+        <span className="q-tag">Modelled estimate</span>
+        Supply for this source was last updated {num(trace.source.telemetryAgeH)} h ago. Not
+        measured, not verified, and not a carbon credit.
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Real geography, drawn small.
+ *
+ * Two points and the haul between them, from the actual coordinates. The straight
+ * line is what the map can show; the road distance is what the carbon was charged
+ * on, and the gap between them is the circuity factor, so both are labelled.
+ */
+function RouteInset({ trace, active }: { trace: AllocationTrace; active: boolean }) {
+  const W = 560;
+  const H = 104;
+  const pad = 30;
+  /** Keeps the arc apex and its distance label inside the viewBox on any geometry. */
+  const TOP = 22;
+
+  const { source, facility } = trace;
+  const minLon = Math.min(source.lon, facility.lon);
+  const maxLon = Math.max(source.lon, facility.lon);
+  const minLat = Math.min(source.lat, facility.lat);
+  const maxLat = Math.max(source.lat, facility.lat);
+  const spanLon = maxLon - minLon || 0.01;
+  const spanLat = maxLat - minLat || 0.01;
+
+  const x = (lon: number) => pad + ((lon - minLon) / spanLon) * (W - 2 * pad);
+  const y = (lat: number) => H / 2 - ((lat - (minLat + maxLat) / 2) / spanLat) * (H * 0.34);
+
+  const x1 = x(source.lon);
+  const y1 = y(source.lat);
+  const x2 = x(facility.lon);
+  const y2 = y(facility.lat);
+  const cx = (x1 + x2) / 2;
+  const cy = Math.max(TOP, Math.min(y1, y2) - 22);
+
+  return (
+    <div className="route-inset">
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Haul geometry">
+        <path
+          d={`M${x1},${y1} Q${cx},${cy} ${x2},${y2}`}
+          className={`ri-arc ${active ? 'on' : ''}`}
+        />
+        <circle cx={x1} cy={y1} r={4} className="ri-src" />
+        <circle cx={x2} cy={y2} r={5} className="ri-fac" />
+        <text x={x1} y={y1 + 16} className="ri-lab" textAnchor="middle">
+          {source.district}
+        </text>
+        <text x={x2} y={y2 + 17} className="ri-lab" textAnchor="middle">
+          {facility.district}
+        </text>
+        <text x={cx} y={cy - 5} className="ri-dist" textAnchor="middle">
+          {num(trace.route.roadKm, 1)} km by road · {num(trace.route.straightKm, 1)} km direct
+        </text>
+      </svg>
+    </div>
+  );
 }

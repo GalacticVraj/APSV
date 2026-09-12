@@ -40,6 +40,11 @@ import type {
   WasteSource,
 } from '../../engine/src/types.ts';
 import type { CarbonHistory } from '../../engine/src/history.ts';
+import type {
+  AllocationTrace,
+  ProvenanceRow,
+  TraceCandidate,
+} from '../../engine/src/trace.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Transport
@@ -91,7 +96,18 @@ export const api = {
       '/api/optimization',
     ),
   routing: () => req<RoutingResult>('/api/routing'),
-  carbon: () => req<{ ledger: CarbonLedger; aggregate: unknown; totals: NetworkTotals }>('/api/carbon'),
+  carbon: () =>
+    req<{
+      ledger: CarbonLedger;
+      aggregate: unknown;
+      totals: NetworkTotals;
+      provenance: Record<string, ProvenanceRow[]>;
+    }>('/api/carbon'),
+  traceCandidates: () => req<TraceCandidate[]>('/api/trace/candidates'),
+  trace: (sourceId: string, facilityId: string) =>
+    req<AllocationTrace>(
+      `/api/trace?sourceId=${encodeURIComponent(sourceId)}&facilityId=${encodeURIComponent(facilityId)}`,
+    ),
   carbonHistory: () => req<CarbonHistory>('/api/carbon/history'),
   economics: () => req<EconomicsPayload>('/api/economics'),
   bottlenecks: () =>

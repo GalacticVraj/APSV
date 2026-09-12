@@ -192,7 +192,31 @@ const GET: Record<string, Handler> = {
       ledger: twin.getLedger(),
       aggregate: twin.getCarbonAggregate(),
       totals: twin.getResult().totals,
+      // Derived from the same aggregate the ledger was built from, so the
+      // evidence panel cannot describe a different plan than the lines above it.
+      provenance: twin.getProvenance(),
     }),
+
+  '/api/trace/candidates': (_req, res) => json(res, 200, twin.getTraceCandidates()),
+
+  '/api/trace': (_req, res, url) => {
+    const sourceId = url.searchParams.get('sourceId');
+    const facilityId = url.searchParams.get('facilityId');
+    if (!sourceId || !facilityId) {
+      return json(res, 400, {
+        error: 'Both "sourceId" and "facilityId" are required to trace a contribution.',
+      });
+    }
+    const trace = twin.getTrace(sourceId, facilityId);
+    if (!trace) {
+      // Not an error: the pair may be stranded, or the plan may have moved since
+      // the client last read the candidate list.
+      return json(res, 404, {
+        error: `No allocation from ${sourceId} to ${facilityId} in the current plan. It may have been stranded, or the plan may have changed.`,
+      });
+    }
+    json(res, 200, trace);
+  },
 
   // Split from /api/carbon because it costs twenty optimiser runs: the Carbon Home
   // renders its headline immediately and fills the trend in when this arrives.

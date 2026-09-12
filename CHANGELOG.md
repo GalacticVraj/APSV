@@ -189,6 +189,54 @@ Caught in review rather than shipped:
 reconcile to the period change, and that an offset is never claimed unless a driver actually
 opposed the lead. Engine and API now stand at **104 tests**.
 
+## Phase 13 — Carbon Ledger
+
+Rebuilt from a ledger table into a trace system. The question it answers is "where
+exactly did this number come from", and it has to survive someone who does not believe it.
+
+- **The decision that makes it defensible.** Tracing one truckload could have been a
+  second, simpler carbon calculation. That would have been the worst option available:
+  two calculations drift, and the moment they disagree the product's central claim is
+  gone. Instead `trace.ts` runs the same three functions the network ledger uses —
+  `physicalPerTonne` → `addToAggregate` → `buildLedger` — with one allocation in the
+  aggregate instead of several hundred. Traced lines carry the same keys, bases and
+  citations, and **sum into the network lines by construction rather than by agreement**.
+  Verified to 1e-6 across all five ledger groups.
+- **Permanence is taken from the network's dominant feedstock, not the allocation's own.**
+  Using the allocation's own stream gives a marginally better estimate for that load and
+  breaks the reconciliation — the first attempt did exactly that and came out 1.67% off on
+  durable removal. A trace has to explain the number the network computed, not a better one.
+- **Provenance** names the physical input each line consumed, the factor applied and that
+  factor's published source, read from the same constants the solver used. Quoted at the
+  same scale as the ledger's own basis string (GJ, MWh) so a provenance row can never
+  contradict the line above it.
+- **Follow carbon** — pick any contribution and it is traced through waste, collection,
+  haulage, the receiving plant, conversion and processing, with carbon booked at the stage
+  that physically causes it. Stages reveal in causal order and the running total moves as
+  each lands, so the reader watches carbon accrue and then be charged rather than being
+  handed a finished figure. Following a contribution **dims the ledger lines it does not
+  feed** — the link between one truckload and the network total is shown, not asserted.
+- Route geometry is drawn from the real coordinates, labelling road distance and straight
+  line separately because the carbon was charged on the former.
+- Evidence is a contextual panel, never a modal, so a line and its evidence are read
+  together. Empty states distinguish "no provenance recorded" from "this did not occur in
+  this plan" — different problems, stated differently, neither filled with a guess.
+
+Caught in review:
+
+- **Provenance contradicted its own line.** Coal energy rendered as `18,69,08,180 MJ` under
+  a basis line reading `186908 GJ`. Same quantity, two scales, in a panel whose entire job
+  is trust. Aligned to the ledger's scales.
+- **A stage narrated a cost it did not carry.** Collection described raking and baling while
+  that emission is charged under transport. Rewritten to describe the diversion it is
+  actually credited for.
+- Route distance label clipped at the top of its viewBox on short geometry; dimmed picker
+  rows were too faint to still function as controls.
+
+**20 trace tests**, led by the reconciliation check. Also: no carbon booked twice across
+stages, every factor row cites a source, provenance never describes a line the plan did not
+produce, and the generated explanation never claims verification or measurement. **124 tests.**
+
 ## Documentation
 
 - `README.md` — how to run it and what it does.

@@ -41,6 +41,14 @@ import {
 } from './bottleneck.ts';
 import { forecastNetwork, type NetworkForecast } from './forecast.ts';
 import { carbonHistory, type CarbonHistory } from './history.ts';
+import {
+  provenanceFor,
+  traceAllocation,
+  traceCandidates,
+  type AllocationTrace,
+  type ProvenanceRow,
+  type TraceCandidate,
+} from './trace.ts';
 import { applyScenario, runScenario } from './scenario.ts';
 import { rollupEconomics, type EconAggregate } from './economics.ts';
 import { solveTransport } from './mincostflow.ts';
@@ -270,6 +278,29 @@ export class Twin {
    * observed supply. Memoised like every other derived artefact: twenty solves is
    * cheap enough to compute on demand but not cheap enough to repeat per request.
    */
+  /**
+   * Inputs behind each line of the network ledger. Derived from the same
+   * aggregate the ledger was built from, so it cannot describe a different plan.
+   */
+  getProvenance(): Record<string, ProvenanceRow[]> {
+    const result = this.getResult();
+    return provenanceFor(
+      this.getCarbonAggregate(),
+      this.state.assumptions.soilTempC,
+      this.state.assumptions.gridEfTPerMwh,
+      dominantBiocharStream(result.allocations),
+    );
+  }
+
+  /** Allocations offered for tracing, largest carbon contribution first. */
+  getTraceCandidates(): TraceCandidate[] {
+    return traceCandidates(this.state, this.getResult());
+  }
+
+  /** The full chain behind one allocation, or null if it is not in the plan. */
+  getTrace(sourceId: string, facilityId: string): AllocationTrace | null {
+    return traceAllocation(this.state, this.getResult(), sourceId, facilityId);
+  }
   getCarbonHistory(): CarbonHistory {
     if (!this.cacheHistory) {
       this.cacheHistory = carbonHistory(this.state, this.objective);

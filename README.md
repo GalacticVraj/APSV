@@ -25,7 +25,7 @@ and every model runs in-process.
 | Command | What it does |
 |---|---|
 | `npm run dev` | API on :5174 and the client on :5173, with hot reload on both |
-| `npm test` | 104 tests (carbon, optimiser, logistics, forecasting, scenarios, copilot, carbon history, API validation) |
+| `npm test` | 124 tests (carbon, optimiser, logistics, forecasting, scenarios, copilot, carbon history, traceability, API validation) |
 | `npm run typecheck` | Type-checks engine, API and client as one program |
 | `npm run build` | Production client bundle |
 | `npm start` | Builds the client and serves everything from the API on :5174 |
@@ -113,7 +113,7 @@ application — switching objectives, running scenarios — rather than playing 
 
 ```
 packages/engine    Domain model, carbon science, optimiser, forecasting.
-                   Pure TypeScript. Zero runtime dependencies. 104 tests.
+                   Pure TypeScript. Zero runtime dependencies. 124 tests.
 packages/api       HTTP API on Node's built-in server. Zero dependencies.
 packages/web       React + Vite client. Custom SVG map and charts, no chart library.
 ```
