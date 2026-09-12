@@ -26,7 +26,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api, useResource, useTwin } from '../store.tsx';
-import { ErrorState, Loading } from '../components/Primitives.tsx';
+import { CountUp, ErrorState, Loading } from '../components/Primitives.tsx';
 import { NetworkMap, type Selection } from '../components/NetworkMap.tsx';
 import { Link, useRouter } from '../router.tsx';
 import { dateFull, inr, num, pct, timeShort } from '../format.ts';
@@ -189,7 +189,9 @@ function Position({
       <div className="cp-row">
         <div className="cp-value">
           {b.position.netT >= 0 ? '+' : '−'}
-          {num(Math.abs(b.position.netT))}
+          {/* Interpolated: after an optimise, the reader watches the position
+              move to its new value instead of it being swapped underneath them. */}
+          <CountUp value={Math.abs(b.position.netT)} duration={620} />
           <span className="cp-unit">tCO₂e</span>
         </div>
         {t && (
@@ -279,7 +281,7 @@ function LiveNetwork({
         </Link>
       </div>
 
-      <div className="cn-canvas">
+      <div className={`cn-canvas ${selection ? 'focused' : ''}`}>
         <NetworkMap
           sources={sources}
           facilities={facilities}

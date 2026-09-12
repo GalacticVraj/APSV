@@ -3161,3 +3161,117 @@ a.cd-item:hover { background: var(--surface-sunken); }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Export control (screen) ───────────────────────────────────────────────── */
+
+.bf-export { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.bf-export-hint { font-size: 9.5px; color: var(--ink-4); line-height: 1.4; max-width: 26ch; }
+.bf-printhead { display: none; }
+
+/* ── Command Center motion ─────────────────────────────────────────────────── */
+
+/* Sections arrive in reading order. One pass on mount, never on re-render — the
+   position must not re-animate every time the twin re-solves. */
+.cmd-pos { animation: cmdRise 340ms cubic-bezier(0.22, 0.6, 0.18, 1) both; }
+.cmd-net { animation: cmdRise 340ms cubic-bezier(0.22, 0.6, 0.18, 1) 60ms both; }
+.cmd-dec { animation: cmdRise 340ms cubic-bezier(0.22, 0.6, 0.18, 1) 120ms both; }
+.cmd-pulse { animation: cmdRise 340ms cubic-bezier(0.22, 0.6, 0.18, 1) 180ms both; }
+@keyframes cmdRise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Material moving along the arcs the reader has selected.
+   Scoped to a focused selection on purpose: animating all 36 arcs at once is the
+   "everything moving" failure, and it costs compositor time for no meaning. Here
+   it says one thing — these are the routes connected to what you picked. */
+.cn-canvas.focused .flow:not(.dim) {
+  stroke-dasharray: 5 9;
+  animation: cmdFlowRun 1.15s linear infinite;
+}
+@keyframes cmdFlowRun { to { stroke-dashoffset: -14; } }
+
+/* A plant receiving the selected material reacts. */
+.cn-canvas.focused .fac.hl circle,
+.cn-canvas.focused .facility.hl { animation: cmdFacPulse 1.6s ease-in-out infinite; }
+@keyframes cmdFacPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+/* ── Print: the brief becomes a document ───────────────────────────────────── */
+
+@media print {
+  @page { margin: 16mm 14mm 18mm; }
+
+  /* Everything that is application chrome disappears. */
+  .topbar,
+  .rail,
+  .demobar,
+  .bf-export,
+  .section-head .btn,
+  .bf-expand,
+  .drawer,
+  .dr-scrim { display: none !important; }
+
+  html, body, .shell, .body, .main, .page {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .brief-page { max-width: none !important; }
+
+  /* Colour survives: the greens and the charge reds carry meaning here. */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* The printed cover. */
+  .bf-printhead { display: block !important; margin-bottom: 14mm; }
+  .bfp-brand {
+    font-size: 11pt; letter-spacing: 0.22em; font-weight: 700; color: #14181a;
+  }
+  .bfp-title {
+    font-size: 26pt; font-weight: 600; letter-spacing: -0.02em;
+    color: #10402f; margin-top: 3mm; line-height: 1.1;
+  }
+  .bfp-meta {
+    font-size: 8.5pt; color: #4e585c; margin-top: 3mm; line-height: 1.6; max-width: 150mm;
+  }
+  .bfp-rule { border-top: 1.5pt solid #14181a; margin-top: 5mm; }
+
+  /* The screen masthead is redundant once the cover exists. */
+  .bf-mast { display: none !important; }
+
+  /* Sections break cleanly and never orphan a heading. */
+  .bf-sec, .bf-hero {
+    padding: 0 0 7mm !important;
+    border-bottom: 0.5pt solid #cfcbc1 !important;
+    margin-bottom: 7mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .section-head h2 {
+    font-size: 12pt; letter-spacing: 0.06em; text-transform: uppercase;
+    break-after: avoid; page-break-after: avoid;
+  }
+  .bf-hero { grid-template-columns: 1fr !important; gap: 5mm !important; }
+  .bfh-value { font-size: 34pt !important; }
+  .bfh-read { font-size: 10.5pt !important; line-height: 1.65 !important; max-width: none !important; }
+
+  .bf-action, .bf-risk { break-inside: avoid; page-break-inside: avoid; }
+  .bfa-delta, .bfr-delta { font-size: 22pt !important; }
+  .bf-note, .bfa-block p, .cmp-note { font-size: 8.5pt !important; }
+  .bf-decomp, .bf-flow, .bf-obj, .bf-contrib, .bf-evid { break-inside: avoid; }
+  .bf-method > div { break-inside: avoid; }
+
+  /* Method is worth printing: a brief without its basis is not defensible. */
+  .bf-method { display: grid !important; }
+
+  a { text-decoration: none !important; color: inherit !important; }
+  .btn, a.btn { display: none !important; }
+  .q-tag { border: 0.5pt solid #8a6412; }
+}
+
+@media (max-width: 900px) {
+  .bf-export { width: 100%; }
+  .bf-export-hint { max-width: none; }
+}

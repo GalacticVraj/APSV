@@ -41,6 +41,19 @@ export default function CarbonReport() {
 
   return (
     <div className="page brief-page">
+      {/* Print-only cover. Hidden on screen; the printed document needs an
+          identity, a period and a generation stamp that the screen gets from
+          the shell chrome. */}
+      <div className="bf-printhead" aria-hidden>
+        <div className="bfp-brand">TERRAFLUX</div>
+        <div className="bfp-title">Carbon Intelligence Brief</div>
+        <div className="bfp-meta">
+          Punjab · Haryana · Chandigarh network · {b.objectiveLabel} objective ·{' '}
+          {b.windowDays}-day planning window to {dateFull(b.asOf)} · generated{' '}
+          {dateFull(b.generatedAt)} · twin v{b.version}
+        </div>
+        <div className="bfp-rule" />
+      </div>
       <Masthead b={b} />
       <Headline b={b} />
       <Position b={b} />
@@ -65,6 +78,14 @@ function Masthead({ b }: { b: CarbonBrief }) {
         <div className="bf-sub">
           Punjab · Haryana · Chandigarh network · {b.objectiveLabel} objective
         </div>
+      </div>
+      <div className="bf-export">
+        <button className="btn sm primary" onClick={() => window.print()}>
+          Export brief
+        </button>
+        <span className="bf-export-hint">
+          Opens your browser's print dialogue — choose “Save as PDF” for a document.
+        </span>
       </div>
       <dl className="bf-meta">
         <div>

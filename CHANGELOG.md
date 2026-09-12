@@ -533,6 +533,32 @@ reads `/api/brief`, which already composes everything.
 
 No calculation logic touched. **260 tests** unchanged and passing.
 
+## Phase 22 — Export, and motion with a job
+
+Final presentation pass. Held to the brief's own golden rule: better presentation over
+more features. Two things were added and nothing else.
+
+**Export (the one real gap).** There were no print styles anywhere. The brief now carries
+an *Export brief* control and a print stylesheet that turns it into a document rather than
+a screenshot of a dashboard: a cover with the wordmark, title, network, objective, planning
+window, generation stamp and twin version; app chrome removed; sections that never orphan a
+heading; colour preserved because the greens and charge reds carry meaning. Verified by
+lifting the `@media print` block onto the screen and looking at it — not by assuming.
+Browser print → Save as PDF, so it works everywhere with no new dependency, and the control
+says exactly that rather than implying a bespoke renderer.
+
+**Motion that reports something.** The hero position now interpolates via the existing
+`CountUp`, so a re-optimisation reads as a value moving rather than swapped underneath the
+reader. Sections rise once on mount in reading order. Selecting a plant focuses the map:
+**34 of 36 arcs dim, the 2 connected routes flow**, and the receiving plant pulses — motion
+bounded to what was selected, because animating all 36 is the "everything moving" failure
+and costs compositor time for nothing.
+
+`prefers-reduced-motion` already neutralised every animation globally with `!important`,
+so the new ones are covered regardless of cascade order — confirmed in the built CSS.
+
+No engine, endpoint, module or calculation touched. **260 tests** unchanged and passing.
+
 ## Documentation
 
 - `README.md` — how to run it and what it does.
