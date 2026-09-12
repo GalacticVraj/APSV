@@ -1,8 +1,14 @@
-# CarbonLoop: Circular Carbon Ecosystem Tracker
+# CarbonLoop & TERRAFLUX: Circular Carbon Ecosystem & Network Operating System
+
+HackOut'26 · PS11 — Waste-to-Carbon Value Chain · Circular Carbon Ecosystem
+
+---
+
+## 1. CarbonLoop Ecosystem Tracker
 
 CarbonLoop is a full-stack, AI-powered platform designed for the HackOut'26 "Circular Carbon Ecosystem" track. It connects waste generators with carbon-conversion facilities (biochar, biogas, composting), optimizes collection logistics, and calculates verifiable CO2 sequestration per tonne of waste diverted from landfills.
 
-## Architecture
+### Architecture
 
 The project is built as a monorepo containing three core services:
 
@@ -13,80 +19,40 @@ The project is built as a monorepo containing three core services:
     *   **Route Optimization**: Nearest-neighbor TSP heuristic with vehicle capacity and time-window constraints.
     *   **Carbon Calculation Engine**: Applies EPA WARM v15, IPCC AR6 WG3, and DEFRA 2023 methodology.
 
-## Tech Stack
+### Tech Stack
 *   **Database**: PostgreSQL + PostGIS (geospatial), Redis (caching/sessions)
 *   **Backend**: Node.js, Express, TypeScript, Knex.js, Socket.IO
 *   **Optimizer**: Python 3, FastAPI, Pydantic, Uvicorn
 *   **Frontend**: React 18, Vite, Tailwind CSS 3, Zustand, React Router, React Leaflet, Recharts
 
-## Setup Instructions
+---
 
-### Prerequisites
-*   Node.js (v18+)
-*   Python (3.9+)
-*   PostgreSQL (with PostGIS extension installed)
-*   Redis (running locally on port 6379)
+## 2. TERRAFLUX Network Operating System
 
-### 1. Database Setup
-Ensure PostgreSQL is running and PostGIS is enabled. Create a database named `carbonloop_dev`.
+For every available tonne of residue, TERRAFLUX decides the highest-value carbon-positive pathway: where it should go, how it should get there, how it should be processed, what carbon and economic value that creates — and what happens when conditions change.
 
-### 2. Environment Variables
-Copy the `.env.example` file to `.env` in the `packages/backend` and `packages/frontend` and configure your database credentials, JWT secret, and API keys.
-*For the AI integration to work, you must provide a valid `GROK_API_KEY` or `GEMINI_API_KEY` in the backend `.env`.*
+### What it does
 
-### 3. Backend & Frontend Installation
-From the root of the project:
+**Optimises.** A capacitated facility-location problem with semi-continuous throughput: a plant either runs above its minimum viable feed or does not run at all. Branch and bound over the facility on/off decisions, with each node's relaxation solved *exactly* by min-cost flow. The whole network solves in **25–180 ms**.
+
+**Prices capacity.** For every binding facility the optimiser is re-run with one extra tonne per day of headroom and the whole network re-solved. The difference is the true marginal value of capacity — in tCO₂e *and* in rupees — including every knock-on reallocation.
+
+**Accounts honestly.** Biogenic CO₂ is excluded. Durable removal and avoided emissions are never summed. Biochar permanence is computed from the char's H/C(org) ratio and Q10-corrected from the 14.9 °C reference dataset to Indian soil at 26 °C.
+
+---
+
+## Quick Start Commands
+
 ```bash
-# Install dependencies for root, backend, and frontend
 npm install
-
-# Run database migrations
-npm run dev -w packages/backend -- knex migrate:latest
-
-# Seed the database with demo data (India-specific)
-npm run dev -w packages/backend -- knex seed:run
+npm run dev
 ```
 
-### 4. Optimizer Service Installation
-In a separate terminal:
-```bash
-cd packages/optimizer
-python -m venv venv
-# On Windows: venv\Scripts\activate
-# On Unix: source venv/bin/activate
-pip install -r requirements.txt
-```
+| Command | What it does |
+|---|---|
+| `npm run dev` | TERRAFLUX API & Web Client dev servers |
+| `npm run dev:all` | CarbonLoop Frontend & Backend dev servers |
+| `npm test` | Run backend & frontend test suites |
+| `npm run test:engine` | Run TERRAFLUX engine tests |
+| `npm run typecheck` | Type-checks TS packages |
 
-### 5. Running the Application
-
-You will need three terminal windows to run all services concurrently:
-
-**Terminal 1: Node.js Backend API**
-```bash
-npm run dev -w packages/backend
-# Runs on http://localhost:3001
-```
-
-**Terminal 2: Python Optimizer Service**
-```bash
-cd packages/optimizer
-# activate venv if not already active
-python -m uvicorn app.main:app --reload --port 8000
-# Runs on http://localhost:8000
-```
-
-**Terminal 3: React Frontend**
-```bash
-npm run dev -w packages/frontend
-# Runs on http://localhost:5173
-```
-
-## Demo Credentials
-You can log in to the frontend using the following demo accounts (Password for all: `Demo@1234`):
-*   **Generator**: `green.farms@example.in`
-*   **Facility**: `biochar.karnataka@example.in`
-*   **Logistics**: `logistics@greenmove.in`
-*   **Admin**: `admin@carbonloop.in`
-
-## License
-MIT License

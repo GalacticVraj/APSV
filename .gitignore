@@ -8,6 +8,8 @@ dist/
 build/
 packages/*/dist/
 packages/*/build/
+.next/
+out/
 
 # Environment variables
 .env
@@ -20,8 +22,10 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.py[cod]
 .pytest_cache/
 venv/
+.venv/
 env/
 ENV/
 packages/optimizer/venv/
@@ -34,8 +38,10 @@ yarn-debug.log*
 yarn-error.log*
 .tempmediaStorage/
 
-# OS / IDE
+# OS / IDE / Editor
 .DS_Store
 Thumbs.db
+desktop.ini
 .vscode/
 .idea/
+

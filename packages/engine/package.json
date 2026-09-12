@@ -1,0 +1,9 @@
+{
+  "name": "@terraflux/engine",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": { ".": "./src/index.ts", "./*": "./src/*" },
+  "description": "Domain model, carbon science, optimiser and forecasting. Zero runtime dependencies."
+}

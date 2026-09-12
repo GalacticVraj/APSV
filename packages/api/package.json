@@ -1,0 +1,11 @@
+{
+  "name": "@terraflux/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TERRAFLUX API. Node built-in http, zero dependencies.",
+  "scripts": {
+    "dev": "node --experimental-strip-types --watch src/index.ts",
+    "start": "node --experimental-strip-types src/index.ts"
+  }
+}
