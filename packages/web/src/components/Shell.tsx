@@ -26,6 +26,7 @@ const NAV: Array<{ group: string; items: Array<{ to: string; label: string }> }>
     items: [
       { to: '/sources', label: 'Waste Sources' },
       { to: '/facilities', label: 'Facilities' },
+      { to: '/siting', label: 'Siting Screener' },
       { to: '/logistics', label: 'Logistics' },
     ],
   },

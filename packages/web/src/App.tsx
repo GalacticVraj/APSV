@@ -8,6 +8,7 @@ import Overview from './pages/Overview.tsx';
 import MapPage from './pages/MapPage.tsx';
 import Sources from './pages/Sources.tsx';
 import Facilities from './pages/Facilities.tsx';
+import FacilityCommand from './pages/FacilityCommand.tsx';
 import Optimization from './pages/Optimization.tsx';
 import Scenarios from './pages/Scenarios.tsx';
 import Carbon from './pages/Carbon.tsx';
@@ -17,12 +18,15 @@ import Bottlenecks from './pages/Bottlenecks.tsx';
 import Activity from './pages/Activity.tsx';
 import System from './pages/System.tsx';
 import Copilot from './pages/Copilot.tsx';
+import SitingPage from './pages/SitingPage.tsx';
 
 const ROUTES: Record<string, () => JSX.Element | null> = {
   '/': Overview,
   '/map': MapPage,
   '/sources': Sources,
   '/facilities': Facilities,
+  '/facility-command': FacilityCommand,
+  '/siting': SitingPage,
   '/optimization': Optimization,
   '/scenarios': Scenarios,
   '/carbon': Carbon,

@@ -36,12 +36,17 @@ export function RouterProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const navigate = useCallback((to: string) => {
-    if (to === window.location.pathname) return;
+    // Separate the path from any query string for route matching, but push
+    // the full URL (including ?search) into browser history so pages can read
+    // window.location.search to get parameters like ?id=...
+    const toPathname = to.split('?')[0] ?? to;
+    if (toPathname === window.location.pathname && to === window.location.pathname + window.location.search) return;
     window.history.pushState({}, '', to);
-    setPath(to);
+    setPath(toPathname);
     // Return the reader to the top of the new page, as a full navigation would.
     document.querySelector('.main')?.scrollTo({ top: 0 });
   }, []);
+
 
   return <Ctx.Provider value={{ path, navigate }}>{children}</Ctx.Provider>;
 }
