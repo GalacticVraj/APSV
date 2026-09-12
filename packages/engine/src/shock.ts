@@ -23,7 +23,7 @@
 
 import { optimize } from './optimizer.ts';
 import { runScenario } from './scenario.ts';
-import { networkLedger } from './carbon.ts';
+import { inheritFrom, networkLedger, OWN_BASIS } from './carbon.ts';
 import { OBJECTIVE_META } from './constants.ts';
 import { PATHWAYS } from './pathways.ts';
 import type {
@@ -205,7 +205,14 @@ function groupDeltas(lines: LedgerLineDelta[]): GroupDelta[] {
 }
 
 function side(state: NetworkState, r: OptimizationResult): { s: ShockSide; ledger: CarbonLedger } {
-  const ledger = networkLedger(r.allocations, state.facilities, state.vehicles, state.assumptions);
+  // A complete plan, valued on its own feedstock mix.
+  const ledger = networkLedger(
+    r.allocations,
+    state.facilities,
+    state.vehicles,
+    state.assumptions,
+    OWN_BASIS,
+  );
   return {
     s: {
       netT: ledger.netT,
@@ -224,6 +231,13 @@ function changedFacilities(
   before: OptimizationResult,
   after: OptimizationResult,
 ): ChangedFacility[] {
+  // Each facility is a SLICE of its own plan, so both sides inherit the
+  // permanence feedstock of the plan they came from. Deriving it per facility
+  // valued each plant on its own biochar mix — the same defect that made the
+  // brief's pathway bands miss the network total by 54 tCO2e.
+  const beforeBasis = inheritFrom(before.allocations);
+  const afterBasis = inheritFrom(after.allocations);
+
   const out: ChangedFacility[] = [];
   for (const f of state.facilities) {
     const bAlloc = before.allocations.filter((a) => a.facilityId === f.id);
@@ -232,8 +246,20 @@ function changedFacilities(
     const aT = aAlloc.reduce((x, a) => x + a.tonnes, 0);
     if (Math.abs(aT - bT) < 0.5) continue;
 
-    const bC = networkLedger(bAlloc, state.facilities, state.vehicles, state.assumptions).netT;
-    const aC = networkLedger(aAlloc, state.facilities, state.vehicles, state.assumptions).netT;
+    const bC = networkLedger(
+      bAlloc,
+      state.facilities,
+      state.vehicles,
+      state.assumptions,
+      beforeBasis,
+    ).netT;
+    const aC = networkLedger(
+      aAlloc,
+      state.facilities,
+      state.vehicles,
+      state.assumptions,
+      afterBasis,
+    ).netT;
     out.push({
       id: f.id,
       name: f.name,

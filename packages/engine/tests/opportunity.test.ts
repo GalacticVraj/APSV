@@ -17,7 +17,7 @@ import assert from 'node:assert/strict';
 import { buildNetwork } from '../src/network.ts';
 import { optimize } from '../src/optimizer.ts';
 import { runScenario } from '../src/scenario.ts';
-import { networkLedger } from '../src/carbon.ts';
+import { networkLedger, OWN_BASIS } from '../src/carbon.ts';
 import { findOpportunities, explainOpportunity } from '../src/opportunity.ts';
 
 const net = buildNetwork();
@@ -31,7 +31,7 @@ const EPS = 1e-6;
 // ─────────────────────────────────────────────────────────────────────────────
 
 test('the reported current state is the actual network state', () => {
-  const ledger = networkLedger(result.allocations, net.facilities, net.vehicles, net.assumptions);
+  const ledger = networkLedger(result.allocations, net.facilities, net.vehicles, net.assumptions, OWN_BASIS);
   assert.ok(Math.abs(report.current.carbonT - ledger.netT) < EPS);
   assert.equal(report.current.marginInr, result.totals.marginInr);
   assert.equal(report.current.divertedT, result.totals.divertedT);
@@ -93,6 +93,7 @@ test('the after-state equals the ledger of the re-optimised plan', () => {
       net.facilities,
       net.vehicles,
       net.assumptions,
+      OWN_BASIS,
     );
     assert.ok(
       Math.abs(ledger.netT - o.measure.carbonAfterT) < EPS,

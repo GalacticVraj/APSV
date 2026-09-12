@@ -25,7 +25,7 @@
 
 import { optimize } from './optimizer.ts';
 import { runScenario } from './scenario.ts';
-import { networkLedger } from './carbon.ts';
+import { networkLedger, OWN_BASIS } from './carbon.ts';
 import { OBJECTIVE_META } from './constants.ts';
 import type {
   FlowChange,
@@ -156,11 +156,13 @@ function measure(
   beforeResult: OptimizationResult,
   afterResult: OptimizationResult,
 ): OpportunityMeasure {
+  // Two complete plans: each valued on its own feedstock mix.
   const before = networkLedger(
     beforeResult.allocations,
     state.facilities,
     state.vehicles,
     state.assumptions,
+    OWN_BASIS,
   );
   // The after-state is measured on the same estate for the ledger's factor set;
   // the scenario's own mutations are already baked into its allocations.
@@ -169,6 +171,7 @@ function measure(
     state.facilities,
     state.vehicles,
     state.assumptions,
+    OWN_BASIS,
   );
 
   const divertedDeltaT = afterResult.totals.divertedT - beforeResult.totals.divertedT;
@@ -260,6 +263,7 @@ export function findOpportunities(
     state.facilities,
     state.vehicles,
     state.assumptions,
+    OWN_BASIS,
   );
 
   for (const c of candidates) {

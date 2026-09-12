@@ -468,6 +468,40 @@ the shock engine's, facility values are Carbon Facilities', evidence counts are 
 trend is Carbon Home's, and the objective sweep is the shock engine's. Plus: the brief never
 mutates the network or the solve. **243 tests.**
 
+## Phase 20 — Permanence-basis hardening
+
+Root-cause fix for a defect that shipped four times. BC₁₀₀ is derived from the dominant
+biochar feedstock, so a ledger built over a **slice** of a plan is valued differently from
+the plan it belongs to — and the result still looks like a plausible number. Only the
+reconciliation fails, and nothing checks a reconciliation unless someone writes the test.
+
+- `networkLedger()` now takes a **required** `PermanenceBasis`, a discriminated union with
+  no default: `{ kind: 'own' }` for a complete plan valued on its own feedstock mix, or
+  `{ kind: 'inherit', stream }` for a slice that must inherit the whole's. The previous
+  optional override made it *possible* to be correct; a required parameter makes it hard to
+  be wrong, because the compiler asks at every call site.
+- Helpers `OWN_BASIS` and `inheritFrom(wholePlan)` keep the call sites short without
+  reintroducing a default.
+- **All 24 call sites updated explicitly** — 17 in src, 7 in tests. The compiler found every
+  one.
+- **Tests are now type-checked.** `tsconfig` covered only `src`, so the seven test call
+  sites were invisible to `tsc`. Adding `packages/engine/tests` and `packages/api/tests`
+  also surfaced a stale fixture in `history.test.ts` missing `netByFacility`.
+- One further latent instance fixed: `shock.ts` `changedFacilities()` valued each plant's
+  slice on its own feedstock rather than its plan's. Measured difference on this dataset:
+  **0.00** — the plants whose intake changes are pellet and CBG sites with no durable
+  removal, so BC₁₀₀ never applied. Real in principle, dormant in this data.
+
+**17 permanence tests** (`permanence.test.ts`) proving the contract rather than the code:
+that the parameter is load-bearing (own and inherited genuinely disagree on a divergent
+slice), that **own-basis slices do NOT sum to the whole** — the counter-example that makes
+the rule necessary — and that every decomposition the product performs does: per-allocation,
+per-pathway, per-facility, evidence contributors, brief bands, shock facility deltas.
+
+**No values changed.** A 26-key snapshot across Carbon Home, Ledger, Pathways, Facilities,
+Opportunities, Scenarios, Evidence and the Brief was captured before the refactor and
+compared after: **26 identical, 0 changed.** **260 tests.**
+
 ## Documentation
 
 - `README.md` — how to run it and what it does.

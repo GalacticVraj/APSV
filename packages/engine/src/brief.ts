@@ -17,7 +17,7 @@
  * contingency, and says nothing that is not in the numbers beside it.
  */
 
-import { dominantBiocharStream, networkLedger } from './carbon.ts';
+import { inheritFrom, networkLedger } from './carbon.ts';
 import { PATHWAYS } from './pathways.ts';
 import { STREAMS } from './streams.ts';
 import { OBJECTIVE_META } from './constants.ts';
@@ -181,7 +181,7 @@ function buildFlow(
 ): BriefFlowBand[] {
   // The whole plan's permanence feedstock, so the bands sum to the network figure
   // rather than each band picking its own BC100.
-  const dominant = dominantBiocharStream(allocations);
+  const basis = inheritFrom(allocations);
   const byPathway = new Map<PathwayId, Allocation[]>();
   for (const a of allocations) {
     const list = byPathway.get(a.pathway);
@@ -199,7 +199,7 @@ function buildFlow(
       state.facilities,
       state.vehicles,
       state.assumptions,
-      dominant,
+      basis,
     ).netT;
 
     const facT = new Map<string, number>();

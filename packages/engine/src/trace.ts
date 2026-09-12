@@ -30,6 +30,7 @@ import {
   dominantBiocharStream,
   emptyAggregate,
   networkLedger,
+  OWN_BASIS,
   permanenceFor,
   physicalPerTonne,
   CO2_PER_C,
@@ -384,8 +385,13 @@ export function traceCandidates(
   // product displays, so shares against it would not total 100%.
   const netTotal =
     Math.abs(
-      networkLedger(result.allocations, state.facilities, state.vehicles, state.assumptions)
-        .netT,
+      networkLedger(
+        result.allocations,
+        state.facilities,
+        state.vehicles,
+        state.assumptions,
+        OWN_BASIS,
+      ).netT,
     ) || 1;
 
   // Each candidate's figure is that allocation's own ledger, not
@@ -488,8 +494,13 @@ export function traceAllocation(
   // product displays, so shares against it would not total 100%.
   const netTotal =
     Math.abs(
-      networkLedger(result.allocations, state.facilities, state.vehicles, state.assumptions)
-        .netT,
+      networkLedger(
+        result.allocations,
+        state.facilities,
+        state.vehicles,
+        state.assumptions,
+        OWN_BASIS,
+      ).netT,
     ) || 1;
 
   const stages = buildStages(a, stream.label, facility.name, pathway.short, perTonne, ledger, cf.label);

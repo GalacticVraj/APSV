@@ -19,7 +19,7 @@ import assert from 'node:assert/strict';
 import { buildNetwork } from '../src/network.ts';
 import { optimize } from '../src/optimizer.ts';
 import { buildDeltas, runScenario } from '../src/scenario.ts';
-import { networkLedger } from '../src/carbon.ts';
+import { networkLedger, OWN_BASIS } from '../src/carbon.ts';
 import { runShock, compareObjectives } from '../src/shock.ts';
 import { findOpportunities } from '../src/opportunity.ts';
 import { facilityRanking } from '../src/facility.ts';
@@ -27,7 +27,7 @@ import type { ScenarioInstance } from '../src/types.ts';
 
 const net = buildNetwork();
 const base = optimize(net, 'balanced');
-const BASE_LEDGER = networkLedger(base.allocations, net.facilities, net.vehicles, net.assumptions);
+const BASE_LEDGER = networkLedger(base.allocations, net.facilities, net.vehicles, net.assumptions, OWN_BASIS);
 
 const SHOCKS: ScenarioInstance[] = [
   { kind: 'facility_offline', params: { facilityId: 'FAC-PL-02' } },
@@ -81,8 +81,8 @@ test('scenario deltas use the ledger, not the optimiser aggregate', () => {
   for (const s of SHOCKS) {
     const run = runScenario(net, s, 'balanced', base);
     const d = buildDeltas(net, run.before, run.after).find((x) => x.key === 'netCarbonT')!;
-    const bL = networkLedger(run.before.allocations, net.facilities, net.vehicles, net.assumptions);
-    const aL = networkLedger(run.after.allocations, net.facilities, net.vehicles, net.assumptions);
+    const bL = networkLedger(run.before.allocations, net.facilities, net.vehicles, net.assumptions, OWN_BASIS);
+    const aL = networkLedger(run.after.allocations, net.facilities, net.vehicles, net.assumptions, OWN_BASIS);
     assert.ok(Math.abs(d.before - bL.netT) < EPS, `${s.kind}: delta before is not the ledger`);
     assert.ok(Math.abs(d.after - aL.netT) < EPS, `${s.kind}: delta after is not the ledger`);
   }
@@ -268,6 +268,7 @@ test('each objective is measured against its own baseline', () => {
       net.facilities,
       net.vehicles,
       net.assumptions,
+      OWN_BASIS,
     );
     assert.ok(
       Math.abs(o.baselineNetT - ledger.netT) < EPS,

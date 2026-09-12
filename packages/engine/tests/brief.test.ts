@@ -15,7 +15,7 @@ import assert from 'node:assert/strict';
 
 import { buildNetwork } from '../src/network.ts';
 import { optimize } from '../src/optimizer.ts';
-import { networkLedger } from '../src/carbon.ts';
+import { networkLedger, OWN_BASIS } from '../src/carbon.ts';
 import { resilienceReport } from '../src/bottleneck.ts';
 import { buildBrief } from '../src/brief.ts';
 import { findOpportunities } from '../src/opportunity.ts';
@@ -23,7 +23,12 @@ import { runShock, compareObjectives } from '../src/shock.ts';
 import { facilityRanking } from '../src/facility.ts';
 import { evidenceRegister, evidenceHealth } from '../src/evidence.ts';
 import { carbonHistory } from '../src/history.ts';
-import { buildLedger, aggregateAllocations, dominantBiocharStream, permanenceFor } from '../src/carbon.ts';
+import {
+  buildLedger,
+  aggregateAllocations,
+  dominantBiocharStream,
+  permanenceFor,
+} from '../src/carbon.ts';
 import type { ScenarioInstance } from '../src/types.ts';
 
 const net = buildNetwork();
@@ -75,6 +80,7 @@ test('report net carbon is the networkLedger figure', () => {
     net.facilities,
     net.vehicles,
     net.assumptions,
+    OWN_BASIS,
   );
   assert.ok(Math.abs(BRIEF.position.netT - authoritative.netT) < EPS);
   assert.ok(Math.abs(BRIEF.position.netT - LEDGER.netT) < EPS);

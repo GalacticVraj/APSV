@@ -25,7 +25,7 @@ import type {
   StreamId,
 } from './types.ts';
 import { cloneNetwork } from './network.ts';
-import { networkLedger } from './carbon.ts';
+import { networkLedger, OWN_BASIS } from './carbon.ts';
 import { optimize } from './optimizer.ts';
 import { detectBottlenecks } from './bottleneck.ts';
 import { STREAMS } from './streams.ts';
@@ -633,8 +633,21 @@ export function buildDeltas(
 
   const B = before.totals;
   const A = after.totals;
-  const bL = networkLedger(before.allocations, net.facilities, net.vehicles, net.assumptions);
-  const aL = networkLedger(after.allocations, net.facilities, net.vehicles, net.assumptions);
+  // Whole plans on both sides, each on its own feedstock mix.
+  const bL = networkLedger(
+    before.allocations,
+    net.facilities,
+    net.vehicles,
+    net.assumptions,
+    OWN_BASIS,
+  );
+  const aL = networkLedger(
+    after.allocations,
+    net.facilities,
+    net.vehicles,
+    net.assumptions,
+    OWN_BASIS,
+  );
 
   return [
     mk('divertedT', 'Waste diverted', 't', B.divertedT, A.divertedT, true),

@@ -91,6 +91,7 @@ function synthetic(values: number[]): CarbonHistoryPoint[] {
     processEmissionsT: 0,
     intensityTPerT: v / 80,
     tonnesByPathway: {},
+    netByFacility: {},
   }));
 }
 

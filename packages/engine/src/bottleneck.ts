@@ -23,7 +23,7 @@ import { COUNTERFACTUALS, STREAMS, dryFraction } from './streams.ts';
 import { PATHWAYS, suitability } from './pathways.ts';
 import { buildArcs, objectiveScale, optimize, type ArcSet } from './optimizer.ts';
 import { cloneNetwork } from './network.ts';
-import { networkLedger } from './carbon.ts';
+import { networkLedger, OWN_BASIS } from './carbon.ts';
 import { roadDistanceKm } from './geo.ts';
 
 function inr(n: number): string {
@@ -363,11 +363,13 @@ export function resilienceReport(
   // per-arc permanence and reads about a tenth lower, which would make the loss
   // percentages here disagree with the tCO₂e figures every Carbon screen shows.
   // The ranking is unaffected — Panipat is worst either way — but the numbers are not.
+  // Both sides are complete plans, so each is valued on its own feedstock mix.
   const baseCarbon = networkLedger(
     base.allocations,
     net.facilities,
     net.vehicles,
     net.assumptions,
+    OWN_BASIS,
   ).netT;
   const n1: ResilienceReport['n1Results'] = [];
 
@@ -390,6 +392,7 @@ export function resilienceReport(
       trial.facilities,
       trial.vehicles,
       trial.assumptions,
+      OWN_BASIS,
     ).netT;
     const lossPct =
       baseCarbon > 0 ? Math.max(0, ((baseCarbon - trialCarbon) / baseCarbon) * 100) : 0;

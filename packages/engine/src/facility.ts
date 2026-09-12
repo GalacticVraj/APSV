@@ -24,6 +24,7 @@ import {
   buildLedger,
   dominantBiocharStream,
   networkLedger,
+  OWN_BASIS,
   permanenceFor,
 } from './carbon.ts';
 import { buildArcs } from './optimizer.ts';
@@ -188,8 +189,13 @@ export function facilityRanking(
   // product displays, so shares against it would not total 100%.
   const netTotal =
     Math.abs(
-      networkLedger(result.allocations, state.facilities, state.vehicles, state.assumptions)
-        .netT,
+      networkLedger(
+        result.allocations,
+        state.facilities,
+        state.vehicles,
+        state.assumptions,
+        OWN_BASIS,
+      ).netT,
     ) || 1;
 
   return state.facilities
@@ -250,8 +256,13 @@ export function facilityCarbon(
   // product displays, so shares against it would not total 100%.
   const netTotal =
     Math.abs(
-      networkLedger(result.allocations, state.facilities, state.vehicles, state.assumptions)
-        .netT,
+      networkLedger(
+        result.allocations,
+        state.facilities,
+        state.vehicles,
+        state.assumptions,
+        OWN_BASIS,
+      ).netT,
     ) || 1;
 
   const srcById = new Map(state.sources.map((s) => [s.id, s]));
@@ -366,8 +377,13 @@ function composeWhy(
   // rest of the product shows rather than the optimiser's internal aggregate.
   const networkPerT =
     result.totals.divertedT > 0
-      ? networkLedger(result.allocations, state.facilities, state.vehicles, state.assumptions).netT /
-        result.totals.divertedT
+      ? networkLedger(
+          result.allocations,
+          state.facilities,
+          state.vehicles,
+          state.assumptions,
+          OWN_BASIS,
+        ).netT / result.totals.divertedT
       : 0;
   const better = p.perTonneT >= networkPerT;
   const gap = Math.abs(p.perTonneT - networkPerT);
