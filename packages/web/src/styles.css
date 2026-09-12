@@ -12,6 +12,14 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
+@font-face {
+  font-family: 'PineForest';
+  src: url('/fonts/PineForest.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Surfaces — warm off-white, never pure white for the page ground */
   --bg: #faf9f6;
@@ -71,7 +79,10 @@ html, body, #root { height: 100%; }
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: url('/paper-texture.jpg');
+  background-repeat: repeat;
+  background-size: 512px 512px;
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 13px;
