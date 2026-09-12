@@ -3275,3 +3275,53 @@ a.cd-item:hover { background: var(--surface-sunken); }
   .bf-export { width: 100%; }
   .bf-export-hint { max-width: none; }
 }
+/* ===========================================================================
+   Facility Manager module
+   =========================================================================== */
+
+/* FleetBar — capacity distribution across all facilities */
+.fleet-bar { position: relative; }
+.fleet-bar > div { transition: opacity var(--t-fast); }
+.fleet-bar > div:hover { opacity: 0.88; }
+
+/* Facility Command header — constraint badge */
+.fc-constraint-badge {
+  background: var(--warn-bg); border: 1px solid #ddc79a;
+  padding: 6px 12px; text-align: right; flex-shrink: 0;
+}
+.fc-constraint-badge .cb-label {
+  font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--warn); font-weight: 600; margin-bottom: 1px;
+}
+.fc-constraint-badge .cb-value {
+  font-size: 14px; font-family: var(--font-mono); color: var(--ink); font-weight: 600;
+}
+
+/* Capacity gauge */
+.fc-gauge-wrap { width: 100%; }
+
+/* Feedstock outlook chart host */
+.fc-outlook { position: relative; }
+
+/* Allocation flow host */
+.fc-flow { position: relative; }
+.fc-flow svg text { user-select: none; }
+
+/* Opportunity banner */
+.fc-opportunity {
+  background: var(--green-100); border: 1px solid var(--green-300);
+  padding: 12px 16px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+}
+.fc-opportunity .opp-label {
+  font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--green-700); font-weight: 600; margin-bottom: 2px;
+}
+.fc-opportunity .opp-value {
+  font-size: 22px; font-family: var(--font-mono); font-weight: 600; color: var(--green-700);
+}
+
+/* What-if section */
+.fc-whatif-result {
+  border-top: 1px solid var(--rule); padding-top: 14px; margin-top: 14px;
+}
+

@@ -72,6 +72,7 @@ const WORKSPACES: Record<string, { label: string; tagline: string; nav: NavGroup
         items: [
           { to: '/sources', label: 'Waste Sources' },
           { to: '/facilities', label: 'Facilities' },
+          { to: '/siting', label: 'Siting Screener' },
           { to: '/logistics', label: 'Logistics' },
         ],
       },
