@@ -750,6 +750,31 @@ export function aggregateAllocations(
  * permanence report represents the network. Reported explicitly in the UI so it is
  * clear the headline BC100 is feedstock-weighted, not universal.
  */
+/**
+ * The network ledger for a set of allocations.
+ *
+ * Exists so that every module computing "share of network net carbon" divides by
+ * the same number. `OptimizationResult.totals.netCarbonT` is NOT that number: the
+ * optimiser aggregates each allocation under its own permanence, which for this
+ * network reads 31,736 against the ledger's 34,921. Both are internally
+ * consistent; only one is the figure the product displays.
+ */
+export function networkLedger(
+  allocations: Allocation[],
+  facilities: Facility[],
+  vehicles: VehicleType[],
+  assumptions: Assumptions,
+): CarbonLedger {
+  const dominant = dominantBiocharStream(allocations);
+  const permanence = dominant ? permanenceFor(dominant, assumptions.soilTempC) : null;
+  return buildLedger(
+    aggregateAllocations(allocations, facilities, vehicles, assumptions),
+    assumptions,
+    permanence,
+    false,
+  );
+}
+
 export function dominantBiocharStream(allocations: Allocation[]): StreamId | null {
   const byStream = new Map<StreamId, number>();
   for (const a of allocations) {

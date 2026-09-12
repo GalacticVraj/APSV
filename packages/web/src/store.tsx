@@ -40,6 +40,7 @@ import type {
   WasteSource,
 } from '../../engine/src/types.ts';
 import type { CarbonHistory } from '../../engine/src/history.ts';
+import type { OpportunityReport } from '../../engine/src/opportunity.ts';
 import type {
   EvidenceHealth,
   EvidenceRecord,
@@ -119,6 +120,7 @@ export const api = {
       totals: NetworkTotals;
       provenance: Record<string, ProvenanceRow[]>;
     }>('/api/carbon'),
+  opportunities: () => req<OpportunityReport>('/api/opportunities'),
   evidence: () =>
     req<{ records: EvidenceRecord[]; health: EvidenceHealth; basis: ModelBasis }>('/api/evidence'),
   lineContributors: (line: string) =>

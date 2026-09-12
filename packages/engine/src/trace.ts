@@ -24,10 +24,12 @@
 
 import {
   addToAggregate,
+  aggregateAllocations,
   baseFactors,
   buildLedger,
   dominantBiocharStream,
   emptyAggregate,
+  networkLedger,
   permanenceFor,
   physicalPerTonne,
   CO2_PER_C,
@@ -377,7 +379,30 @@ export function traceCandidates(
 ): TraceCandidate[] {
   const srcName = new Map(state.sources.map((s) => [s.id, s.name]));
   const facName = new Map(state.facilities.map((x) => [x.id, x.name]));
-  const netTotal = Math.abs(result.totals.netCarbonT) || 1;
+  // Divided by the ledger's net, not `totals.netCarbonT`: the optimiser's
+  // aggregate uses per-arc permanence and is a different figure from the one the
+  // product displays, so shares against it would not total 100%.
+  const netTotal =
+    Math.abs(
+      networkLedger(result.allocations, state.facilities, state.vehicles, state.assumptions)
+        .netT,
+    ) || 1;
+
+  // Each candidate's figure is that allocation's own ledger, not
+  // `Allocation.netCarbonT`. The optimiser's field uses per-arc permanence, so a
+  // row in this list would read 2,290 while the trace it opens reads 2,771 — the
+  // list and the detail disagreeing about the same haul.
+  const dominant = dominantBiocharStream(result.allocations);
+  const permanence = dominant
+    ? permanenceFor(dominant, state.assumptions.soilTempC)
+    : null;
+  const ledgerNetFor = (a: Allocation) =>
+    buildLedger(
+      aggregateAllocations([a], state.facilities, state.vehicles, state.assumptions),
+      state.assumptions,
+      permanence,
+      false,
+    ).netT;
 
   return result.allocations
     .map((a) => ({
@@ -392,8 +417,8 @@ export function traceCandidates(
       pathwayLabel: PATHWAYS[a.pathway].short,
       tonnes: a.tonnes,
       distanceKm: a.distanceKm,
-      netCarbonT: a.netCarbonT,
-      sharePct: (a.netCarbonT / netTotal) * 100,
+      netCarbonT: ledgerNetFor(a),
+      sharePct: (ledgerNetFor(a) / netTotal) * 100,
     }))
     .sort((x, y) => Math.abs(y.netCarbonT) - Math.abs(x.netCarbonT))
     .slice(0, limit);
@@ -458,7 +483,14 @@ export function traceAllocation(
 
   const straightKm = haversineKm(source, facility);
   const cf = COUNTERFACTUALS[perTonne.counterfactual];
-  const netTotal = Math.abs(result.totals.netCarbonT) || 1;
+  // Divided by the ledger's net, not `totals.netCarbonT`: the optimiser's
+  // aggregate uses per-arc permanence and is a different figure from the one the
+  // product displays, so shares against it would not total 100%.
+  const netTotal =
+    Math.abs(
+      networkLedger(result.allocations, state.facilities, state.vehicles, state.assumptions)
+        .netT,
+    ) || 1;
 
   const stages = buildStages(a, stream.label, facility.name, pathway.short, perTonne, ledger, cf.label);
 

@@ -43,6 +43,11 @@ import {
 import { forecastNetwork, type NetworkForecast } from './forecast.ts';
 import { carbonHistory, type CarbonHistory } from './history.ts';
 import {
+  explainOpportunity,
+  findOpportunities,
+  type OpportunityReport,
+} from './opportunity.ts';
+import {
   evidenceHealth,
   evidenceRegister,
   lineContributors,
@@ -121,6 +126,7 @@ export class Twin {
   private cachePareto: ParetoPoint[] | null = null;
   private cacheHistory: CarbonHistory | null = null;
   private cacheFacilityRank: FacilityRankRow[] | null = null;
+  private cacheOpportunityReport: OpportunityReport | null = null;
   private cacheEvidence: {
     records: EvidenceRecord[];
     health: EvidenceHealth;
@@ -163,6 +169,7 @@ export class Twin {
     this.cacheHistory = null;
     this.cacheFacilityRank = null;
     this.cacheEvidence = null;
+    this.cacheOpportunityReport = null;
     if (!keepForecast) this.cacheForecast = null;
   }
 
@@ -342,6 +349,22 @@ export class Twin {
     return this.cacheEvidence;
   }
 
+  /**
+   * Carbon opportunities, each measured by actually applying the change to a
+   * clone of the network and re-optimising. ~300 ms for the full sweep, so it is
+   * memoised rather than approximated.
+   */
+  getCarbonOpportunities(): OpportunityReport {
+    if (!this.cacheOpportunityReport) {
+      this.cacheOpportunityReport = findOpportunities(this.state, this.getResult());
+    }
+    return this.cacheOpportunityReport;
+  }
+
+  /** One opportunity re-run, with the scenario engine's own flow-level diff. */
+  getOpportunityDetail(scenario: ScenarioInstance) {
+    return explainOpportunity(this.state, this.getResult(), scenario);
+  }
   /** Which allocations produced one ledger line, and in what proportion. */
   getLineContributors(lineKey: string): LineContributor[] {
     return lineContributors(this.state, this.getResult(), lineKey);

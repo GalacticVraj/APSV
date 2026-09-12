@@ -23,6 +23,7 @@ import {
   aggregateAllocations,
   buildLedger,
   dominantBiocharStream,
+  networkLedger,
   permanenceFor,
 } from './carbon.ts';
 import { buildArcs } from './optimizer.ts';
@@ -182,7 +183,14 @@ export function facilityRanking(
   result: OptimizationResult,
 ): FacilityRankRow[] {
   const dominant = dominantBiocharStream(result.allocations);
-  const netTotal = Math.abs(result.totals.netCarbonT) || 1;
+  // Divided by the ledger's net, not `totals.netCarbonT`: the optimiser's
+  // aggregate uses per-arc permanence and is a different figure from the one the
+  // product displays, so shares against it would not total 100%.
+  const netTotal =
+    Math.abs(
+      networkLedger(result.allocations, state.facilities, state.vehicles, state.assumptions)
+        .netT,
+    ) || 1;
 
   return state.facilities
     .map((f) => {
@@ -237,7 +245,14 @@ export function facilityCarbon(
   const split = splitEmissions(ledger);
   const receivedT = mine.reduce((a, x) => a + x.tonnes, 0);
   const capacityT = windowCapacityT(f, state.assumptions.windowDays);
-  const netTotal = Math.abs(result.totals.netCarbonT) || 1;
+  // Divided by the ledger's net, not `totals.netCarbonT`: the optimiser's
+  // aggregate uses per-arc permanence and is a different figure from the one the
+  // product displays, so shares against it would not total 100%.
+  const netTotal =
+    Math.abs(
+      networkLedger(result.allocations, state.facilities, state.vehicles, state.assumptions)
+        .netT,
+    ) || 1;
 
   const srcById = new Map(state.sources.map((s) => [s.id, s]));
   const facNet = ledger.netT || 1;
@@ -347,8 +362,13 @@ function composeWhy(
     return `${p.name} is online but received no material this window, so it contributes nothing to the net figure. The optimiser found better destinations for everything within its catchment.`;
   }
 
+  // Ledger net over placed tonnes, so the comparison is against the figure the
+  // rest of the product shows rather than the optimiser's internal aggregate.
   const networkPerT =
-    result.totals.divertedT > 0 ? result.totals.netCarbonT / result.totals.divertedT : 0;
+    result.totals.divertedT > 0
+      ? networkLedger(result.allocations, state.facilities, state.vehicles, state.assumptions).netT /
+        result.totals.divertedT
+      : 0;
   const better = p.perTonneT >= networkPerT;
   const gap = Math.abs(p.perTonneT - networkPerT);
 

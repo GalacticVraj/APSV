@@ -202,6 +202,8 @@ const GET: Record<string, Handler> = {
       provenance: twin.getProvenance(),
     }),
 
+  '/api/opportunities': (_req, res) => json(res, 200, twin.getCarbonOpportunities()),
+
   '/api/evidence': (_req, res) => json(res, 200, twin.getEvidence()),
 
   '/api/evidence/contributors': (_req, res, url) => {

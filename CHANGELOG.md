@@ -362,6 +362,45 @@ Caught by looking, not by asserting:
   screenshot; no DOM assertion would have flagged it.
 - Count chips read "14 published **factor**" and "16 model-derived **quantity**".
 
+## Phase 17 — Carbon Opportunities
+
+"Where can the network create more net carbon, and what change would do it."
+
+- **An opportunity is a scenario.** Not a heuristic, not a threshold rule, not a score.
+  Each candidate is a real `ScenarioInstance` that the existing scenario engine applies to a
+  clone of the network and re-optimises; the improvement is the difference between two
+  ledgers built from two real solves. 15 candidates, ~300 ms, memoised.
+- Three consequences: nothing is extrapolated; **"Simulate" cannot drift**, because the
+  Scenarios screen receives the identical instance that was measured; and rejected
+  candidates keep their measured figure. "Solving on Profit First would cost 3,156 tCO₂e"
+  is useful and would be dishonest to hide behind a list of only the wins.
+- Every item states **why the optimiser has not already taken it**, read from real state —
+  a binding capacity constraint, or the objective in force. An opportunity without that is
+  a misleading recommendation.
+- The top finding on this network: **+1,410 tCO₂e from 40 t/day more at Jagraon Pellet
+  Plant**, which also earns ₹27.05 L. Re-solving on Carbon First gains +275 tCO₂e but costs
+  ₹50.21 L — shown with an amber verdict rather than presented as a free win.
+- Deep link `/scenarios?kind=…&params` so the change carries into simulation; Scenarios
+  adopts it once, then behaves normally.
+
+**Two real bugs found while building it**, both the same class and both caught by an
+invariant rather than by eye:
+
+- **`totals.netCarbonT` is not the ledger figure.** The optimiser aggregates each
+  allocation under its own permanence and reads **31,736** against the ledger's **34,921**.
+  Every "share of network net carbon" divided by it — in Facilities and in the Ledger's
+  trace candidates — was inflated by about a tenth, and nothing looked wrong. A new
+  `networkLedger()` helper now gives one authoritative denominator.
+- **The Ledger's candidate list disagreed with the trace it opened.** A row read 2,290 while
+  the trace behind it read 2,771, for the same haul, for the same reason. Candidates now
+  carry their own per-allocation ledger.
+
+**18 opportunity tests**, including that re-running a handed-over scenario reproduces the
+reported delta exactly, that the after-state equals the ledger of the re-optimised plan,
+that a change costing carbon is never listed, and that no text claims a guaranteed
+reduction. Plus a new cross-module invariant that shares total 100% against the ledger.
+**203 tests.**
+
 ## Documentation
 
 - `README.md` — how to run it and what it does.

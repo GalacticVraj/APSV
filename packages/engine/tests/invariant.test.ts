@@ -25,7 +25,7 @@ import {
   permanenceFor,
 } from '../src/carbon.ts';
 import { strandedLots } from '../src/bottleneck.ts';
-import { traceAllocation } from '../src/trace.ts';
+import { traceAllocation, traceCandidates } from '../src/trace.ts';
 import { facilityCarbon, facilityRanking } from '../src/facility.ts';
 import { pathwayDecision } from '../src/pathwaychoice.ts';
 import { evidenceRegister, lineContributors } from '../src/evidence.ts';
@@ -298,6 +298,28 @@ test('no module reports a charge as a benefit', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 // Language
 // ─────────────────────────────────────────────────────────────────────────────
+
+test('shares of network net total 100%, against the ledger and not the optimiser aggregate', () => {
+  // OptimizationResult.totals.netCarbonT aggregates each allocation under its own
+  // permanence and reads 31,736 here against the ledger's 34,921. Dividing by it
+  // would inflate every share by about a tenth and nothing would look wrong.
+  assert.ok(
+    Math.abs(result.totals.netCarbonT - LEDGER.netT) > 100,
+    'the fixture should still exercise the case where the two differ',
+  );
+
+  const facilityShare = ranking.reduce((a, r) => a + r.sharePct, 0);
+  assert.ok(
+    Math.abs(facilityShare - 100) < 0.01,
+    `facility shares total ${facilityShare.toFixed(3)}%`,
+  );
+
+  const candidateShare = traceCandidates(net, result, 1000).reduce((a, c) => a + c.sharePct, 0);
+  assert.ok(
+    Math.abs(candidateShare - 100) < 0.5,
+    `trace candidate shares total ${candidateShare.toFixed(3)}%`,
+  );
+});
 
 test('no evidence record claims measurement or verification', () => {
   const forbidden = /\b(verified|certified|accredited|audited|measured|carbon credit)\b/i;
