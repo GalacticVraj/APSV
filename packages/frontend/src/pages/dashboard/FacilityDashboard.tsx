@@ -5,6 +5,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { format } from 'date-fns';
 import AppLayout from '../../components/layout/AppLayout';
 import AIChatPanel from '../../components/ai/AIChatPanel';
+import AIInsightButton from '../../components/ai/AIInsightButton';
 import apiClient from '../../api/client';
 
 interface Match {
@@ -123,6 +124,13 @@ export default function FacilityDashboard() {
               <div className="flex items-baseline gap-2 justify-end">
                 <p className="text-3xl font-bold text-forest-700">{impact ? impact.total_co2_t.toFixed(2) : '...'}</p>
                 <span className="text-sm font-semibold text-forest-700">tCO₂e</span>
+                {impact && facility && (
+                  <AIInsightButton
+                    id="kpi-insight-facility-co2"
+                    templateKey="kpi_card"
+                    dataPackage={{ metric: 'total_co2_output', value: impact.total_co2_t, unit: 'tCO2e', impact, facility }}
+                  />
+                )}
               </div>
             </div>
             <div className="h-10 w-px bg-charcoal-200" />
@@ -131,6 +139,13 @@ export default function FacilityDashboard() {
               <div className="flex items-baseline gap-2 justify-end">
                 <p className="text-3xl font-bold text-charcoal-900">{capacityPct}</p>
                 <span className="text-sm font-semibold text-charcoal-500">%</span>
+                {facility && (
+                  <AIInsightButton
+                    id="kpi-insight-utilization"
+                    templateKey="kpi_card"
+                    dataPackage={{ metric: 'capacity_utilization', value: capacityPct, unit: '%', facility, impact }}
+                  />
+                )}
               </div>
             </div>
             <div className="h-10 w-px bg-charcoal-200" />
@@ -148,7 +163,16 @@ export default function FacilityDashboard() {
             <section className="border border-charcoal-200 rounded-sm bg-white overflow-hidden flex flex-col">
               <div className="px-6 py-4 border-b border-charcoal-100 flex items-center justify-between bg-charcoal-50">
                 <h2 className="text-sm font-bold text-charcoal-900 uppercase tracking-wider">Throughput Capacity Engine</h2>
-                <span className="text-xs font-mono text-charcoal-500">{facility?.capacity_t_month} t/mo baseline limit</span>
+                <div className="flex items-center gap-2">
+                  {facility && impact && (
+                    <AIInsightButton
+                      id="facility-insight"
+                      templateKey="facility_card"
+                      dataPackage={{ facility, impact, capacityPct }}
+                    />
+                  )}
+                  <span className="text-xs font-mono text-charcoal-500">{facility?.capacity_t_month} t/mo baseline limit</span>
+                </div>
               </div>
               
               <div className="p-8">

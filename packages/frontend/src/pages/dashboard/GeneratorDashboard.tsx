@@ -7,6 +7,7 @@ import {
 import { format } from 'date-fns';
 import AppLayout from '../../components/layout/AppLayout';
 import AIChatPanel from '../../components/ai/AIChatPanel';
+import AIInsightButton from '../../components/ai/AIInsightButton';
 import apiClient from '../../api/client';
 
 interface Listing {
@@ -239,6 +240,13 @@ export default function GeneratorDashboard() {
               <div className="flex items-baseline gap-2 justify-end">
                 <p className="text-3xl font-bold text-forest-700">{impact ? impact.total_co2_t.toFixed(2) : '...'}</p>
                 <span className="text-sm font-semibold text-forest-700">tCO₂e</span>
+                {impact && (
+                  <AIInsightButton
+                    id="kpi-insight-co2"
+                    templateKey="kpi_card"
+                    dataPackage={{ metric: 'co2_sequestered', value: impact.total_co2_t, unit: 'tCO2e', impact }}
+                  />
+                )}
               </div>
             </div>
             <div className="h-10 w-px bg-charcoal-200" />
@@ -247,6 +255,13 @@ export default function GeneratorDashboard() {
               <div className="flex items-baseline gap-2 justify-end">
                 <p className="text-3xl font-bold text-charcoal-900">{impact ? impact.total_waste_diverted_t.toFixed(1) : '...'}</p>
                 <span className="text-sm font-semibold text-charcoal-500">t</span>
+                {impact && (
+                  <AIInsightButton
+                    id="kpi-insight-diverted"
+                    templateKey="kpi_card"
+                    dataPackage={{ metric: 'waste_diverted', value: impact.total_waste_diverted_t, unit: 'tonnes', impact }}
+                  />
+                )}
               </div>
             </div>
             <div className="h-10 w-px bg-charcoal-200" />
@@ -285,6 +300,7 @@ export default function GeneratorDashboard() {
                         <th className="text-left py-3 px-4 text-xs font-semibold text-charcoal-600 w-1/6">Volume</th>
                         <th className="text-left py-3 px-4 text-xs font-semibold text-charcoal-600 w-1/4">Time Window</th>
                         <th className="text-left py-3 px-4 text-xs font-semibold text-charcoal-600 text-right">Routing Status</th>
+                        <th className="py-3 px-3 w-8"></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-charcoal-100">
@@ -306,6 +322,13 @@ export default function GeneratorDashboard() {
                             }`}>
                               {listing.status.toUpperCase()}
                             </span>
+                          </td>
+                          <td className="py-4 px-3">
+                            <AIInsightButton
+                              id={`listing-insight-${listing.id}`}
+                              templateKey="waste_listing"
+                              dataPackage={listing as unknown as Record<string, unknown>}
+                            />
                           </td>
                         </tr>
                       ))}

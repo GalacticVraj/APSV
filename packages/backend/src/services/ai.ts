@@ -1,6 +1,11 @@
 import { logger } from '../utils/logger';
+import {
+  InsightTemplateKey,
+  INSIGHT_TEMPLATES,
+  INSIGHT_SYSTEM_PREAMBLE,
+} from '../ai-insights/templates';
 
-// AI service supporting Google Gemini and xAI Grok with graceful fallback
+// AI service supporting Google Gemini and Groq with graceful fallback
 // Provider selection: try primary first, fall back to secondary, then to rule-based response
 
 interface AIMessage {
@@ -10,6 +15,7 @@ interface AIMessage {
 
 interface AIContext {
   role: string;
+  _systemOverride?: string;
   stats?: Record<string, unknown>;
   listings?: unknown[];
   matches?: unknown[];
@@ -40,8 +46,10 @@ async function callGemini(messages: AIMessage[], context: AIContext): Promise<st
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL || 'gemini-1.5-flash' });
 
-  const contextText = JSON.stringify(context, null, 2);
-  const systemWithContext = `${SYSTEM_PROMPT}\n\nUser context:\n${contextText}`;
+  // Use _systemOverride when present (structured insight calls), else build role-context prompt
+  const systemInstruction = context._systemOverride
+    ? context._systemOverride
+    : `${SYSTEM_PROMPT}\n\nUser context:\n${JSON.stringify(context, null, 2)}`;
 
   const history = messages.slice(0, -1).map((m) => ({
     role: m.role === 'user' ? 'user' : 'model',
@@ -49,7 +57,7 @@ async function callGemini(messages: AIMessage[], context: AIContext): Promise<st
   }));
 
   const chat = model.startChat({
-    systemInstruction: systemWithContext,
+    systemInstruction,
     history,
   });
 
@@ -58,22 +66,24 @@ async function callGemini(messages: AIMessage[], context: AIContext): Promise<st
   return result.response.text();
 }
 
-// Grok (OpenAI-compatible) implementation
-async function callGrok(messages: AIMessage[], context: AIContext): Promise<string> {
-  const apiKey = process.env.GROK_API_KEY;
-  if (!apiKey) throw new Error('GROK_API_KEY not set');
+// Groq implementation
+async function callGroq(messages: AIMessage[], context: AIContext): Promise<string> {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) throw new Error('GROQ_API_KEY not set');
 
   const { default: OpenAI } = await import('openai');
   const client = new OpenAI({
     apiKey,
-    baseURL: process.env.GROK_BASE_URL || 'https://api.x.ai/v1',
+    baseURL: process.env.GROQ_BASE_URL || 'https://api.groq.com/openai/v1',
   });
 
-  const contextText = JSON.stringify(context, null, 2);
-  const systemWithContext = `${SYSTEM_PROMPT}\n\nUser context:\n${contextText}`;
+  // Use _systemOverride when present (structured insight calls), else build role-context prompt
+  const systemContent = context._systemOverride
+    ? context._systemOverride
+    : `${SYSTEM_PROMPT}\n\nUser context:\n${JSON.stringify(context, null, 2)}`;
 
   const openAIMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
-    { role: 'system', content: systemWithContext },
+    { role: 'system', content: systemContent },
     ...messages.map((m) => ({
       role: m.role as 'user' | 'assistant',
       content: m.content,
@@ -81,9 +91,8 @@ async function callGrok(messages: AIMessage[], context: AIContext): Promise<stri
   ];
 
   const completion = await client.chat.completions.create({
-    model: process.env.GROK_MODEL || 'grok-beta',
+    model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
     messages: openAIMessages,
-    max_tokens: 1024,
   });
 
   return completion.choices[0]?.message?.content || 'No response generated.';
@@ -114,15 +123,15 @@ function rulesBasedResponse(userMessage: string, context: AIContext): string {
     return `You have ${pickupCount} pickup(s) in your context. Check the Pickups section for status updates. Pickups progress through: Requested, Scheduled, In Transit, Delivered, Verified.`;
   }
 
-  return 'I can help with questions about your waste listings, facility matches, pickup status, and carbon impact. Please ask a specific question and I will do my best to help using your platform data. (AI provider not configured. Add your GEMINI_API_KEY or GROK_API_KEY in .env to enable full AI responses.)';
+  return 'I can help with questions about your waste listings, facility matches, pickup status, and carbon impact. Please ask a specific question and I will do my best to help using your platform data. (AI provider not configured. Add your GEMINI_API_KEY or GROQ_API_KEY in .env to enable full AI responses.)';
 }
 
 export async function getAIResponse(
   messages: AIMessage[],
   context: AIContext
 ): Promise<{ response: string; provider: string }> {
-  const primary = process.env.AI_PROVIDER || 'gemini';
-  const secondary = primary === 'gemini' ? 'grok' : 'gemini';
+  const primary = process.env.AI_PROVIDER || 'groq';
+  const secondary = primary === 'gemini' ? 'groq' : 'gemini';
 
   // Try primary
   try {
@@ -134,7 +143,7 @@ export async function getAIResponse(
       ]);
     } else {
       response = await Promise.race([
-        callGrok(messages, context),
+        callGroq(messages, context),
         new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 15000)),
       ]);
     }
@@ -153,7 +162,7 @@ export async function getAIResponse(
       ]);
     } else {
       response = await Promise.race([
-        callGrok(messages, context),
+        callGroq(messages, context),
         new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 15000)),
       ]);
     }
@@ -168,4 +177,76 @@ export async function getAIResponse(
     response: rulesBasedResponse(messages[messages.length - 1]?.content || '', context),
     provider: 'rules-based',
   };
+}
+
+// ─── Structured Insight Generation ──────────────────────────────────────────
+
+export interface StructuredInsight {
+  finding: string;
+  carbonEconomicFraming: string;
+  action: string;
+  supportingDetail: string;
+}
+
+export class InsightParseError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'InsightParseError';
+  }
+}
+
+function validateInsightShape(obj: unknown): StructuredInsight {
+  if (!obj || typeof obj !== 'object') throw new InsightParseError('Response is not an object');
+  const o = obj as Record<string, unknown>;
+  const required = ['finding', 'carbonEconomicFraming', 'action', 'supportingDetail'];
+  for (const field of required) {
+    if (typeof o[field] !== 'string' || !(o[field] as string).trim()) {
+      throw new InsightParseError(`Missing or empty field: ${field}`);
+    }
+  }
+  return {
+    finding: (o.finding as string).trim(),
+    carbonEconomicFraming: (o.carbonEconomicFraming as string).trim(),
+    action: (o.action as string).trim(),
+    supportingDetail: (o.supportingDetail as string).trim(),
+  };
+}
+
+function extractJSON(text: string): unknown {
+  // Strip markdown fences if the model wrapped the JSON anyway
+  const stripped = text
+    .replace(/^```(?:json)?\n?/i, '')
+    .replace(/\n?```\s*$/i, '')
+    .trim();
+  // Find outermost JSON object
+  const start = stripped.indexOf('{');
+  const end = stripped.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new InsightParseError('No JSON object found in response');
+  return JSON.parse(stripped.slice(start, end + 1));
+}
+
+export async function generateStructuredInsight(
+  templateKey: InsightTemplateKey,
+  dataPackage: Record<string, unknown>
+): Promise<{ insight: StructuredInsight; provider: string }> {
+  const componentTemplate = INSIGHT_TEMPLATES[templateKey];
+  const dataJson = JSON.stringify(dataPackage, null, 2);
+
+  const systemPrompt = INSIGHT_SYSTEM_PREAMBLE;
+  const userMessage = `${componentTemplate}\n\n--- DATA PACKAGE ---\n${dataJson}`;
+
+  const messages: AIMessage[] = [{ role: 'user', content: userMessage }];
+  // We reuse the existing context-free call path but override the system prompt
+  const insightContext: AIContext = { role: 'insight', _systemOverride: systemPrompt } as unknown as AIContext;
+
+  const { response, provider } = await getAIResponse(messages, insightContext);
+
+  try {
+    const parsed = extractJSON(response);
+    const insight = validateInsightShape(parsed);
+    return { insight, provider };
+  } catch (err) {
+    logger.warn('Insight parse failed', { templateKey, error: (err as Error).message, raw: response.slice(0, 200) });
+    throw new InsightParseError(`Failed to parse structured insight: ${(err as Error).message}`);
+  }
 }

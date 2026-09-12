@@ -2,7 +2,8 @@ import { Router, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { authenticate, AuthenticatedRequest } from '../middleware/auth';
 import { aiRateLimiter } from '../middleware/rateLimit';
-import { getAIResponse } from '../services/ai';
+import { getAIResponse, generateStructuredInsight, InsightParseError } from '../services/ai';
+import { InsightTemplateKey } from '../ai-insights/templates';
 import db from '../services/db';
 
 const router = Router();
@@ -149,5 +150,60 @@ router.post('/chat', authenticate, aiRateLimiter, async (req: AuthenticatedReque
     next(err);
   }
 });
+
+// ─── POST /api/ai/insights ────────────────────────────────────────────────────
+// One-shot, scoped structured insight for a specific data component.
+// Not a chat endpoint — no conversation history, no open text input.
+
+const VALID_TEMPLATE_KEYS: InsightTemplateKey[] = [
+  'waste_listing',
+  'facility_card',
+  'kpi_card',
+  'trade_ledger_row',
+  'pathway_economics',
+  'break_even',
+  'what_if_result',
+  'investment_opportunity',
+  'value_flow',
+];
+
+const insightSchema = z.object({
+  templateKey: z.enum(VALID_TEMPLATE_KEYS as [InsightTemplateKey, ...InsightTemplateKey[]]),
+  dataPackage: z.record(z.unknown()),
+});
+
+router.post(
+  '/insights',
+  authenticate,
+  aiRateLimiter,
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      const body = insightSchema.parse(req.body);
+
+      try {
+        const { insight, provider } = await generateStructuredInsight(
+          body.templateKey,
+          body.dataPackage
+        );
+        res.json({ insight, provider });
+      } catch (err) {
+        // Return a clean error payload so the frontend can show an inline error
+        // state rather than crashing or showing a generic 500.
+        if (err instanceof InsightParseError) {
+          res.json({ error: 'The AI returned a response that could not be parsed into a structured insight. Try refreshing.', errorCode: 'parse_error' });
+          return;
+        }
+        if ((err as Error)?.message?.includes('Timeout')) {
+          res.json({ error: 'The AI service timed out. Try refreshing in a moment.', errorCode: 'timeout' });
+          return;
+        }
+        // Re-throw unexpected errors to the global error handler
+        throw err;
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 export default router;

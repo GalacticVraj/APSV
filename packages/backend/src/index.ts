@@ -87,6 +87,11 @@ app.use(errorHandler);
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
+if (process.env.AI_PROVIDER === 'groq' && !process.env.GROQ_API_KEY) {
+  logger.error('CRITICAL: AI_PROVIDER is set to groq, but GROQ_API_KEY is missing from the environment. Failing fast.');
+  process.exit(1);
+}
+
 if (process.env.NODE_ENV !== 'test') {
   httpServer.listen(PORT, () => {
     logger.info(`CarbonLoop API running on port ${PORT}`);
