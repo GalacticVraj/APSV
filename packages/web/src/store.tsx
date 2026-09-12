@@ -41,6 +41,7 @@ import type {
 } from '../../engine/src/types.ts';
 import type { CarbonHistory } from '../../engine/src/history.ts';
 import type { OpportunityReport } from '../../engine/src/opportunity.ts';
+import type { ObjectiveOutcome, ShockResult } from '../../engine/src/shock.ts';
 import type {
   EvidenceHealth,
   EvidenceRecord,
@@ -121,6 +122,11 @@ export const api = {
       provenance: Record<string, ProvenanceRow[]>;
     }>('/api/carbon'),
   opportunities: () => req<OpportunityReport>('/api/opportunities'),
+  shock: (scenario: ScenarioInstance, compareObjectives: boolean) =>
+    req<{ shock: ShockResult; objectives: ObjectiveOutcome[] | null }>('/api/shock', {
+      method: 'POST',
+      body: JSON.stringify({ ...scenario, compareObjectives }),
+    }),
   evidence: () =>
     req<{ records: EvidenceRecord[]; health: EvidenceHealth; basis: ModelBasis }>('/api/evidence'),
   lineContributors: (line: string) =>

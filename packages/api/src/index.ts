@@ -389,6 +389,27 @@ const POST: Record<string, Handler> = {
     json(res, 200, { assumptions: twin.getState().assumptions, version: twin.getVersion() });
   },
 
+  '/api/shock': async (req, res) => {
+    const body = await readBody(req);
+    const kind = String(body.kind ?? '');
+    const net = twin.getState();
+    const defs = scenarioDefs(net);
+    const def = defs.find((d) => d.kind === kind);
+    if (!def) {
+      return json(res, 400, {
+        error: `Unknown scenario "${kind}". Expected one of: ${defs.map((d) => d.kind).join(', ')}.`,
+      });
+    }
+    const checked = validateScenarioParams(def, net, body.params);
+    if ('error' in checked) return json(res, 400, { error: checked.error });
+    const scenario: ScenarioInstance = { kind: kind as ScenarioInstance['kind'], params: checked.params };
+
+    const shock = twin.runShock(scenario);
+    // The objective sweep costs eight solves, so it is opt-in per request.
+    const objectives = body.compareObjectives === true ? twin.compareShockObjectives(scenario) : null;
+    json(res, 200, { shock, objectives });
+  },
+
   '/api/scenario': async (req, res) => {
     const body = await readBody(req);
     const kind = String(body.kind ?? '');

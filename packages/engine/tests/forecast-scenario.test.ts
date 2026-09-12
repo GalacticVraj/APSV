@@ -268,7 +268,7 @@ test('deltas report before, after and a consistent percentage', () => {
   const net = buildNetwork();
   const a = optimize(net, 'carbon_first');
   const b = optimize(net, 'profit_first');
-  for (const d of buildDeltas(a, b)) {
+  for (const d of buildDeltas(net, a, b)) {
     assert.ok(Math.abs(d.delta - (d.after - d.before)) < 1e-6, `${d.key}: delta is inconsistent`);
     if (Math.abs(d.before) > 1e-9) {
       const expected = ((d.after - d.before) / Math.abs(d.before)) * 100;

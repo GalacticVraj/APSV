@@ -401,6 +401,38 @@ that a change costing carbon is never listed, and that no text claims a guarante
 reduction. Plus a new cross-module invariant that shares total 100% against the ledger.
 **203 tests.**
 
+## Phase 18 — Carbon Scenarios (shock engine)
+
+The screen that proves this is a twin rather than a report: change one real constraint,
+and the whole network re-solves into a different physical decision.
+
+- **No new simulation.** `runScenario` already clones the network, applies a
+  `ScenarioInstance` and re-optimises; `shock.ts` adds the carbon reading of that result.
+  All twelve existing scenario types work, unchanged.
+- **The decomposition is a ledger diff.** Rather than attributing the change to categories
+  invented for the chart, the two ledgers are differenced line by line — so the drivers sum
+  to the net change by construction, with no residual and no "other" bucket. Verified to 1e-11.
+- **Objectives are each measured against their own baseline.** Comparing a carbon-first
+  scenario against a balanced baseline would charge the objective switch to the shock. The
+  four rows start from four different numbers, visibly.
+- The network response leads with what physically moved: source, plant before, plant after,
+  distance change, carbon change — each row tracing into the Ledger.
+- Constraints that flipped are read from the optimiser's own shadow prices before and after,
+  not inferred from utilisation.
+
+**The bug this module was built on top of.** `buildDeltas` read
+`OptimizationResult.totals.netCarbonT`, so the Scenarios screen reported **+1,174 tCO₂e**
+for the same capacity change Carbon Opportunities measured at **+1,410** — a 20% disagreement
+between two screens about one change, live in the product. A facility outage was 620 tCO₂e
+apart. `buildDeltas` now takes the network and uses `networkLedger()`; every carbon figure
+in the scenario engine is the ledger's.
+
+**21 shock tests**, led by the two that matter most: a shock never mutates the baseline
+network, and never mutates the baseline solve. Also that an opportunity and its simulation
+report the identical change, that drivers reconcile with no residual, that avoidance and
+substitution stay separate across the diff, and that a constraint is only reported as
+flipped when the optimiser says it flipped. **224 tests.**
+
 ## Documentation
 
 - `README.md` — how to run it and what it does.

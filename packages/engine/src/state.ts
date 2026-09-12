@@ -43,6 +43,12 @@ import {
 import { forecastNetwork, type NetworkForecast } from './forecast.ts';
 import { carbonHistory, type CarbonHistory } from './history.ts';
 import {
+  compareObjectives,
+  runShock,
+  type ObjectiveOutcome,
+  type ShockResult,
+} from './shock.ts';
+import {
   explainOpportunity,
   findOpportunities,
   type OpportunityReport,
@@ -361,6 +367,26 @@ export class Twin {
     return this.cacheOpportunityReport;
   }
 
+  /**
+   * A shock, read as carbon. Never mutates the live network: runScenario works
+   * on a deep clone and this returns a reading of that clone's solve.
+   */
+  runShock(scenario: ScenarioInstance): ShockResult {
+    const res = runShock(this.state, this.getResult(), scenario, this.objective);
+    this.log(
+      'scenario',
+      'info',
+      `Shock evaluated: ${res.label}`,
+      `Net carbon ${res.carbonDeltaT >= 0 ? '+' : ''}${res.carbonDeltaT.toFixed(0)} tCO₂e over ${res.solveMs} ms of re-optimisation.`,
+      res.changedFacilities.map((f) => f.id),
+    );
+    return res;
+  }
+
+  /** The same shock under every objective, each against its own baseline. */
+  compareShockObjectives(scenario: ScenarioInstance): ObjectiveOutcome[] {
+    return compareObjectives(this.state, scenario, this.objective);
+  }
   /** One opportunity re-run, with the scenario engine's own flow-level diff. */
   getOpportunityDetail(scenario: ScenarioInstance) {
     return explainOpportunity(this.state, this.getResult(), scenario);

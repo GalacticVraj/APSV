@@ -324,10 +324,11 @@ function Actions({ o }: { o: Opportunity }) {
   const q = new URLSearchParams({
     kind: o.scenario.kind,
     ...Object.fromEntries(Object.entries(o.scenario.params).map(([k, v]) => [k, String(v)])),
+    from: 'opportunity',
   });
   return (
     <div className="op-actions">
-      <Link to={`/scenarios?${q.toString()}`} className="btn sm primary">
+      <Link to={`/carbon/scenarios?${q.toString()}`} className="btn sm primary">
         Simulate this change
       </Link>
       {o.facilityId && (
