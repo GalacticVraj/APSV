@@ -1,0 +1,461 @@
+/**
+ * Carbon Infrastructure — the facilities command screen.
+ *
+ * An asymmetric grid, not a card matrix. The map occupies two rows of the left
+ * column because "where" is most of the question; the signals beside it are
+ * sized by how often a carbon manager actually acts on them. Equal cards would
+ * be an admission that no decision had been made about importance.
+ *
+ * The whole dashboard is built to fit one 1536×746 viewport above the fold,
+ * with the ranking table below it — a table is reference, not headline.
+ */
+
+.cf { padding: 0 0 40px; }
+
+/* ── Masthead ──────────────────────────────────────────────────────────────── */
+
+.cf-top {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 14px 24px 12px;
+}
+.cf-top h1 {
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  color: var(--ink);
+}
+.cf-top p {
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+
+.cf-acts { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.cf-btn {
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+}
+.cf-btn:hover { background: var(--surface-sunken); border-color: var(--ink-4); }
+.cf-btn.on { background: var(--green-700); border-color: var(--green-700); color: #fff; }
+
+.cf-mini {
+  background: none;
+  border: 1px solid var(--rule-strong);
+  padding: 5px 11px;
+  font: inherit;
+  font-size: 10.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+.cf-mini:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+.cf-lbl {
+  font-size: 9.5px;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--ink-3);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.cf-sub { font-size: 11px; color: var(--ink-3); }
+.cf-scope {
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--green-700);
+}
+
+/* ── The grid ──────────────────────────────────────────────────────────────── */
+
+.cf-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.95fr);
+  grid-template-rows: auto auto;
+  gap: 12px;
+  padding: 0 24px;
+  align-items: stretch;
+}
+
+.cf-map { grid-column: 1; grid-row: 1 / span 2; display: flex; flex-direction: column; }
+.cf-pos { grid-column: 2; grid-row: 1; }
+.cf-matters { grid-column: 2; grid-row: 2; }
+.cf-cap { grid-column: 1; grid-row: 3; }
+.cf-chain { grid-column: 2; grid-row: 3; }
+
+.cf-map, .cf-pos, .cf-matters, .cf-cap, .cf-chain {
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  padding: 12px 15px;
+  animation: cfIn 340ms cubic-bezier(0.22, 0.62, 0.2, 1) both;
+}
+.cf-pos { animation-delay: 50ms; }
+.cf-matters { animation-delay: 100ms; }
+.cf-cap { animation-delay: 150ms; }
+.cf-chain { animation-delay: 200ms; }
+
+@keyframes cfIn { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+
+/* ── Map ───────────────────────────────────────────────────────────────────── */
+
+.cf-map-bar { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-bottom: 10px; }
+
+.cf-pill {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--green-700);
+  background: var(--green-100);
+  border: 1px solid var(--green-300);
+  padding: 3px 9px;
+}
+.cf-pill button { background: none; border: 0; font-size: 13px; line-height: 1; color: inherit; cursor: pointer; padding: 0; }
+
+/* The map is the one element allowed to be large. */
+.cf-canvas {
+  flex: 1 1 auto;
+  min-height: clamp(300px, 38vh, 520px);
+  position: relative;
+  overflow: hidden;
+}
+.cf-canvas svg { width: 100%; height: 100%; display: block; }
+
+.cf-canvas.focused .flow:not(.dim) {
+  stroke-dasharray: 5 9;
+  animation: cfRun 1.15s linear infinite;
+}
+@keyframes cfRun { to { stroke-dashoffset: -14; } }
+.cf-canvas.focused .node-fac.hl { animation: cfPulse 1.6s ease-in-out infinite; }
+@keyframes cfPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+.cf-map-foot { padding-top: 9px; font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+
+/* ── Carbon position ───────────────────────────────────────────────────────── */
+
+.cf-net {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: clamp(30px, 3.4vw, 44px);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  color: var(--green-700);
+}
+.cf-net span {
+  font-family: var(--font-sans, inherit);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-3);
+  letter-spacing: 0;
+  margin-left: 6px;
+}
+.cf-net-note { margin-top: 7px; font-size: 10.5px; line-height: 1.5; color: var(--ink-3); }
+
+.cf-rank { margin-top: 13px; display: flex; flex-direction: column; }
+.cf-rank li { border-top: 1px solid var(--rule); }
+.cf-rank-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 74px 58px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.cf-rank-row:hover { background: var(--surface-sunken); }
+.cf-rank-row.on { background: var(--green-100); }
+.cf-rank-n {
+  font-size: 12px;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cf-rank-track { height: 7px; background: var(--surface-sunken); position: relative; }
+.cf-rank-fill {
+  position: absolute; inset: 0 auto 0 0; height: 100%;
+  background: var(--green-500);
+  transform-origin: 0 50%;
+  animation: cfGrow 560ms cubic-bezier(0.2, 0.72, 0.2, 1) both;
+}
+@keyframes cfGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.cf-rank-v { font-family: var(--font-mono); font-size: 12px; font-weight: 600; text-align: right; color: var(--ink); }
+
+/* ── What matters ──────────────────────────────────────────────────────────── */
+
+.cf-matters { display: flex; flex-direction: column; gap: 10px; }
+
+.cf-sig {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto;
+  gap: 1px 12px;
+  padding: 11px 13px;
+  border-left: 2px solid var(--rule-strong);
+  background: var(--surface-sunken);
+}
+.cf-sig.up { border-left-color: var(--green-700); }
+.cf-sig.risk { border-left-color: var(--neg); }
+
+.cf-sig-v {
+  grid-column: 1;
+  font-family: var(--font-mono);
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+.cf-sig.up .cf-sig-v { color: var(--green-700); }
+.cf-sig.risk .cf-sig-v { color: var(--neg); }
+.cf-sig-v i { font-style: normal; font-family: var(--font-sans, inherit); font-size: 10px; color: var(--ink-3); margin-left: 4px; }
+
+.cf-sig-t { grid-column: 1; font-size: 12.5px; font-weight: 600; color: var(--ink); line-height: 1.35; }
+.cf-sig-s { grid-column: 1; font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+.cf-sig .cf-mini { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
+
+/* ── Capacity ──────────────────────────────────────────────────────────────── */
+
+.cf-cap-v {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.cf-cap-v span { font-family: var(--font-sans, inherit); font-size: 11.5px; font-weight: 500; color: var(--ink-3); letter-spacing: 0; margin-left: 6px; }
+
+.cf-cap-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(90px, 180px) 84px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px 0;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--rule);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.cf-cap-row:hover { background: var(--surface-sunken); }
+.cf-cap-n { font-size: 12.5px; font-weight: 500; color: var(--ink); }
+.cf-cap-track { height: 9px; background: var(--surface-sunken); position: relative; }
+.cf-cap-fill { position: absolute; inset: 0 auto 0 0; height: 100%; background: var(--warn); }
+.cf-cap-x { font-family: var(--font-mono); font-size: 12px; font-weight: 600; text-align: right; color: var(--warn); }
+.cf-cap-note { margin-top: 9px; font-size: 11px; line-height: 1.55; color: var(--ink-3); }
+
+/* ── Material chain ────────────────────────────────────────────────────────── */
+
+.cf-chain-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+.cf-chain-head b { font-family: var(--font-mono); font-size: 15px; font-weight: 600; color: var(--ink); margin-right: 3px; }
+.cf-chain-head .pos b { color: var(--green-700); }
+.cf-chain-arrow { color: var(--ink-4); }
+
+.cf-chain-rows { display: flex; flex-direction: column; }
+.cf-chain-rows li {
+  display: grid;
+  grid-template-columns: 92px 62px minmax(60px, 1fr) 62px;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.cf-chain-rows li:last-child { border-bottom: 0; }
+.cf-chain-k { font-size: 12px; color: var(--ink); }
+.cf-chain-t { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); text-align: right; }
+.cf-chain-track { height: 7px; background: var(--surface-sunken); position: relative; }
+.cf-chain-fill {
+  position: absolute; inset: 0 auto 0 0; height: 100%; background: var(--green-500);
+  transform-origin: 0 50%;
+  animation: cfGrow 560ms cubic-bezier(0.2, 0.72, 0.2, 1) both;
+}
+.cf-chain-v { font-family: var(--font-mono); font-size: 12px; font-weight: 600; text-align: right; color: var(--green-700); }
+
+/* ── Ranking table, below the fold ─────────────────────────────────────────── */
+
+.cf-table { padding: 26px 24px 0; }
+.cf-table-head { display: flex; align-items: center; gap: 14px; padding-bottom: 10px; }
+.cf-table-head .cf-mini { margin-left: auto; }
+
+.cf-table table { width: 100%; border-collapse: collapse; }
+.cf-table th, .cf-table td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--rule); }
+.cf-table thead th {
+  font-size: 9.5px; letter-spacing: 0.11em; text-transform: uppercase;
+  color: var(--ink-3); font-weight: 700; border-bottom-color: var(--rule-strong);
+}
+.cf-table th.n, .cf-table td.n { text-align: right; font-family: var(--font-mono); }
+.cf-table thead th.n { font-family: inherit; }
+.cf-table tbody tr { cursor: pointer; transition: background var(--t-fast); }
+.cf-table tbody tr:hover { background: var(--surface-sunken); }
+.cf-table td { font-size: 12.5px; color: var(--ink-2); }
+.cf-table td.strong { color: var(--green-700); font-weight: 600; }
+.cf-t-rank {
+  display: inline-block; width: 20px; font-family: var(--font-mono);
+  font-size: 10.5px; color: var(--ink-4);
+}
+.cf-t-dist { display: block; margin-left: 20px; font-size: 10.5px; color: var(--ink-4); }
+
+/* ── Drawer contents ───────────────────────────────────────────────────────── */
+
+.cfp-figs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 16px 0 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.cfp-figs b { display: block; font-family: var(--font-mono); font-size: 21px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
+.cfp-figs div:first-child b { color: var(--green-700); }
+.cfp-figs i { display: block; font-style: normal; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-top: 4px; }
+
+.cfp-decomp { margin: 11px 0 22px; }
+.cfp-decomp > div, .cfp-d-net {
+  display: grid;
+  grid-template-columns: 168px minmax(60px, 1fr) 84px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.cfp-d-net { border-bottom: 0; border-top: 2px solid var(--ink); padding-top: 10px; }
+.cfp-d-k { font-size: 12px; color: var(--ink-2); }
+.cfp-d-net .cfp-d-k { font-weight: 700; color: var(--ink); }
+.cfp-d-track { height: 8px; background: var(--surface-sunken); position: relative; }
+.cfp-d-net .cfp-d-track { background: none; }
+.cfp-d-fill { position: absolute; inset: 0 auto 0 0; height: 100%; }
+.cfp-d-fill.add { background: var(--green-500); }
+.cfp-d-fill.sub { background: var(--neg); }
+.cfp-d-v { font-family: var(--font-mono); font-size: 13px; font-weight: 600; text-align: right; }
+.cfp-d-v.add { color: var(--green-700); }
+.cfp-d-v.sub { color: var(--neg); }
+.cfp-d-net .cfp-d-v { font-size: 17px; color: var(--ink); }
+
+.cfp-streams { margin: 11px 0 20px; }
+.cfp-streams li {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 7px 0; border-bottom: 1px solid var(--rule); font-size: 12.5px; color: var(--ink-2);
+}
+.cfp-streams b { margin-left: auto; font-family: var(--font-mono); color: var(--ink); }
+
+.cfp-why {
+  font-size: 12.5px; line-height: 1.65; color: var(--ink-2);
+  padding: 13px 15px; background: var(--surface-sunken);
+  border-left: 2px solid var(--green-700); margin-bottom: 22px;
+}
+
+.cfp-arcs { margin-top: 11px; }
+.cfp-arcs li { border-bottom: 1px solid var(--rule); }
+.cfp-arcs button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 130px 92px 62px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 0;
+  background: none; border: 0; font: inherit; text-align: left; cursor: pointer;
+  transition: background var(--t-fast);
+}
+.cfp-arcs button:hover { background: var(--surface-sunken); }
+.cfp-arc-n { font-size: 12.5px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cfp-arc-m { font-size: 11px; color: var(--ink-3); text-align: right; }
+.cfp-arc-c { font-family: var(--font-mono); font-size: 12px; color: var(--green-700); text-align: right; }
+.cfp-arc-go { font-size: 10.5px; font-weight: 700; color: var(--ink-3); text-align: right; }
+.cfp-arcs button:hover .cfp-arc-go { color: var(--green-700); }
+
+/* Compare */
+.cfc-heads {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: baseline;
+  margin: 14px 0 16px; font-size: 14px; font-weight: 600; color: var(--ink);
+}
+.cfc-heads span:last-child { text-align: right; }
+.cfc-vs { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-4); font-weight: 700; }
+
+.cfc-table { width: 100%; border-collapse: collapse; }
+.cfc-table tr { border-bottom: 1px solid var(--rule); }
+.cfc-table th {
+  text-align: center; font-size: 10.5px; font-weight: 600; color: var(--ink-3);
+  padding: 10px 8px; white-space: nowrap;
+}
+.cfc-table th i { display: block; font-style: normal; font-size: 9px; color: var(--ink-4); margin-top: 2px; }
+.cfc-table td.n { font-family: var(--font-mono); font-size: 14px; padding: 10px 8px; color: var(--ink-3); width: 34%; }
+.cfc-table td.n:first-child { text-align: left; }
+.cfc-table td.n:last-child { text-align: right; }
+.cfc-table td.win { color: var(--green-700); font-weight: 600; }
+
+.cfc-verdict {
+  margin-top: 18px; font-size: 13px; line-height: 1.65; color: var(--ink);
+  padding: 14px 16px; background: var(--green-100); border-left: 2px solid var(--green-700);
+}
+
+/* ── Narrow ────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 1180px) {
+  .cf-grid { grid-template-columns: 1fr; }
+  .cf-map { grid-column: 1; grid-row: auto; }
+  .cf-pos, .cf-matters, .cf-cap, .cf-chain { grid-column: 1; grid-row: auto; }
+  .cf-canvas { min-height: 340px; }
+}
+
+@media (max-width: 760px) {
+  .cf-top, .cf-grid, .cf-table { padding-left: 14px; padding-right: 14px; }
+  .cf-acts { width: 100%; }
+  .cf-acts .cf-btn { flex: 1 1 auto; }
+  .cfp-figs { grid-template-columns: repeat(2, 1fr); }
+  .cfp-decomp > div, .cfp-d-net { grid-template-columns: 118px minmax(40px, 1fr) 70px; }
+  .cfp-arcs button { grid-template-columns: minmax(0, 1fr) 78px; }
+  .cfp-arc-c, .cfp-arc-go { display: none; }
+  .cf-table { overflow-x: auto; }
+  .cf-table table { min-width: 640px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf *, .cf *::before, .cf *::after { animation: none !important; transition: none !important; }
+  .cf-rank-fill, .cf-chain-fill { transform: none !important; }
+}
+
+/* This page carries its own masthead, so the nav strip's description would be a
+   second one saying the same thing. The question and the tabs stay — they are
+   navigation; the blurb goes. */
+.cnav:has(+ .cf) .cnav-blurb { display: none; }
+.cnav:has(+ .cf) { padding-bottom: 0; }

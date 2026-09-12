@@ -1,0 +1,322 @@
+{
+  "meta": {
+    "project": "TerraFlux",
+    "description": "Consolidated real-world seed dataset for feedstock properties, emission factors, biochar permanence modeling, facility data, and economic constants. All values sourced from cited real research and government data, compiled September 2026. Values marked as ranges should be treated as calibration bounds, not fixed constants. Carbon price and facility capacity figures should be re-verified close to submission since India's carbon market is still forming in 2026.",
+    "last_compiled": "2026-09-13"
+  },
+  "feedstock_properties": {
+    "paddy_straw": {
+      "notes": "Based on demonstration-scale biomethanation study, Fazilka, Punjab. Broader Indian ultimate-analysis studies show wider ranges, included as bounds.",
+      "moisture_pct_wet_basis": {
+        "value": 10.0,
+        "range": [
+          8.0,
+          14.0
+        ]
+      },
+      "total_solids_pct": 90.0,
+      "volatile_solids_pct_dry": 84.0,
+      "ash_pct_dry": {
+        "value": 16.0,
+        "range": [
+          11.0,
+          18.0
+        ]
+      },
+      "carbon_pct_dry": {
+        "value": 40.0,
+        "range": [
+          36.3,
+          46.7
+        ]
+      },
+      "hydrogen_pct_dry": {
+        "value": 5.5,
+        "range": [
+          4.6,
+          5.6
+        ]
+      },
+      "nitrogen_pct_dry": {
+        "value": 0.75,
+        "range": [
+          0.2,
+          0.7
+        ]
+      },
+      "cn_ratio": 54.0,
+      "cellulose_pct": 39.9,
+      "hemicellulose_pct": 24.0,
+      "lignin_pct": 5.6,
+      "bulk_density_t_per_m3": 0.15,
+      "source": "https://firstgreen.co/energy-generation-from-paddy-straw-an-analysis-of-bioenergy-models/"
+    },
+    "paddy_straw_digestate_fom": {
+      "notes": "Fermented Organic Manure produced from paddy straw anaerobic digestion, for downstream agronomic matching.",
+      "nitrogen_pct": [
+        0.5,
+        2.0
+      ],
+      "p2o5_pct": [
+        0.3,
+        1.5
+      ],
+      "k2o_pct": [
+        0.5,
+        2.0
+      ],
+      "organic_carbon_pct": [
+        20,
+        40
+      ],
+      "organic_matter_pct": [
+        35,
+        65
+      ],
+      "source": "https://www.frontiersin.org/journals/sustainable-food-systems/articles/10.3389/fsufs.2025.1702102/full"
+    },
+    "food_waste": {
+      "notes": "Based on San Francisco municipal food waste characterization study, widely used as an AD reference dataset.",
+      "moisture_pct": {
+        "value": 72.0,
+        "range": [
+          70.0,
+          74.0
+        ]
+      },
+      "vs_ts_ratio_pct": {
+        "value": 85.0,
+        "range": [
+          83.0,
+          87.0
+        ]
+      },
+      "methane_yield_ml_per_gVS": {
+        "value": 390,
+        "range": [
+          348,
+          435
+        ]
+      },
+      "cn_ratio_optimal_range": [
+        20,
+        30
+      ],
+      "cn_ratio_acceptable_range": [
+        9,
+        30
+      ],
+      "biogas_yield_m3_per_tonne": [
+        100,
+        200
+      ],
+      "methane_content_pct": [
+        50,
+        70
+      ],
+      "co2_avoided_t_per_t_diverted": [
+        0.5,
+        1.0
+      ],
+      "source": "https://pubmed.ncbi.nlm.nih.gov/16635571/"
+    }
+  },
+  "emission_factors": {
+    "ipcc_ar6_gwp100": {
+      "notes": "IPCC Sixth Assessment Report, Working Group I, 2021, Chapter 7 Supplementary Material. Use biogenic methane value for agricultural/food waste, not fossil.",
+      "co2": 1.0,
+      "ch4_fossil": 29.8,
+      "ch4_biogenic": 27.0,
+      "ch4_fossil_gwp20": 82.5,
+      "ch4_biogenic_gwp20": 80.0,
+      "source": "https://ghginstitute.org/ipcc-ar6-methane-gwp-tables/"
+    }
+  },
+  "biochar_permanence_model": {
+    "notes": "Woolf et al. 2021 model as published, plus the Lehmann et al. 2015 Q10 temperature correction approach referenced in the same paper.",
+    "formula": "Fperm = 1.04 - 0.635 * (H_to_Corg_molar_ratio)",
+    "reference_soil_temp_c": 14.9,
+    "fperm_range_at_reference_temp": [
+      0.63,
+      0.82
+    ],
+    "hc_ratio_permanence_threshold": 0.40,
+    "hc_ratio_permanence_threshold_fperm": 0.79,
+    "q10_correction": {
+      "formula": "f_T = Q10 ^ ((T_soil - T_ref) / 10)",
+      "q10_value": 2.0,
+      "example_india_soil_temp_c": 26.0,
+      "example_result_f_T": 2.158
+    },
+    "source": "https://bpb-us-e1.wpmucdn.com/blogs.cornell.edu/dist/8/7329/files/2021/11/EST-55-14795-14805-2021-Woolf.pdf"
+  },
+  "facilities": [
+    {
+      "id": "FAC-PB-SGR-01",
+      "name": "Sangrur CBG Plant (Bhuttal Kalan)",
+      "type": "anaerobic_digestion_cbg",
+      "feedstock": "paddy_straw",
+      "capacity_t_cbg_per_day": 33.23,
+      "district": "Sangrur, Punjab",
+      "approx_lat": 30.2458,
+      "approx_lng": 75.8421,
+      "notes": "Reported as one of the largest paddy-straw-based CBG plants in the region, supplies Indian Oil Corporation Ltd. Coordinates are district-center approximations, not the exact plant location; refine before final submission if precision matters.",
+      "source": "https://www.tribuneindia.com/news/punjab/asias-largest-compressed-biogas-plant-launched-421477/"
+    },
+    {
+      "id": "FAC-PB-PTL-01",
+      "name": "Patiala CBG Plant (Jaikhar village)",
+      "type": "anaerobic_digestion_cbg",
+      "feedstock": "paddy_straw",
+      "capacity_t_cbg_per_day": 20.0,
+      "biogas_capacity_m3_per_day": 48000,
+      "annual_feedstock_consumption_t": 68000,
+      "district": "Patiala, Punjab",
+      "approx_lat": 30.3398,
+      "approx_lng": 76.3869,
+      "notes": "Coordinates are district-center approximations.",
+      "source": "https://renewablewatch.in/2024/01/30/taking-action-cbg-helps-address-the-issue-of-stubble-burning-in-punjab/"
+    },
+    {
+      "id": "FAC-PB-SGR-02",
+      "name": "Sangrur CBG Plant (Fatehgarh village)",
+      "type": "anaerobic_digestion_cbg",
+      "feedstock": "paddy_straw",
+      "capacity_t_cbg_per_day": 20.0,
+      "biogas_capacity_m3_per_day": 48000,
+      "annual_feedstock_consumption_t": 68000,
+      "district": "Sangrur, Punjab",
+      "approx_lat": 30.2458,
+      "approx_lng": 75.8421,
+      "notes": "Coordinates are district-center approximations, distinct facility from FAC-PB-SGR-01.",
+      "source": "https://renewablewatch.in/2024/01/30/taking-action-cbg-helps-address-the-issue-of-stubble-burning-in-punjab/"
+    },
+    {
+      "id": "FAC-PB-LDH-01",
+      "name": "Haibowal Municipal Biogas Plant",
+      "type": "anaerobic_digestion_dung",
+      "feedstock": "dairy_dung",
+      "capacity_t_per_day": 225,
+      "district": "Ludhiana, Punjab",
+      "approx_lat": 30.9010,
+      "approx_lng": 75.8573,
+      "notes": "Processes dairy dung, not paddy straw. Additional 300 t/day plant proposed at Tajpur Road. Coordinates are district-center approximations.",
+      "source": "https://www.tribuneindia.com/news/ludhiana/peda-to-run-biogas-plant-at-full-capacity-400347"
+    },
+    {
+      "id": "FAC-PB-HSP-01",
+      "name": "Hoshiarpur CBG Project (Baroti village)",
+      "type": "anaerobic_digestion_cbg",
+      "feedstock": "mixed_agro_industrial_municipal",
+      "capacity_t_cbg_per_day": 20.0,
+      "annual_feedstock_consumption_t": 49350,
+      "bio_manure_output_t_per_day": 91,
+      "district": "Hoshiarpur, Punjab",
+      "approx_lat": 31.5143,
+      "approx_lng": 75.9115,
+      "notes": "Under development at time of source publication. Coordinates are district-center approximations.",
+      "source": "https://www.tribuneindia.com/news/punjab/rs-140-crore-biogas-project-to-come-up-in-hoshiarpur-547427/amp"
+    }
+  ],
+  "state_level_context": {
+    "punjab_cbg_projects_allotted": 48,
+    "punjab_cbg_total_capacity_t_per_day": 557.58,
+    "punjab_annual_paddy_straw_consumption_projected_t": 1867000,
+    "source": "https://renewablewatch.in/2024/01/30/taking-action-cbg-helps-address-the-issue-of-stubble-burning-in-punjab/"
+  },
+  "economics": {
+    "landfill_and_msw_cost_inr_per_tonne": {
+      "notes": "Government and academic cost studies for Indian urban local bodies.",
+      "general_urban_local_body_range": [
+        500,
+        1500
+      ],
+      "cost_split_pct": {
+        "collection": [
+          60,
+          85
+        ],
+        "transport": [
+          20,
+          30
+        ],
+        "treatment_disposal": [
+          2,
+          8
+        ]
+      },
+      "delhi_collection_only": 642,
+      "metro_2025_2026_authorized_tipping_fee_range": [
+        800,
+        1500
+      ],
+      "metro_transport_addon_range": [
+        600,
+        1000
+      ],
+      "metro_all_in_disposal_cost_range": [
+        2000,
+        2800
+      ],
+      "source": "https://cpheeo.gov.in/upload/uploadfiles/files/chap21(1).pdf"
+    },
+    "carbon_price_inr_per_tonne_co2e": {
+      "notes": "India's Carbon Credit Trading Scheme (CCTS) launched 2026, still forming. Re-verify before final submission.",
+      "ccts_early_compliance_estimate_range": [
+        250,
+        1500
+      ],
+      "ccts_early_2026_trading_price_approx": [
+        850,
+        900
+      ],
+      "ccts_projected_stabilized_band_by_2028": [
+        600,
+        900
+      ],
+      "voluntary_market_early_2024": [
+        200,
+        300
+      ],
+      "voluntary_market_2026_trend": [
+        800,
+        1000
+      ],
+      "recommended_default_for_macc_calculations": 900,
+      "source": "https://www.indiancarbonmarket.com/ccts-2026-complete-guide-india"
+    }
+  },
+  "sources_full_list": [
+    "https://firstgreen.co/energy-generation-from-paddy-straw-an-analysis-of-bioenergy-models/",
+    "https://www.researchgate.net/publication/319109023_Energy_Generation_from_Paddy_Straw_An_Analysis_of_Bioenergy_Models",
+    "https://www.frontiersin.org/journals/sustainable-food-systems/articles/10.3389/fsufs.2025.1702102/full",
+    "https://www.currentscience.ac.in/Volumes/115/02/0292.pdf",
+    "https://pubmed.ncbi.nlm.nih.gov/16635571/",
+    "https://blog.anaerobic-digestion.com/biogas-yield-analysis-best-practices-maximizing-output-from-food-waste/",
+    "https://par.nsf.gov/servlets/purl/10276142",
+    "https://ghginstitute.org/ipcc-ar6-methane-gwp-tables/",
+    "https://greencalculus.com/data/ipcc-ar6-gwp-values/",
+    "https://ghginstitute.org/2024/10/17/which-methane-gwp-value-do-i-use/",
+    "https://www.epa.gov/system/files/documents/2024-02/us-ghg-inventory-2024-annex-6-additional-information.pdf",
+    "https://bpb-us-e1.wpmucdn.com/blogs.cornell.edu/dist/8/7329/files/2021/11/EST-55-14795-14805-2021-Woolf.pdf",
+    "https://onlinelibrary.wiley.com/doi/full/10.1111/gcbb.70049",
+    "https://puro.earth/insights/post/biochar-permanence/",
+    "https://www.sciencedirect.com/science/article/pii/S001670612300438X",
+    "https://www.tribuneindia.com/news/punjab/asias-largest-compressed-biogas-plant-launched-421477/",
+    "https://renewablewatch.in/2024/01/30/taking-action-cbg-helps-address-the-issue-of-stubble-burning-in-punjab/",
+    "https://www.pib.gov.in/PressReleasePage.aspx?PRID=1868887&reg=48&lang=2",
+    "https://www.tribuneindia.com/news/punjab/rs-140-crore-biogas-project-to-come-up-in-hoshiarpur-547427/amp",
+    "https://www.tribuneindia.com/news/ludhiana/peda-to-run-biogas-plant-at-full-capacity-400347",
+    "https://www.peda.gov.in/waste-to-energy-projects",
+    "https://india.mongabay.com/2021/12/explainer-the-cost-of-plastic-waste/",
+    "https://www.downtoearth.org.in/coverage/waste/costs-and-benefits-of-india-s-waste-disposal-options-5623",
+    "https://www.nationalrecycling.in/blog/recycling-vs-landfill-cost-india-businesses/",
+    "https://cpheeo.gov.in/upload/uploadfiles/files/chap21(1).pdf",
+    "https://journals.lww.com/ijoe/fulltext/2024/28030/cost_effectiveness_of_decentralized_solid_waste.11.aspx",
+    "https://www.indiancarbonmarket.com/ccts-2026-complete-guide-india",
+    "https://www.greenfueljournal.com/post/indian-carbon-market-2026-the-new-industrial-operating-system",
+    "https://costmos.in/how-much-carbon-credit-worth-in-india/",
+    "https://carbonminus.com/indias-carbon-credit-boom-ccts-revenue-guide/",
+    "https://c4scourses.in/international-affairs/state-and-trends-of-carbon-pricing-2026-world-bank-report-2026/"
+  ]
+}
