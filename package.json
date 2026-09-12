@@ -1,29 +1,33 @@
 {
-  "name": "terraflux",
+  "name": "carbonloop",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "TERRAFLUX - Circular Carbon Network Operating System. HackOut'26 PS11.",
-  "engines": {
-    "node": ">=22.6.0"
-  },
+  "description": "CarbonLoop / TERRAFLUX - Circular Carbon Ecosystem Tracker & Network Operating System",
   "workspaces": [
+    "packages/frontend",
+    "packages/backend",
     "packages/engine",
     "packages/api",
-    "packages/web"
+    "packages/web",
+    "shared"
   ],
   "scripts": {
     "dev": "node scripts/dev.mjs",
+    "dev:all": "concurrently -n frontend,backend -c green,blue \"npm run dev -w packages/frontend\" \"npm run dev -w packages/backend\"",
+    "dev:terraflux": "node scripts/dev.mjs",
     "dev:api": "npm run dev -w @terraflux/api",
     "dev:web": "npm run dev -w @terraflux/web",
-    "build": "npm run build -w @terraflux/web",
-    "start": "npm run build && node --experimental-strip-types packages/api/src/index.ts",
-    "test": "node --experimental-strip-types --test \"packages/*/tests/*.test.ts\"",
+    "build": "npm run build -w packages/frontend && npm run build -w packages/backend",
+    "test": "npm run test -w packages/backend && npm run test -w packages/frontend",
+    "test:engine": "node --experimental-strip-types --test \"packages/*/tests/*.test.ts\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test:watch": "node --experimental-strip-types --test --watch \"packages/*/tests/*.test.ts\""
+    "seed": "npm run seed -w packages/backend",
+    "migrate": "npm run migrate -w packages/backend"
   },
   "devDependencies": {
     "@types/node": "^22.20.2",
+    "concurrently": "^8.2.2",
     "typescript": "^5.6.3"
   }
 }

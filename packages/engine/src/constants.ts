@@ -220,6 +220,31 @@ export const CARBON_MARKETS = {
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Economic Models & Baselines
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const ECONOMIC_BASELINES = {
+  /**
+   * Societal Shadow Price of Carbon (SPC).
+   * Used for public-economics evaluation, independent of market clearing prices.
+   * Source: World Bank High-Level Commission on Carbon Prices (~$80/tCO2e at ₹83/USD).
+   */
+  shadowPriceCarbonInrPerT: 6640,
+  
+  /**
+   * Average municipal landfill tipping fee + avoided environmental cost.
+   * Serves as the Life Cycle Costing (LCC) baseline for MSW and mandi waste.
+   */
+  landfillTippingFeeInrPerT: 1500,
+  
+  /**
+   * Standard Weighted Average Cost of Capital (WACC) for emerging market
+   * infrastructure. Used as the discount rate for DCF and LCOP calculations.
+   */
+  discountRateWacc: 0.10,
+} as const;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Fleet
 // ─────────────────────────────────────────────────────────────────────────────
 
