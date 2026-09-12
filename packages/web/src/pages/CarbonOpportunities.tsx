@@ -21,6 +21,8 @@
 
 import { useMemo, useState } from 'react';
 import { api, useResource, useTwin } from '../store.tsx';
+import { exportCsv } from '../download.ts';
+import { useCarbonExport } from '../components/CarbonExport.tsx';
 import { ErrorState, Loading, Panel, SectionHead } from '../components/Primitives.tsx';
 import { Link } from '../router.tsx';
 import { inr, num, pct } from '../format.ts';
@@ -34,6 +36,54 @@ export default function CarbonOpportunities() {
   ]);
 
   const [openId, setOpenId] = useState<string | null>(null);
+
+  // Before the early returns — hooks cannot run conditionally.
+  const found = res.data?.opportunities;
+  useCarbonExport(
+    found && state
+      ? {
+          label: `opportunities (${found.length})`,
+          run: () =>
+            exportCsv(
+              found,
+              [
+                { header: 'Headline', value: (o) => o.headline },
+                { header: 'Kind', value: (o) => o.kind },
+                { header: 'Change applied', value: (o) => o.scenarioLabel },
+                { header: 'Carbon before tCO2e', value: (o) => o.measure.carbonBeforeT.toFixed(2) },
+                { header: 'Carbon after tCO2e', value: (o) => o.measure.carbonAfterT.toFixed(2) },
+                { header: 'Carbon gain tCO2e', value: (o) => o.measure.carbonDeltaT.toFixed(2) },
+                { header: 'Margin change INR', value: (o) => o.measure.marginDeltaInr.toFixed(0) },
+                { header: 'Diverted change t', value: (o) => o.measure.divertedDeltaT.toFixed(1) },
+                { header: 'Stranded change t', value: (o) => o.measure.strandedDeltaT.toFixed(1) },
+                { header: 'tkm change %', value: (o) => o.measure.tkmDeltaPct.toFixed(2) },
+                {
+                  header: 'Carbon per added tonne',
+                  value: (o) =>
+                    o.measure.carbonPerAddedTonneT === null
+                      ? ''
+                      : o.measure.carbonPerAddedTonneT.toFixed(4),
+                },
+                { header: 'Why it helps', value: (o) => o.why },
+                { header: 'Why not already taken', value: (o) => o.whyNotAlready },
+                { header: 'Flows changed', value: (o) => o.flowChanges.length },
+                { header: 'Solve ms', value: (o) => o.solveMs },
+              ],
+              {
+                title: 'Carbon opportunities',
+                asOf: state.asOf,
+                windowDays: state.assumptions.windowDays,
+                objective: state.objective,
+                twinVersion: version,
+                notes: [
+                  `${res.data!.candidatesTested} candidates tested; each figure is the difference between two full optimiser runs.`,
+                ],
+              },
+            ),
+        }
+      : null,
+    [found, state, version],
+  );
 
   if (!boot || !state) return <Loading message="Loading…" />;
   if (res.loading) return <Loading message={res.message} />;

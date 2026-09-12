@@ -23,6 +23,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api, useResource, useTwin } from '../store.tsx';
+import { exportCsv } from '../download.ts';
+import { useCarbonExport } from '../components/CarbonExport.tsx';
 import { ErrorState, Loading, Panel, SectionHead, Tag } from '../components/Primitives.tsx';
 import { Link, useRouter } from '../router.tsx';
 import { dateFull, num, pct } from '../format.ts';
@@ -158,6 +160,43 @@ export default function CarbonLedger() {
     setTrace(null);
     setTraceError(null);
   }, []);
+
+  // Registered before the early returns below, because hooks cannot run
+  // conditionally. The closure reads carbon.data at call time, so it exports
+  // whatever the screen is currently showing.
+  const ledgerLines = carbon.data?.ledger.lines;
+  useCarbonExport(
+    ledgerLines && state
+      ? {
+          label: `ledger lines (${ledgerLines.length})`,
+          run: () =>
+            exportCsv(
+              ledgerLines,
+              [
+                { header: 'Key', value: (l) => l.key },
+                { header: 'Line', value: (l) => l.label },
+                { header: 'Kind', value: (l) => l.kind },
+                { header: 'tCO2e', value: (l) => l.valueT.toFixed(3) },
+                { header: 'Uncertainty %', value: (l) => l.uncertaintyPct },
+                { header: 'Basis', value: (l) => l.basis },
+                { header: 'Source', value: (l) => l.source },
+              ],
+              {
+                title: 'Carbon ledger',
+                asOf: state.asOf,
+                windowDays: state.assumptions.windowDays,
+                objective: state.objective,
+                twinVersion: version,
+                notes: [
+                  `Net ${carbon.data!.ledger.netT.toFixed(1)} tCO2e`,
+                  'Removal, avoidance and substitution are different commodities and are never summed.',
+                ],
+              },
+            ),
+        }
+      : null,
+    [ledgerLines, state, version],
+  );
 
   if (!boot || !state) return <Loading message="Loading…" />;
   if (carbon.loading) return <Loading message={carbon.message} />;

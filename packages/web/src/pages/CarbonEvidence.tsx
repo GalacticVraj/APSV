@@ -22,6 +22,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api, useResource, useTwin } from '../store.tsx';
+import { exportCsv } from '../download.ts';
+import { useCarbonExport } from '../components/CarbonExport.tsx';
 import { ErrorState, Loading, Panel, SectionHead } from '../components/Primitives.tsx';
 import { Link, useRouter } from '../router.tsx';
 import { dateFull, num, pct, timeShort } from '../format.ts';
@@ -68,6 +70,46 @@ export default function CarbonEvidence() {
       );
     },
     [navigate],
+  );
+
+  // Before the early returns — hooks cannot run conditionally. This is the one
+  // export a reviewer actually asks for: every figure with its calculation, its
+  // citation and its uncertainty, in one file.
+  const evRecords = ev.data?.records;
+  useCarbonExport(
+    evRecords && state
+      ? {
+          label: `evidence register (${evRecords.length})`,
+          run: () =>
+            exportCsv(
+              evRecords,
+              [
+                { header: 'Key', value: (r) => r.key },
+                { header: 'Figure', value: (r) => r.label },
+                { header: 'Value', value: (r) => r.valueT.toFixed(3) },
+                { header: 'Unit', value: (r) => r.unit },
+                { header: 'Kind', value: (r) => r.kind },
+                { header: 'Status', value: (r) => r.status },
+                { header: 'Calculation', value: (r) => r.calculation },
+                { header: 'Source', value: (r) => r.source },
+                { header: 'Uncertainty %', value: (r) => r.uncertaintyPct },
+                { header: 'Inputs', value: (r) => r.inputs.length },
+                { header: 'Contributing allocations', value: (r) => r.contributorCount },
+              ],
+              {
+                title: 'Carbon evidence register',
+                asOf: state.asOf,
+                windowDays: state.assumptions.windowDays,
+                objective: state.objective,
+                twinVersion: version,
+                notes: [
+                  'Status "modelled" means derived, not measured. Nothing here is verified or certified.',
+                ],
+              },
+            ),
+        }
+      : null,
+    [evRecords, state, version],
   );
 
   if (!boot || !state) return <Loading message="Loading…" />;

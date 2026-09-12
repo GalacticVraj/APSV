@@ -21,6 +21,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api, useResource, useTwin } from '../store.tsx';
+import { exportCsv } from '../download.ts';
+import { useCarbonExport } from '../components/CarbonExport.tsx';
 import { ErrorState, Loading, Panel, SectionHead } from '../components/Primitives.tsx';
 import { Link, useRouter } from '../router.tsx';
 import { num, pct } from '../format.ts';
@@ -67,6 +69,48 @@ export default function CarbonFacilities() {
       navigate(`/carbon/ledger?source=${encodeURIComponent(sourceId)}&facility=${encodeURIComponent(facilityId)}`);
     },
     [navigate],
+  );
+
+  // Before the early returns — hooks cannot run conditionally.
+  const rankRows = rank.data;
+  useCarbonExport(
+    rankRows && state
+      ? {
+          label: `plant ranking (${rankRows.length})`,
+          run: () =>
+            exportCsv(
+              rankRows,
+              [
+                { header: 'Facility', value: (r) => r.name },
+                { header: 'District', value: (r) => r.district },
+                { header: 'Pathway', value: (r) => r.pathwayShort },
+                { header: 'Status', value: (r) => r.status },
+                { header: 'Received t', value: (r) => r.receivedT.toFixed(1) },
+                { header: 'Capacity t', value: (r) => r.capacityT.toFixed(1) },
+                { header: 'Utilisation %', value: (r) => r.utilisationPct.toFixed(1) },
+                { header: 'Net tCO2e', value: (r) => r.netT.toFixed(2) },
+                { header: 'tCO2e per t', value: (r) => r.perTonneT.toFixed(4) },
+                { header: 'Gross benefit tCO2e', value: (r) => r.grossBenefitT.toFixed(2) },
+                { header: 'Transport tCO2e', value: (r) => r.transportT.toFixed(2) },
+                { header: 'Process tCO2e', value: (r) => r.processT.toFixed(2) },
+                { header: 'Share of net %', value: (r) => r.sharePct.toFixed(2) },
+                { header: 'Sources', value: (r) => r.sourceCount },
+                { header: 'Mean haul km', value: (r) => r.meanHaulKm.toFixed(1) },
+              ],
+              {
+                title: 'Carbon by plant',
+                asOf: state.asOf,
+                windowDays: state.assumptions.windowDays,
+                objective: state.objective,
+                twinVersion: version,
+                notes: [
+                  'Each plant is valued under the whole network permanence basis, so shares sum to the network net.',
+                ],
+              },
+            ),
+        }
+      : null,
+    [rankRows, state, version],
   );
 
   if (!boot || !state) return <Loading message="Loading…" />;

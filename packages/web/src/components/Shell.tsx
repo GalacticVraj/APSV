@@ -8,6 +8,8 @@
 
 import type { ReactNode } from 'react';
 import { Link, useRouter } from '../router.tsx';
+import { CARBON_GROUPS, CarbonNav, carbonGroupFor } from './CarbonNav.tsx';
+import { CarbonExportProvider } from './CarbonExport.tsx';
 import { useTwin } from '../store.tsx';
 import type { ObjectiveMode } from '../../../engine/src/types.ts';
 import { dateFull, num, pct } from '../format.ts';
@@ -34,24 +36,12 @@ const WORKSPACES: Record<string, { label: string; tagline: string; nav: NavGroup
   carbon: {
     label: 'Carbon',
     tagline: 'Carbon Network',
+    // Four questions, not nine nouns — see CarbonNav.tsx for why.
     nav: [
       {
-        group: 'Command',
+        group: 'Carbon',
         primary: true,
-        items: [{ to: '/carbon', label: 'Carbon Command' }],
-      },
-      {
-        group: 'Explore',
-        items: [
-          { to: '/carbon/impact', label: 'Impact' },
-          { to: '/carbon/facilities', label: 'Network' },
-          { to: '/carbon/pathways', label: 'Pathways' },
-          { to: '/carbon/ledger', label: 'Trace' },
-          { to: '/carbon/opportunities', label: 'Opportunities' },
-          { to: '/carbon/scenarios', label: 'Scenarios' },
-          { to: '/carbon/evidence', label: 'Evidence' },
-          { to: '/carbon/report', label: 'Brief' },
-        ],
+        items: CARBON_GROUPS.map((g) => ({ to: g.views[0].to, label: g.label })),
       },
     ],
   },
@@ -107,6 +97,13 @@ const WORKSPACES: Record<string, { label: string; tagline: string; nav: NavGroup
 /** The workspace a path belongs to, so a deep link lands in the right rail. */
 function workspaceFor(path: string): 'carbon' | 'network' {
   return path.startsWith('/carbon') ? 'carbon' : 'network';
+}
+
+/** True when `path` is any view of the carbon group whose first view is `to`. */
+function inCarbonGroup(path: string, to: string): boolean {
+  const here = carbonGroupFor(path);
+  const target = carbonGroupFor(to);
+  return !!here && !!target && here.key === target.key;
 }
 
 export function Shell({ children, demoActive }: { children: ReactNode; demoActive: boolean }) {
@@ -257,7 +254,14 @@ export function Shell({ children, demoActive }: { children: ReactNode; demoActiv
           </div>
         </nav>
 
-        <main className="main">{children}</main>
+        <main className="main">
+          {/* The provider has to sit above both, so the strip can render a
+              button for an export the page below it registers. */}
+          <CarbonExportProvider>
+            <CarbonNav />
+            {children}
+          </CarbonExportProvider>
+        </main>
       </div>
     </div>
   );

@@ -1639,11 +1639,20 @@ input[type='range']::-webkit-slider-thumb {
 .fu-fill.full { background: var(--warn); }
 .fu-val { font-size: 10.5px; color: var(--ink-3); width: 32px; text-align: right; }
 
+/* Eighteen compare buttons stacked down the ranking is eighteen invitations to
+   do something the reader almost never wants. The control keeps its place in
+   the layout — so nothing reflows when it appears — but is only inked on the
+   row the pointer or keyboard is on, or the row already being compared. */
 .fr-cmp {
   background: none; border: 1px solid var(--rule-2); padding: 3px 7px;
   font: inherit; font-size: 9.5px; letter-spacing: 0.04em; text-transform: uppercase;
   font-weight: 600; color: var(--ink-3); cursor: pointer;
+  opacity: 0; transition: opacity var(--t-fast);
 }
+.fr-row:hover .fr-cmp,
+.fr-row:focus-within .fr-cmp,
+.fr-cmp:focus-visible,
+.fr-cmp.on { opacity: 1; }
 .fr-cmp:hover:not(:disabled) { background: var(--surface); border-color: var(--ink-4); color: var(--ink); }
 .fr-cmp.on { background: var(--green-700); border-color: var(--green-700); color: #fff; }
 .fr-cmp:disabled { opacity: 0.3; cursor: default; }
@@ -3499,3 +3508,92 @@ a.cd-item:hover { background: var(--surface-sunken); }
 .econ-shell > .decision-banner {
   margin: 14px 0 0;
 }
+
+/* ── Carbon navigation ─────────────────────────────────────────────────────── */
+
+/* The strip that replaced nine rail peers with four questions. It sits above
+   every carbon screen and carries three things in reading order: the question
+   this group answers, the views inside it, and what the current view is for. */
+
+.cnav {
+  padding: 18px 26px 0;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
+}
+
+.cnav-q {
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--green-700);
+  margin-bottom: 12px;
+}
+
+.cnav-tabs { display: flex; gap: 2px; flex-wrap: wrap; }
+
+.cnav-tab {
+  position: relative;
+  padding: 8px 16px 11px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-3);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color var(--t-fast), border-color var(--t-fast);
+  white-space: nowrap;
+}
+.cnav-tab:hover { color: var(--ink); }
+.cnav-tab.on {
+  color: var(--ink);
+  font-weight: 600;
+  border-bottom-color: var(--green-700);
+}
+
+/* The blurb is the whole point of the redesign: a reader should never have to
+   open a screen to find out whether it is the one they wanted. */
+.cnav-blurb {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--ink-3);
+  max-width: 80ch;
+  padding: 11px 0 14px;
+}
+
+/* Inside the carbon workspace the strip above already names the view and says
+   what it is for, using the page's own words. So the page's title and lede are
+   suppressed here — two descriptions stacked is the clutter this redesign is
+   removing. Any actions in that header survive, collapsing it to a thin bar;
+   a header with nothing left in it disappears entirely. */
+.cnav ~ .page .page-head > div:first-child { display: none; }
+.cnav ~ .page .page-head:not(:has(.head-actions)) { display: none; }
+.cnav ~ .page .page-head { padding-top: 10px; padding-bottom: 10px; }
+.cnav ~ .page .page-head .head-actions { margin-left: 0; }
+
+@media (max-width: 720px) {
+  .cnav { padding: 14px 16px 0; }
+  .cnav-tab { padding: 8px 11px 10px; font-size: 12.5px; }
+}
+
+/* ── Download control ──────────────────────────────────────────────────────── */
+
+.dl {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--ink-2);
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+}
+.dl:hover { background: var(--surface-sunken); border-color: var(--ink-4); color: var(--ink); }
+.dl svg { width: 13px; height: 13px; flex: none; }
+
+.cnav-tabs { align-items: center; }
+.cnav-spacer { flex: 1 1 auto; }
