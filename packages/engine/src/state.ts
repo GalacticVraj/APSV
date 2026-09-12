@@ -40,6 +40,7 @@ import {
   strandedLots,
 } from './bottleneck.ts';
 import { forecastNetwork, type NetworkForecast } from './forecast.ts';
+import { carbonHistory, type CarbonHistory } from './history.ts';
 import { applyScenario, runScenario } from './scenario.ts';
 import { rollupEconomics, type EconAggregate } from './economics.ts';
 import { solveTransport } from './mincostflow.ts';
@@ -84,6 +85,7 @@ export class Twin {
   private cacheResilience: ResilienceReport | null = null;
   private cacheForecast: NetworkForecast | null = null;
   private cachePareto: ParetoPoint[] | null = null;
+  private cacheHistory: CarbonHistory | null = null;
   private lastScenario: ScenarioResult | null = null;
 
   constructor() {
@@ -116,6 +118,9 @@ export class Twin {
     this.cacheOpportunities = null;
     this.cacheResilience = null;
     this.cachePareto = null;
+    // History re-solves against the live estate and assumptions, so anything that
+    // changes the plan changes the trend too.
+    this.cacheHistory = null;
     if (!keepForecast) this.cacheForecast = null;
   }
 
@@ -260,6 +265,17 @@ export class Twin {
     return this.cacheResilience;
   }
 
+  /**
+   * Carbon over the trailing weeks, each point a real re-solve on that week's
+   * observed supply. Memoised like every other derived artefact: twenty solves is
+   * cheap enough to compute on demand but not cheap enough to repeat per request.
+   */
+  getCarbonHistory(): CarbonHistory {
+    if (!this.cacheHistory) {
+      this.cacheHistory = carbonHistory(this.state, this.objective);
+    }
+    return this.cacheHistory;
+  }
   getForecast(): NetworkForecast {
     if (!this.cacheForecast) {
       this.cacheForecast = forecastNetwork(

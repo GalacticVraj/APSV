@@ -11,6 +11,7 @@ import Facilities from './pages/Facilities.tsx';
 import Optimization from './pages/Optimization.tsx';
 import Scenarios from './pages/Scenarios.tsx';
 import Carbon from './pages/Carbon.tsx';
+import CarbonLedger from './pages/CarbonLedger.tsx';
 import Economics from './pages/Economics.tsx';
 import Logistics from './pages/Logistics.tsx';
 import Bottlenecks from './pages/Bottlenecks.tsx';
@@ -26,6 +27,7 @@ const ROUTES: Record<string, () => JSX.Element | null> = {
   '/optimization': Optimization,
   '/scenarios': Scenarios,
   '/carbon': Carbon,
+  '/carbon/ledger': CarbonLedger,
   '/economics': Economics,
   '/logistics': Logistics,
   '/bottlenecks': Bottlenecks,

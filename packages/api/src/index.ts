@@ -194,6 +194,10 @@ const GET: Record<string, Handler> = {
       totals: twin.getResult().totals,
     }),
 
+  // Split from /api/carbon because it costs twenty optimiser runs: the Carbon Home
+  // renders its headline immediately and fills the trend in when this arrives.
+  '/api/carbon/history': (_req, res) => json(res, 200, twin.getCarbonHistory()),
+
   '/api/economics': (_req, res) =>
     json(res, 200, {
       rollup: twin.getEconomics(),

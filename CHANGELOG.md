@@ -145,6 +145,50 @@ Two corrections after the first end-to-end solve:
   declared choices and both of its numeric bounds, and every parameter is finite when
   nothing is supplied. Engine plus API now stands at **85 tests**; `npm test` runs both.
 
+## Phase 12 — Carbon Home
+
+The Carbon vertical gets its own section. `/carbon` becomes a decision surface; the
+existing ledger screen moves intact to `/carbon/ledger`.
+
+- **The missing time axis.** The optimiser solves one window, which answers "how much"
+  but not "is this getting better". `history.ts` supplies the axis without inventing it:
+  `generateHistory` already produces a real weekly supply series per source, so for each
+  of the last twenty weeks the module sets availability to that week's observed rate and
+  re-runs **the real optimiser and the real ledger**. Every point on the trend is a genuine
+  solve, not a curve drawn through the headline. Twenty solves cost ~350 ms with shadow
+  prices and alternatives skipped, memoised on the twin version like every other artefact.
+- Each point is expressed **per planning window at that week's supply rate**, so the trend
+  and the hero figure can never disagree about what they measure. Only supply varies —
+  prices, assumptions and the estate are held, because no history exists for them, and the
+  basis string on the page says so rather than letting the reader over-read the line.
+- **Change attribution** is a difference of two measured means per ledger group, so the
+  drivers reconcile to the net change. The "what changed" sentence is a rendering of that
+  list and nothing else: lead driver, the physical throughput shift behind it, and an
+  offsetting driver **only when one genuinely pushed the other way**.
+- The screen: one hero figure with its Monte Carlo band and period delta; the ledger
+  regrouped into six interactive terms that open into contributing material, facilities,
+  pathways, transport, factors and citations; a proportional carbon flow that marks where
+  tonnes become tCO₂e rather than pretending one ribbon runs throughout; a five-item ruled
+  attention strip; and the trend beside the narrative. No KPI card grid.
+- Removal, avoidance and substitution stay on separate rows throughout, and every drill-down
+  closes with an explicit **"Modelled estimate — not measured, not verified, not a carbon
+  credit."**
+
+Caught in review rather than shipped:
+
+- **Two rows, one label, two numbers.** The decomposition's gross removal term and the hero's
+  net durable-removal line both read "Durable removal" while showing 4,299 and 3,512. Renamed
+  to "Carbon fixed in biochar" and "Durable removal (after permanence)".
+- **`.g2` without `.grid`** left the trend at full width, scaling its SVG ~2× so axis labels
+  rendered as headings.
+- **Three identical bars.** Collection, Transport and Processing all showed the same tonnage.
+  The haulage and plant stages now carry their own carbon charge instead.
+- Narrative figures printed raw (`12564`); now grouped Indian-style like the rest of the product.
+
+**19 history tests**, including that emission drivers are signed as charges, that drivers
+reconcile to the period change, and that an offset is never claimed unless a driver actually
+opposed the lead. Engine and API now stand at **104 tests**.
+
 ## Documentation
 
 - `README.md` — how to run it and what it does.

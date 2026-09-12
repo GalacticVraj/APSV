@@ -39,6 +39,7 @@ import type {
   VehicleType,
   WasteSource,
 } from '../../engine/src/types.ts';
+import type { CarbonHistory } from '../../engine/src/history.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Transport
@@ -91,6 +92,7 @@ export const api = {
     ),
   routing: () => req<RoutingResult>('/api/routing'),
   carbon: () => req<{ ledger: CarbonLedger; aggregate: unknown; totals: NetworkTotals }>('/api/carbon'),
+  carbonHistory: () => req<CarbonHistory>('/api/carbon/history'),
   economics: () => req<EconomicsPayload>('/api/economics'),
   bottlenecks: () =>
     req<{ bottlenecks: Bottleneck[]; stranded: StrandedLot[]; opportunities: OpportunityScore[] }>(

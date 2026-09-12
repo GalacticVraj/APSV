@@ -39,9 +39,15 @@ const NAV: Array<{ group: string; items: Array<{ to: string; label: string }> }>
     ],
   },
   {
+    group: 'Carbon',
+    items: [
+      { to: '/carbon', label: 'Carbon Home' },
+      { to: '/carbon/ledger', label: 'Carbon Ledger' },
+    ],
+  },
+  {
     group: 'Accounting',
     items: [
-      { to: '/carbon', label: 'Carbon' },
       { to: '/economics', label: 'Economics' },
       { to: '/system', label: 'System & Data' },
     ],
