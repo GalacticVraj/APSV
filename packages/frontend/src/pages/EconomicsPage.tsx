@@ -12,6 +12,7 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import AppLayout from '../components/layout/AppLayout';
 import ReportOptionsPanel, { type ReportOptions } from '../components/economics/ReportOptionsPanel';
+import AIInsightButton from '../components/ai/AIInsightButton';
 import apiClient from '../api/client';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -144,12 +145,23 @@ function fmtDate(d: string) {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function KpiCard({ label, value, unit, sub, accent = false }: {
+function KpiCard({ label, value, unit, sub, accent = false, insightData }: {
   label: string; value: string; unit: string; sub?: string; accent?: boolean;
+  insightData?: Record<string, unknown>;
 }) {
+  const slugId = label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
   return (
-    <div className={`rounded-sm border p-4 flex flex-col gap-1 ${accent ? 'border-forest-300 bg-forest-50' : 'border-charcoal-200 bg-white'}`}>
-      <p className="text-[10px] font-bold uppercase tracking-wider text-charcoal-500">{label}</p>
+    <div className={`rounded-sm border p-4 flex flex-col gap-1 relative ${accent ? 'border-forest-300 bg-forest-50' : 'border-charcoal-200 bg-white'}`}>
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-charcoal-500">{label}</p>
+        {insightData && (
+          <AIInsightButton
+            id={`kpi-insight-${slugId}`}
+            templateKey="kpi_card"
+            dataPackage={{ label, value, unit, sub, ...insightData }}
+          />
+        )}
+      </div>
       <div className="flex items-baseline gap-1.5">
         <span className={`text-2xl font-bold ${accent ? 'text-forest-700' : 'text-charcoal-900'}`}>{value}</span>
         <span className="text-xs text-charcoal-400 font-medium">{unit}</span>
@@ -693,19 +705,32 @@ export default function EconomicsPage() {
                   </div>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                  <KpiCard label="Net Economic Value" value={fmtINR(overviewData.kpis.net_value_inr)} unit="estimated" accent />
-                  <KpiCard label="CO₂ Sequestered" value={overviewData.kpis.total_co2_t.toFixed(2)} unit="tCO₂e" accent />
-                  <KpiCard label="Waste Diverted" value={overviewData.kpis.total_waste_diverted_t.toFixed(1)} unit="tonnes" />
-                  <KpiCard label="Carbon Value" value={fmtINR(overviewData.kpis.estimated_carbon_value_inr)} unit="gross" sub={`Shadow prices: ₹${overviewData.shadow_prices.avoided_emissions_inr_per_tco2}/t avoided · ₹${overviewData.shadow_prices.durable_removal_inr_per_tco2}/t durable`} />
-                  <KpiCard label="Transport Cost" value={fmtINR(overviewData.kpis.estimated_transport_cost_inr)} unit="estimated" />
-                  <KpiCard label="Verified Transactions" value={overviewData.kpis.pickup_count.toString()} unit="pickups" />
+                  <KpiCard label="Net Economic Value" value={fmtINR(overviewData.kpis.net_value_inr)} unit="estimated" accent
+                    insightData={{ kpis: overviewData.kpis, shadow_prices: overviewData.shadow_prices, dateStart, dateEnd }} />
+                  <KpiCard label="CO₂ Sequestered" value={overviewData.kpis.total_co2_t.toFixed(2)} unit="tCO₂e" accent
+                    insightData={{ kpis: overviewData.kpis, shadow_prices: overviewData.shadow_prices, dateStart, dateEnd }} />
+                  <KpiCard label="Waste Diverted" value={overviewData.kpis.total_waste_diverted_t.toFixed(1)} unit="tonnes"
+                    insightData={{ kpis: overviewData.kpis, dateStart, dateEnd }} />
+                  <KpiCard label="Carbon Value" value={fmtINR(overviewData.kpis.estimated_carbon_value_inr)} unit="gross" sub={`Shadow prices: ₹${overviewData.shadow_prices.avoided_emissions_inr_per_tco2}/t avoided · ₹${overviewData.shadow_prices.durable_removal_inr_per_tco2}/t durable`}
+                    insightData={{ kpis: overviewData.kpis, shadow_prices: overviewData.shadow_prices, dateStart, dateEnd }} />
+                  <KpiCard label="Transport Cost" value={fmtINR(overviewData.kpis.estimated_transport_cost_inr)} unit="estimated"
+                    insightData={{ kpis: overviewData.kpis, dateStart, dateEnd }} />
+                  <KpiCard label="Verified Transactions" value={overviewData.kpis.pickup_count.toString()} unit="pickups"
+                    insightData={{ kpis: overviewData.kpis, dateStart, dateEnd }} />
                 </div>
 
                 {/* Charts Row */}
                 <div className="grid lg:grid-cols-2 gap-6">
                   {/* Monthly Value Flow */}
                   <div className="border border-charcoal-200 rounded-sm bg-white p-5">
-                    <SectionHeader title="Monthly Value Flow (CO₂e)" />
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-sm font-bold text-charcoal-900 uppercase tracking-wider">Monthly Value Flow (CO₂e)</h2>
+                      <AIInsightButton
+                        id="valueflow-insight"
+                        templateKey="value_flow"
+                        dataPackage={{ monthly_trend: overviewData.monthly_trend, kpis: overviewData.kpis, dateStart, dateEnd }}
+                      />
+                    </div>
                     {overviewData.monthly_trend.length > 0 ? (
                       <div className="h-48">
                         <ResponsiveContainer width="100%" height="100%">
@@ -820,14 +845,14 @@ export default function EconomicsPage() {
                     <table className="w-full text-xs">
                       <thead className="bg-charcoal-50 border-b border-charcoal-200">
                         <tr>
-                          {['Date', 'Generator', 'Waste Type', 'Volume (t)', 'Facility', 'Pathway', 'CO₂ (t)', 'Dist (km)', 'Est. Value'].map(h => (
+                          {['Date', 'Generator', 'Waste Type', 'Volume (t)', 'Facility', 'Pathway', 'CO₂ (t)', 'Dist (km)', 'Est. Value', ''].map(h => (
                             <th key={h} className="text-left py-2.5 px-3 text-[10px] font-bold text-charcoal-600 uppercase tracking-wide whitespace-nowrap">{h}</th>
                           ))}
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-charcoal-100">
                         {ledgerData.pickups.length === 0 ? (
-                          <tr><td colSpan={9} className="py-10 text-center text-charcoal-400">No transactions in this period</td></tr>
+                          <tr><td colSpan={10} className="py-10 text-center text-charcoal-400">No transactions in this period</td></tr>
                         ) : ledgerData.pickups.map(p => (
                           <tr key={p.id} className="hover:bg-charcoal-50 transition-colors">
                             <td className="py-2.5 px-3 font-mono text-[10px] text-charcoal-500 whitespace-nowrap">{fmtDate(p.verified_at)}</td>
@@ -845,6 +870,13 @@ export default function EconomicsPage() {
                             <td className="py-2.5 px-3 font-mono font-bold text-forest-700">{p.co2_sequestered_t.toFixed(3)}</td>
                             <td className="py-2.5 px-3 font-mono text-charcoal-500">{p.distance_km.toFixed(0)}</td>
                             <td className="py-2.5 px-3 font-semibold text-charcoal-800">{fmtINR(p.estimated_value_inr)}</td>
+                            <td className="py-2.5 px-2">
+                              <AIInsightButton
+                                id={`ledger-insight-${p.id}`}
+                                templateKey="trade_ledger_row"
+                                dataPackage={p as unknown as Record<string, unknown>}
+                              />
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -883,7 +915,12 @@ export default function EconomicsPage() {
                 <h2 className="text-sm font-bold text-charcoal-900 uppercase tracking-wider">Pathway Comparison</h2>
                 <p className="text-xs text-charcoal-500 mt-0.5">Ranked by net margin after Levelised Cost of Processing</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
+                <AIInsightButton
+                  id="pathway-insight"
+                  templateKey="pathway_economics"
+                  dataPackage={{ pathways, dateStart, dateEnd }}
+                />
                 <CsvBtn onClick={() => {
                   const params = new URLSearchParams({ dateStart, dateEnd });
                   apiClient.get(`/api/reports/economics/pathway-economics/csv?${params}`, { responseType: 'blob' })
@@ -981,7 +1018,23 @@ export default function EconomicsPage() {
                 <h2 className="text-sm font-bold text-charcoal-900 uppercase tracking-wider">What-If Simulator</h2>
                 <p className="text-xs text-charcoal-500 mt-0.5">Adjust parameters to model economic scenarios. Based on current period baseline.</p>
               </div>
-              <ReportBtn onClick={() => openReportPanel('whats-if')} label="Export Scenario" />
+              <div className="flex items-center gap-2">
+                {whatIfProjected && overviewData && (
+                  <AIInsightButton
+                    id="whatif-insight"
+                    templateKey="what_if_result"
+                    dataPackage={{
+                      baseline: overviewData.kpis,
+                      shadow_prices: overviewData.shadow_prices,
+                      shadowMultiplier,
+                      transportMultiplier,
+                      capacityTarget,
+                      projected: whatIfProjected,
+                    }}
+                  />
+                )}
+                <ReportBtn onClick={() => openReportPanel('whats-if')} label="Export Scenario" />
+              </div>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-6">
@@ -1066,7 +1119,25 @@ export default function EconomicsPage() {
                         },
                       ].map(row => (
                         <div key={row.label} className={`p-3.5 rounded-sm border ${row.accent ? 'border-forest-300 bg-forest-50' : 'border-charcoal-100 bg-charcoal-50'}`}>
-                          <p className="text-[10px] font-bold text-charcoal-500 uppercase">{row.label}</p>
+                          <div className="flex items-center justify-between">
+                            <p className="text-[10px] font-bold text-charcoal-500 uppercase">{row.label}</p>
+                            {row.label === 'Break-Even Volume' && overviewData && whatIfProjected && (
+                              <AIInsightButton
+                                id="breakeven-insight"
+                                templateKey="break_even"
+                                dataPackage={{
+                                  label: row.label,
+                                  baseline: row.baseline,
+                                  projected: row.projected,
+                                  delta: row.delta,
+                                  shadowMultiplier,
+                                  transportMultiplier,
+                                  capacityTarget,
+                                  kpis: overviewData.kpis,
+                                }}
+                              />
+                            )}
+                          </div>
                           <div className="flex items-baseline gap-2 mt-1">
                             <span className={`text-xl font-bold ${row.accent ? 'text-forest-700' : 'text-charcoal-800'}`}>{row.projected}</span>
                             <span className={`text-xs font-semibold ${row.delta >= 0 ? 'text-forest-600' : 'text-red-600'}`}>
@@ -1126,7 +1197,7 @@ export default function EconomicsPage() {
                   <table className="w-full text-xs">
                     <thead className="bg-charcoal-50 border-b border-charcoal-200">
                       <tr>
-                        {['#', 'Facility', 'City', 'Pathway', 'Remaining Cap.', 'Headroom', 'CO₂/t', 'Shadow Price', 'LCOP', 'Break-Even (km)', 'Annual Net', '5Y DCF'].map(h => (
+                        {['#', 'Facility', 'City', 'Pathway', 'Remaining Cap.', 'Headroom', 'CO₂/t', 'Shadow Price', 'LCOP', 'Break-Even (km)', 'Annual Net', '5Y DCF', ''].map(h => (
                           <th key={h} className="text-left py-2.5 px-3 text-[10px] font-bold text-charcoal-600 uppercase tracking-wide whitespace-nowrap">{h}</th>
                         ))}
                       </tr>

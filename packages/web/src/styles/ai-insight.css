@@ -1,0 +1,165 @@
+/**
+ * Styles for the AI Insight button.
+ *
+ * The component was written for packages/frontend, which has Tailwind and a
+ * custom theme with `forest-*` and `charcoal-*` palettes. packages/web has
+ * neither — it is hand-rolled CSS — so on arrival the button rendered as an
+ * unpositioned, unstyled blob in the bottom of the document.
+ *
+ * Rather than add Tailwind to a workspace with 3,700 lines of its own CSS (and
+ * risk a collision on every shared word), this implements exactly the utilities
+ * the component uses, scoped so they cannot leak, and maps the two custom
+ * palettes onto this project's own tokens:
+ *
+ *   forest-*    →  the TERRAFLUX greens
+ *   charcoal-*  →  the ink scale
+ *
+ * The upside of doing it this way is that the component file itself is left
+ * untouched, so the next merge from Preetansh's branch stays clean.
+ */
+
+.ai-root,
+.ai-root * {
+  box-sizing: border-box;
+}
+
+/*
+ * The root element carries utility classes too (fixed bottom-6 left-6 z-…), and
+ * a descendant selector cannot reach the element it is scoped to. Rather than
+ * duplicate every rule in a self form, the root is positioned here directly —
+ * it is one element with one job.
+ */
+.ai-root {
+  position: fixed;
+  bottom: 22px;
+  left: 22px;
+  /* Under the drawer scrim (40) so an open inspection panel still wins. */
+  z-index: 35;
+}
+
+/* ── Layout ────────────────────────────────────────────────────────────────── */
+
+.ai-root .fixed { position: fixed; }
+.ai-root .relative { position: relative; }
+.ai-root .flex { display: flex; }
+.ai-root .inline-flex { display: inline-flex; }
+.ai-root .items-center { align-items: center; }
+.ai-root .items-start { align-items: flex-start; }
+.ai-root .justify-between { justify-content: space-between; }
+.ai-root .flex-1 { flex: 1 1 0%; }
+.ai-root .flex-shrink-0 { flex-shrink: 0; }
+.ai-root .min-w-0 { min-width: 0; }
+.ai-root .w-full { width: 100%; }
+.ai-root .overflow-y-auto { overflow-y: auto; }
+
+.ai-root .bottom-6 { bottom: 24px; }
+.ai-root .left-6 { left: 24px; }
+/* Above the shell, below nothing. The drawer scrim is 40. */
+.ai-root .\[z-9999\], .ai-root .z-\[9999\] { z-index: 60; }
+
+.ai-root .gap-0\.5 { gap: 2px; }
+.ai-root .gap-1 { gap: 4px; }
+.ai-root .gap-1\.5 { gap: 6px; }
+.ai-root .gap-2\.5 { gap: 10px; }
+
+.ai-root .p-0\.5 { padding: 2px; }
+.ai-root .p-1 { padding: 4px; }
+.ai-root .p-3 { padding: 12px; }
+.ai-root .pb-3 { padding-bottom: 12px; }
+.ai-root .pl-4 { padding-left: 16px; }
+.ai-root .px-3 { padding-left: 12px; padding-right: 12px; }
+.ai-root .py-1\.5 { padding-top: 6px; padding-bottom: 6px; }
+.ai-root .py-2 { padding-top: 8px; padding-bottom: 8px; }
+.ai-root .py-2\.5 { padding-top: 10px; padding-bottom: 10px; }
+
+.ai-root .mb-0\.5 { margin-bottom: 2px; }
+.ai-root .mb-1 { margin-bottom: 4px; }
+.ai-root .ml-0\.5 { margin-left: 2px; }
+.ai-root .mt-0\.5 { margin-top: 2px; }
+.ai-root .mt-1\.5 { margin-top: 6px; }
+
+.ai-root .w-3 { width: 12px; }
+.ai-root .h-3 { height: 12px; }
+.ai-root .w-3\.5 { width: 14px; }
+.ai-root .h-3\.5 { height: 14px; }
+.ai-root .w-4 { width: 16px; }
+.ai-root .h-4 { height: 16px; }
+.ai-root .w-5 { width: 20px; }
+.ai-root .h-5 { height: 20px; }
+.ai-root .w-72 { width: 288px; }
+.ai-root .w-80 { width: 320px; }
+.ai-root .max-h-\[300px\] { max-height: 300px; }
+
+/* ── Surfaces ──────────────────────────────────────────────────────────────── */
+
+.ai-root .bg-white { background: var(--surface); }
+.ai-root .bg-charcoal-50 { background: var(--surface-sunken); }
+.ai-root .bg-forest-50 { background: var(--green-100); }
+.ai-root .hover\:bg-charcoal-100:hover { background: var(--surface-sunken); }
+.ai-root .hover\:bg-forest-50:hover { background: var(--green-100); }
+
+.ai-root .border { border: 1px solid var(--rule); }
+.ai-root .border-b { border-bottom: 1px solid var(--rule); }
+.ai-root .border-l-2 { border-left-width: 2px; border-left-style: solid; }
+.ai-root .border-charcoal-100 { border-color: var(--rule); }
+.ai-root .border-charcoal-200 { border-color: var(--rule-2); }
+.ai-root .border-forest-100 { border-color: var(--green-300); }
+.ai-root .border-red-200 { border-color: #e7c3ba; }
+
+/* This product does not use rounded corners; these stay square on purpose. */
+.ai-root .rounded,
+.ai-root .rounded-sm,
+.ai-root .rounded-t-sm { border-radius: 0; }
+
+.ai-root .shadow-panel { box-shadow: 0 12px 34px -14px rgba(20, 24, 26, 0.34); }
+
+/* ── Type ──────────────────────────────────────────────────────────────────── */
+
+.ai-root .text-\[9px\] { font-size: 9px; }
+.ai-root .text-\[10px\] { font-size: 10px; }
+.ai-root .text-xs { font-size: 11.5px; }
+.ai-root .font-medium { font-weight: 500; }
+.ai-root .font-semibold { font-weight: 600; }
+.ai-root .font-bold { font-weight: 700; }
+.ai-root .uppercase { text-transform: uppercase; }
+.ai-root .tracking-wider { letter-spacing: 0.08em; }
+.ai-root .leading-relaxed { line-height: 1.6; }
+
+.ai-root .text-charcoal-400 { color: var(--ink-4); }
+.ai-root .text-charcoal-500 { color: var(--ink-3); }
+.ai-root .text-charcoal-600 { color: var(--ink-3); }
+.ai-root .text-charcoal-700 { color: var(--ink-2); }
+.ai-root .text-charcoal-900 { color: var(--ink); }
+.ai-root .text-forest-700 { color: var(--green-700); }
+.ai-root .text-red-500 { color: var(--neg); }
+.ai-root .text-red-700 { color: var(--neg); }
+.ai-root .hover\:text-charcoal-600:hover { color: var(--ink-3); }
+.ai-root .hover\:text-charcoal-700:hover { color: var(--ink-2); }
+.ai-root .hover\:text-forest-700:hover { color: var(--green-700); }
+.ai-root .hover\:text-forest-900:hover { color: var(--green-900); }
+
+.ai-root .transition-colors {
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast);
+}
+
+/* ── Motion ────────────────────────────────────────────────────────────────── */
+
+.ai-root .animate-spin { animation: aiSpin 0.9s linear infinite; }
+@keyframes aiSpin { to { transform: rotate(360deg); } }
+
+.ai-root .animate-fade-in { animation: aiFade 200ms ease both; }
+@keyframes aiFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-root .animate-spin,
+  .ai-root .animate-fade-in { animation: none; }
+}
+
+/* The trigger itself needs a surface of its own — it floats over whatever page
+   is behind it, including the Carbon network. */
+.ai-root button.ai-trigger,
+.ai-root > div > button {
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  cursor: pointer;
+}

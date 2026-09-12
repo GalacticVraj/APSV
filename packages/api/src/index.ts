@@ -442,6 +442,33 @@ const POST: Record<string, Handler> = {
     json(res, 200, ask(twin, question));
   },
 
+  '/api/ai/insights': async (req, res) => {
+    const { generateStructuredInsight } = await import('./ai-insights/ai.ts');
+    const body = await readBody(req);
+    const templateKey = String(body.templateKey ?? '');
+    const dataPackage = typeof body.dataPackage === 'object' ? (body.dataPackage as Record<string, unknown>) : {};
+    
+    if (!templateKey) return json(res, 400, { error: 'templateKey is required.' });
+
+    // Say the actual reason. With no provider key the chain falls through to the
+    // rule-based prose responder, whose output the structured parser cannot read
+    // — so the reader would otherwise be told "No JSON object found in response",
+    // which describes the symptom and hides the cause.
+    if (!process.env.GROQ_API_KEY && !process.env.GEMINI_API_KEY) {
+      return json(res, 503, {
+        error:
+          'AI insights are not configured on this server. Set GROQ_API_KEY or GEMINI_API_KEY to enable them.',
+      });
+    }
+
+    try {
+      const { insight, provider } = await generateStructuredInsight(templateKey as any, dataPackage);
+      json(res, 200, { insight, provider });
+    } catch (err: any) {
+      json(res, 500, { error: err.message || 'Failed to generate insight' });
+    }
+  },
+
   '/api/reset': async (_req, res) => {
     twin.reset();
     json(res, 200, { ok: true, version: twin.getVersion() });

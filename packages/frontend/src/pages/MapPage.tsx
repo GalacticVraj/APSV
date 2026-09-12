@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Leaf, Factory, Filter, X, MapPin, Layers } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import AIInsightButton from '../components/ai/AIInsightButton';
 import apiClient from '../api/client';
 
 // Fix Leaflet default icon path (Vite issue)
@@ -166,6 +167,16 @@ function FacilityPopup({ facility }: { facility: Facility }) {
             Pending verification
           </span>
         )}
+      </div>
+      {/* AI Insight — uses fixed-center placement to avoid Leaflet popup clipping */}
+      <div className="mt-3 pt-2.5 border-t border-charcoal-100 flex items-center justify-between">
+        <span className="text-[9px] text-charcoal-400 uppercase tracking-wide font-semibold">AI Insight</span>
+        <AIInsightButton
+          id={`facility-popup-insight-${facility.id}`}
+          templateKey="facility_card"
+          dataPackage={facility as unknown as Record<string, unknown>}
+          placement="fixed-center"
+        />
       </div>
     </div>
   );
