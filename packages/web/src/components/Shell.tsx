@@ -62,7 +62,7 @@ const WORKSPACES: Record<string, { label: string; tagline: string; nav: NavGroup
       {
         group: 'Portals',
         items: [
-          { to: '/welcome', label: 'Landing' },
+          { to: '/', label: 'Landing' },
           { to: '/entry', label: 'Choose Persona' },
           { to: '/generator', label: 'Farmer Waste App' },
         ],
@@ -70,7 +70,7 @@ const WORKSPACES: Record<string, { label: string; tagline: string; nav: NavGroup
       {
         group: 'Operations',
         items: [
-          { to: '/', label: 'Overview' },
+          { to: '/overview', label: 'Overview' },
           { to: '/map', label: 'Network Map' },
           { to: '/activity', label: 'Network Activity' },
         ],

@@ -27,13 +27,14 @@ import Activity from './pages/Activity.tsx';
 import System from './pages/System.tsx';
 import Copilot from './pages/Copilot.tsx';
 import SitingPage from './pages/SitingPage.tsx';
+import Landing from './pages/Landing.tsx';
 
 import PersonaLanding from './pages/PersonaLanding.tsx';
 import GeneratorModule from './pages/GeneratorModule.tsx';
 import TrueLanding from './pages/TrueLanding.tsx';
 
 const ROUTES: Record<string, () => JSX.Element | null> = {
-  '/': Overview,
+  '/overview': Overview,
   '/welcome': TrueLanding,
   '/landing': TrueLanding,
   '/entry': PersonaLanding,
@@ -61,6 +62,7 @@ const ROUTES: Record<string, () => JSX.Element | null> = {
   '/system': System,
   '/copilot': Copilot,
   '/demo': Overview,
+  '/': Overview,
 };
 
 function Routed() {
@@ -127,7 +129,11 @@ function Boot() {
     );
   }
 
-  if (path === '/welcome' || path === '/landing') {
+  if (path === '/' || path === '/welcome' || path === '/landing') {
+    return <Landing />;
+  }
+
+  if (path === '/legacy-welcome') {
     return <TrueLanding />;
   }
 
