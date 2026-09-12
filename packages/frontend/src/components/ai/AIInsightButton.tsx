@@ -233,55 +233,57 @@ export default function AIInsightButton({
             </div>
           </div>
 
-          {/* Section 1: Critical Finding */}
-          <div className="px-3 py-2.5 bg-forest-50 border-b border-forest-100">
-            <p className="text-[9px] font-bold text-forest-700 uppercase tracking-wider mb-1">
-              Critical Finding
-            </p>
-            <p className="text-xs font-semibold text-charcoal-900 leading-relaxed">
-              {(panel as { insight: StructuredInsight }).insight.finding}
-            </p>
-          </div>
-
-          {/* Section 2: Carbon & Economic Framing */}
-          <div className="px-3 py-2 border-b border-charcoal-100">
-            <p className="text-[9px] font-bold text-charcoal-500 uppercase tracking-wider mb-0.5 flex items-center gap-1">
-              <span>🌱</span> Carbon &amp; Economic
-            </p>
-            <p className="text-xs text-charcoal-700 leading-relaxed">
-              {(panel as { insight: StructuredInsight }).insight.carbonEconomicFraming}
-            </p>
-          </div>
-
-          {/* Section 3: Recommended Action */}
-          <div className="px-3 py-2 border-b border-charcoal-100">
-            <p className="text-[9px] font-bold text-charcoal-500 uppercase tracking-wider mb-0.5">
-              → Action
-            </p>
-            <p className={`text-xs leading-relaxed ${
-              (panel as { insight: StructuredInsight }).insight.action.toLowerCase().startsWith('no action')
-                ? 'text-charcoal-400 italic'
-                : 'text-charcoal-800 font-medium'
-            }`}>
-              {(panel as { insight: StructuredInsight }).insight.action}
-            </p>
-          </div>
-
-          {/* Section 4: Supporting Detail (collapsible) */}
-          <div className="px-3 py-1.5">
-            <button
-              type="button"
-              onClick={() => setDetailOpen(!detailOpen)}
-              className="flex items-center gap-1 text-[9px] font-bold text-charcoal-400 hover:text-charcoal-600 uppercase tracking-wider transition-colors w-full"
-            >
-              {detailOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-              Supporting Detail
-            </button>
-            {detailOpen && (
-              <p className="text-[10px] text-charcoal-500 leading-relaxed mt-1.5 pl-4 border-l-2 border-charcoal-100">
-                {(panel as { insight: StructuredInsight }).insight.supportingDetail}
+          <div className="max-h-[300px] overflow-y-auto">
+            {/* Section 1: Critical Finding */}
+            <div className="px-3 py-2.5 bg-forest-50 border-b border-forest-100">
+              <p className="text-[9px] font-bold text-forest-700 uppercase tracking-wider mb-1">
+                Critical Finding
               </p>
-            )}
+              <p className="text-xs font-semibold text-charcoal-900 leading-relaxed">
+                {(panel as { insight: StructuredInsight }).insight.finding}
+              </p>
+            </div>
+
+            {/* Section 2: Carbon & Economic Framing */}
+            <div className="px-3 py-2 border-b border-charcoal-100">
+              <p className="text-[9px] font-bold text-charcoal-500 uppercase tracking-wider mb-0.5 flex items-center gap-1">
+                <span>🌱</span> Carbon &amp; Economic
+              </p>
+              <p className="text-xs text-charcoal-700 leading-relaxed">
+                {(panel as { insight: StructuredInsight }).insight.carbonEconomicFraming}
+              </p>
+            </div>
+
+            {/* Section 3: Recommended Action */}
+            <div className="px-3 py-2 border-b border-charcoal-100">
+              <p className="text-[9px] font-bold text-charcoal-500 uppercase tracking-wider mb-0.5">
+                → Action
+              </p>
+              <p className={`text-xs leading-relaxed ${
+                (panel as { insight: StructuredInsight }).insight.action.toLowerCase().startsWith('no action')
+                  ? 'text-charcoal-400 italic'
+                  : 'text-charcoal-800 font-medium'
+              }`}>
+                {(panel as { insight: StructuredInsight }).insight.action}
+              </p>
+            </div>
+
+            {/* Section 4: Supporting Detail (collapsible) */}
+            <div className="px-3 py-1.5">
+              <button
+                type="button"
+                onClick={() => setDetailOpen(!detailOpen)}
+                className="flex items-center gap-1 text-[9px] font-bold text-charcoal-400 hover:text-charcoal-600 uppercase tracking-wider transition-colors w-full"
+              >
+                {detailOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                Supporting Detail
+              </button>
+              {detailOpen && (
+                <p className="text-[10px] text-charcoal-500 leading-relaxed mt-1.5 pl-4 border-l-2 border-charcoal-100">
+                  {(panel as { insight: StructuredInsight }).insight.supportingDetail}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       )}
