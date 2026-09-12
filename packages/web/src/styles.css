@@ -780,3 +780,34 @@ input[type='range']::-webkit-slider-thumb {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Print Media Support ─────────────────────────────────────────────────── */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+  }
+  .topbar, .rail, .demobar, .no-print, button, input, select {
+    display: none !important;
+  }
+  .body, .main, #root, .print-expand {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  table {
+    page-break-inside: auto;
+    width: 100% !important;
+  }
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+}
+

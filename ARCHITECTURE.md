@@ -44,6 +44,9 @@ Everything below follows from that.
 │   state (Twin) ── memoises every derived artefact                │
 │   copilot  ────── tools over the Twin                            │
 └──────────────────────────────────────────────────────────────────┘
+
+### Core Economics Reference
+See [ECONOMY_AUDIT.md](file:///C:/Users/user/.gemini/antigravity-ide/brain/8dab40f2-6b91-414f-9d9f-58fcf5c433c0/ECONOMY_AUDIT.md) for the initial findings of the economics logic overhaul, and [ECONOMY_MODELS.md](file:///C:/Users/user/.gemini/antigravity-ide/brain/8dab40f2-6b91-414f-9d9f-58fcf5c433c0/ECONOMY_MODELS.md) for the mathematical formulas (LCOP, DCF, MACC, ABC, LCC) implemented in the engine.
 ```
 
 ### One engine, consumed as source

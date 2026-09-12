@@ -108,196 +108,181 @@ export default function FacilityDashboard() {
 
   return (
     <AppLayout>
-      <div className="p-6 md:p-8 space-y-8 max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="page-header">
+      <div className="p-8 space-y-10 max-w-[1400px] mx-auto animate-fade-in">
+        {/* Header & Impact Summary - Stark, high-density */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-charcoal-200">
           <div>
-            <h1 className="page-title">Facility Dashboard</h1>
-            {facility && (
-              <p className="page-subtitle">{facility.name} - {conversionLabels[facility.conversion_type]}</p>
-            )}
+            <h1 className="text-3xl font-bold text-charcoal-900 tracking-tight">Facility Operations</h1>
+            <p className="text-sm text-charcoal-500 mt-2">
+              {facility ? `${facility.name} — ${conversionLabels[facility.conversion_type]} Node` : 'Loading facility profile...'}
+            </p>
           </div>
-          <button onClick={() => setShowAI(!showAI)} className="btn-secondary">
-            <span className="text-lg">AI</span> Ask CarbonLoop AI
-          </button>
-        </div>
-
-        {/* KPIs */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { label: 'CO2 Sequestered', value: impact ? `${impact.total_co2_t.toFixed(2)} t` : '...', icon: TrendingUp, color: 'text-forest-700' },
-            { label: 'Total Throughput', value: impact ? `${impact.total_throughput_t.toFixed(1)} t` : '...', icon: Factory, color: 'text-sage-700' },
-            { label: 'Capacity Used', value: `${capacityPct}%`, icon: CheckCircle2, color: 'text-blue-600' },
-            { label: 'Pending Requests', value: matches.length.toString(), icon: Clock, color: 'text-yellow-600' },
-          ].map((kpi) => (
-            <div key={kpi.label} className="card">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-semibold text-charcoal-500">{kpi.label}</p>
-                <kpi.icon className={`w-4 h-4 ${kpi.color}`} />
-              </div>
-              <p className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Capacity ring + chart */}
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="card flex flex-col items-center justify-center py-6">
-            <p className="text-xs font-semibold text-charcoal-500 mb-5">Capacity utilization</p>
-            <div className="relative w-32 h-32">
-              <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                <circle cx="50" cy="50" r="42" fill="none" stroke="#e5e7eb" strokeWidth="12" />
-                <circle
-                  cx="50" cy="50" r="42"
-                  fill="none"
-                  stroke={capacityPct > 90 ? '#dc2626' : capacityPct > 70 ? '#f59e0b' : '#166534'}
-                  strokeWidth="12"
-                  strokeDasharray={`${capacityPct * 2.64} 264`}
-                  strokeLinecap="round"
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold text-charcoal-900">{capacityPct}%</span>
-                <span className="text-[10px] text-charcoal-400">used</span>
+          <div className="flex items-center gap-6">
+            <div className="text-right">
+              <p className="text-xs font-semibold text-charcoal-500 uppercase tracking-wider">Total Output</p>
+              <div className="flex items-baseline gap-2 justify-end">
+                <p className="text-3xl font-bold text-forest-700">{impact ? impact.total_co2_t.toFixed(2) : '...'}</p>
+                <span className="text-sm font-semibold text-forest-700">tCO₂e</span>
               </div>
             </div>
-            {facility && (
-              <div className="mt-4 text-center">
-                <p className="text-sm text-charcoal-600">
-                  <span className="font-bold text-charcoal-900">{facility.remaining_capacity_t.toFixed(0)} t</span> available
-                </p>
-                <p className="text-xs text-charcoal-400">of {facility.capacity_t_month.toFixed(0)} t/month</p>
+            <div className="h-10 w-px bg-charcoal-200" />
+            <div className="text-right">
+              <p className="text-xs font-semibold text-charcoal-500 uppercase tracking-wider">Node Utilization</p>
+              <div className="flex items-baseline gap-2 justify-end">
+                <p className="text-3xl font-bold text-charcoal-900">{capacityPct}</p>
+                <span className="text-sm font-semibold text-charcoal-500">%</span>
               </div>
-            )}
-          </div>
-
-          <div className="card lg:col-span-2">
-            <h2 className="text-sm font-bold text-charcoal-900 mb-4">Monthly CO2 Sequestered (tonnes)</h2>
-            {chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={180}>
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="fco2Gradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#166534" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#166534" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                  <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#9ca3af" />
-                  <YAxis tick={{ fontSize: 11 }} stroke="#9ca3af" />
-                  <Tooltip formatter={(v: number) => [`${v.toFixed(2)} t CO2`, 'Sequestered']} />
-                  <Area type="monotone" dataKey="co2" stroke="#166534" strokeWidth={2} fill="url(#fco2Gradient)" dot={{ r: 3, fill: '#166534' }} />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-44 flex items-center justify-center text-sm text-charcoal-400">
-                Complete pickups to see your CO2 trend
-              </div>
-            )}
+            </div>
+            <div className="h-10 w-px bg-charcoal-200" />
+            <div className="flex gap-3">
+              <button onClick={() => setShowAI(!showAI)} className="btn-secondary">
+                Copilot
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Pending match requests */}
-        <div className="card">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-bold text-charcoal-900">Incoming Match Requests</h2>
-            {matches.length > 0 && (
-              <span className="badge-yellow">{matches.length} pending</span>
-            )}
-          </div>
-          {matches.length === 0 ? (
-            <div className="text-center py-10">
-              <Clock className="w-8 h-8 text-charcoal-300 mx-auto mb-2" />
-              <p className="text-sm text-charcoal-400">No pending requests. You will be notified when generators match to you.</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {matches.map((match) => (
-                <div key={match.id} className="border border-charcoal-200 rounded-xl p-4 hover:border-forest-200 hover:bg-forest-50/30 transition-all">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold ${
-                          match.score >= 80 ? 'bg-forest-100 text-forest-800' :
-                          match.score >= 60 ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-charcoal-100 text-charcoal-700'
-                        }`}>
-                          {Math.round(match.score)}
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-charcoal-900">{match.generator_name || 'Generator'}</p>
-                          <p className="text-xs text-charcoal-500">{match.generator_city} - {match.waste_type?.replace(/_/g, ' ')} - {match.volume_t} t</p>
-                        </div>
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Throughput Pipeline (2 columns) */}
+          <div className="lg:col-span-2 space-y-8">
+            <section className="border border-charcoal-200 rounded-sm bg-white overflow-hidden flex flex-col">
+              <div className="px-6 py-4 border-b border-charcoal-100 flex items-center justify-between bg-charcoal-50">
+                <h2 className="text-sm font-bold text-charcoal-900 uppercase tracking-wider">Throughput Capacity Engine</h2>
+                <span className="text-xs font-mono text-charcoal-500">{facility?.capacity_t_month} t/mo baseline limit</span>
+              </div>
+              
+              <div className="p-8">
+                {/* Visual Capacity Bar */}
+                <div className="mb-6 relative">
+                  <div className="flex justify-between text-xs font-bold text-charcoal-600 uppercase mb-2">
+                    <span>Allocated Volume</span>
+                    <span>{facility ? (facility.capacity_t_month - facility.remaining_capacity_t).toFixed(0) : 0} t</span>
+                  </div>
+                  <div className="h-4 bg-charcoal-100 rounded-sm overflow-hidden flex">
+                    <div 
+                      className={`h-full transition-all duration-1000 ${capacityPct > 90 ? 'bg-red-600' : capacityPct > 70 ? 'bg-yellow-500' : 'bg-forest-600'}`}
+                      style={{ width: `${Math.min(capacityPct, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-[11px] text-charcoal-400 font-mono mt-2">
+                    <span>0 t</span>
+                    <span>{facility?.remaining_capacity_t.toFixed(0)} t remaining headroom</span>
+                    <span>{facility?.capacity_t_month} t max</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-8 border-t border-charcoal-100 pt-6 mt-6">
+                  <div>
+                    <h3 className="text-xs font-bold text-charcoal-900 uppercase mb-4">Pending Routing Decisions</h3>
+                    {matches.length === 0 ? (
+                      <p className="text-xs text-charcoal-500">No pending requests.</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {matches.map((match) => (
+                          <div key={match.id} className="p-3 border border-charcoal-200 bg-charcoal-50 rounded-sm">
+                            <div className="flex justify-between items-start mb-2">
+                              <p className="text-xs font-bold text-charcoal-900">{match.generator_name}</p>
+                              <span className="text-[10px] font-mono bg-charcoal-200 px-1.5 py-0.5 rounded-sm">+{match.volume_t} t</span>
+                            </div>
+                            <div className="flex gap-2 mt-3">
+                              <button 
+                                onClick={() => respondToMatch(match.id, 'accept')}
+                                disabled={respondingMatch === match.id}
+                                className="flex-1 bg-forest-800 text-white text-[10px] font-bold uppercase py-1.5 rounded-sm hover:bg-forest-900 transition-colors"
+                              >
+                                Accept Flow
+                              </button>
+                              <button 
+                                onClick={() => respondToMatch(match.id, 'decline')}
+                                disabled={respondingMatch === match.id}
+                                className="flex-1 border border-charcoal-300 text-charcoal-600 text-[10px] font-bold uppercase py-1.5 rounded-sm hover:bg-charcoal-100 transition-colors"
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      {match.explanation_text && (
-                        <p className="text-xs text-charcoal-500 mb-3 bg-charcoal-50 rounded-lg px-3 py-2 leading-relaxed">
-                          {match.explanation_text}
-                        </p>
-                      )}
-                      <p className="text-xs text-charcoal-400">
-                        Window: {format(new Date(match.pickup_window_start), 'dd MMM')} - {format(new Date(match.pickup_window_end), 'dd MMM yyyy')}
-                      </p>
-                    </div>
-                    <div className="flex gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => respondToMatch(match.id, 'decline')}
-                        disabled={respondingMatch === match.id}
-                        className="p-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
-                        title="Decline"
-                      >
-                        <ThumbsDown className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => respondToMatch(match.id, 'accept')}
-                        disabled={respondingMatch === match.id}
-                        className="px-4 py-2 rounded-xl bg-forest-800 text-white text-sm font-semibold hover:bg-forest-900 transition-colors flex items-center gap-2"
-                      >
-                        <ThumbsUp className="w-4 h-4" />
-                        Accept
-                      </button>
-                    </div>
+                    )}
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
 
-        {/* Recent pickups */}
-        <div className="card">
-          <h2 className="text-sm font-bold text-charcoal-900 mb-4">Recent Pickups</h2>
-          {pickups.length === 0 ? (
-            <p className="text-sm text-charcoal-400 text-center py-6">No pickups yet</p>
-          ) : (
-            <div className="divide-y divide-charcoal-100">
-              {pickups.map((pickup) => (
-                <div key={pickup.id} className="flex items-center gap-4 py-3">
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-charcoal-900">{pickup.generator_name || 'Generator'}</p>
-                    <p className="text-xs text-charcoal-500 capitalize">
-                      {pickup.waste_type?.replace(/_/g, ' ')} - {pickup.volume_t} t
-                    </p>
+                  <div>
+                    <h3 className="text-xs font-bold text-charcoal-900 uppercase mb-4">Verified Logistics Output</h3>
+                    {pickups.length === 0 ? (
+                      <p className="text-xs text-charcoal-500">No active deliveries.</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {pickups.map((pickup) => (
+                          <div key={pickup.id} className="p-3 border border-forest-100 bg-white rounded-sm flex items-center justify-between">
+                            <div>
+                              <p className="text-xs font-bold text-charcoal-900">{pickup.generator_name}</p>
+                              <p className="text-[10px] text-charcoal-500 capitalize">{pickup.waste_type.replace(/_/g, ' ')} • {pickup.volume_t} t</p>
+                            </div>
+                            <div className="text-right">
+                              {pickup.co2_sequestered_t > 0 ? (
+                                <>
+                                  <p className="text-xs font-bold text-forest-700">+{pickup.co2_sequestered_t.toFixed(2)} t</p>
+                                  <p className="text-[9px] uppercase font-bold text-charcoal-400">CO₂e Output</p>
+                                </>
+                              ) : (
+                                <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded-sm ${
+                                  pickup.status === 'in_transit' ? 'bg-yellow-100 text-yellow-800' : 'bg-charcoal-100 text-charcoal-600'
+                                }`}>
+                                  {pickup.status.replace('_', ' ')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                    pickup.status === 'verified' ? 'bg-forest-100 text-forest-800' :
-                    pickup.status === 'in_transit' ? 'bg-yellow-100 text-yellow-800' :
-                    pickup.status === 'scheduled' ? 'bg-blue-100 text-blue-700' :
-                    'bg-charcoal-100 text-charcoal-600'
-                  }`}>
-                    {pickup.status.replace(/_/g, ' ')}
-                  </span>
-                  {pickup.co2_sequestered_t > 0 && (
-                    <p className="text-sm font-bold text-forest-700">{pickup.co2_sequestered_t.toFixed(2)} t CO2</p>
-                  )}
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            </section>
+          </div>
+
+          {/* Sidebar / Abatement Curve */}
+          <div className="space-y-8">
+            <section className="bg-white border border-charcoal-200 rounded-sm overflow-hidden">
+              <div className="px-5 py-4 border-b border-charcoal-100 bg-charcoal-50">
+                <h2 className="text-sm font-bold text-charcoal-900 uppercase tracking-wider">Abatement Output</h2>
+              </div>
+              <div className="p-5">
+                {chartData.length > 0 ? (
+                  <div className="h-48 w-full -ml-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={chartData}>
+                        <defs>
+                          <linearGradient id="fco2Gradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#166534" stopOpacity={0.15} />
+                            <stop offset="95%" stopColor="#166534" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+                        <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#6b7280' }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 10, fill: '#6b7280' }} axisLine={false} tickLine={false} />
+                        <Tooltip 
+                          contentStyle={{ borderRadius: '4px', border: '1px solid #e5e7eb', fontSize: '12px' }}
+                          formatter={(v: number) => [`${v.toFixed(2)} t CO2e`]} 
+                        />
+                        <Area type="step" dataKey="co2" stroke="#166534" strokeWidth={2} fill="url(#fco2Gradient)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <div className="h-40 flex items-center justify-center text-xs text-charcoal-400 text-center px-4">
+                    Process allocations to establish baseline abatement history.
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
         </div>
       </div>
 
       {showAI && (
-        <div className="fixed bottom-6 right-6 z-40">
+        <div className="fixed bottom-6 right-6 z-40 shadow-panel">
           <AIChatPanel onClose={() => setShowAI(false)} />
         </div>
       )}

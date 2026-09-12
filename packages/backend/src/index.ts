@@ -26,6 +26,7 @@ import aiRoutes from './routes/ai';
 import notificationRoutes from './routes/notifications';
 import reportRoutes from './routes/reports';
 import statsRoutes from './routes/stats';
+import economicsRoutes from './routes/economics';
 
 const app = express();
 const httpServer = createServer(app);
@@ -79,6 +80,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/economics', economicsRoutes);
 
 // Global error handler (must be last)
 app.use(errorHandler);

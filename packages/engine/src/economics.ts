@@ -288,3 +288,97 @@ export const PATHWAY_LABEL: Record<PathwayId, string> = {
   composting: PATHWAYS.composting.short,
   gasification_power: PATHWAYS.gasification_power.short,
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Established Economic Models (Phase 3 Upgrade)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Levelized Cost of Processing (LCOP)
+ * Evaluates the true unit cost of processing by discounting lifetime capital
+ * and operating expenses against discounted lifetime throughput.
+ * Formula: sum( (Capex_t + Opex_t) / (1+r)^t ) / sum( Throughput_t / (1+r)^t )
+ * 
+ * @param facility The facility with its capex/opex parameters.
+ * @param lifetimeYears Expected operating life (default 20).
+ * @param discountRate Discount rate (WACC) from constants.
+ */
+export function levelizedCostOfProcessing(
+  facility: Facility,
+  discountRate: number,
+  lifetimeYears: number = 20
+): number {
+  let npvCost = 0;
+  let npvTonnes = 0;
+  
+  // We approximate capexAmortInrPerT back to a day-0 lump sum (very roughly)
+  // or simply treat the amortized cost as an annual cash flow for this model.
+  // A truer LCOP treats capex as Year 0 and opex as Years 1..N.
+  // For simplicity, assume capex was spread, or use the amortized value as a proxy
+  // for capital recovery factor. 
+  // Wait, if it's already amortized per tonne at nameplate, the annual capital charge is:
+  const annualCapex = facility.capexAmortInrPerT * facility.capacityTpd * 330;
+  
+  // Year 0: initial investment (approximated from annual amortized over life)
+  // Since capexAmortInrPerT = NPV_capex / NPV_tonnes roughly, we can reconstruct NPV_capex:
+  let crf = (discountRate * Math.pow(1 + discountRate, lifetimeYears)) / (Math.pow(1 + discountRate, lifetimeYears) - 1);
+  const totalCapex = annualCapex / crf;
+  
+  npvCost += totalCapex;
+  
+  for (let t = 1; t <= lifetimeYears; t++) {
+    const discountFactor = Math.pow(1 + discountRate, t);
+    const annualOpex = facility.opexInrPerT * (facility.capacityTpd * 330);
+    const annualTonnes = facility.capacityTpd * 330; // Assuming nameplate for LCOP baseline
+    
+    npvCost += annualOpex / discountFactor;
+    npvTonnes += annualTonnes / discountFactor;
+  }
+  
+  return npvCost / npvTonnes;
+}
+
+/**
+ * Discounted Cash Flow (DCF) & Net Present Value (NPV) for Expansion
+ * Calculates the NPV of expanding a facility's capacity by 1 tpd, based on the LP
+ * shadow price (marginal value of capacity) projected over N years.
+ * 
+ * @param marginalValuePerTonne Marginal daily value (shadow price) of 1 extra tonne capacity
+ * @param capexPerTpd Capital cost required to add 1 tpd capacity
+ * @param discountRate WACC
+ * @param horizonYears Evaluation horizon (e.g., 10 years)
+ */
+export function expansionNpv(
+  marginalValuePerTonne: number,
+  capexPerTpd: number,
+  discountRate: number,
+  horizonYears: number = 10
+): { npv: number; irr: number | null; realOptionWaitValue: number } {
+  let npv = -capexPerTpd;
+  const annualCashFlow = marginalValuePerTonne * 330; // 330 active days
+  
+  for (let t = 1; t <= horizonYears; t++) {
+    npv += annualCashFlow / Math.pow(1 + discountRate, t);
+  }
+  
+  // Real Options Framing: Option to Wait (simplified proxy)
+  // If NPV is slightly negative or highly uncertain, waiting 1 year might avoid a bad investment.
+  // Wait value is the Black-Scholes call option value on the NPV, approximated here
+  // as max(0, expected_volatility_upside) minus lost year of cash flows.
+  // For UI purposes, we return a simple heuristic: if NPV > 0, wait value is 0 (invest now).
+  // If NPV is close to 0, wait value is the value of avoiding downside.
+  const realOptionWaitValue = npv < 0 && npv > -capexPerTpd * 0.5 ? Math.abs(npv) * 0.2 : 0;
+  
+  return { npv, irr: null, realOptionWaitValue };
+}
+
+/**
+ * Life Cycle Costing (LCC) baseline adjustment
+ * Adds the avoided societal/financial cost of landfilling to the net margin.
+ */
+export function lifeCycleAvoidedCost(
+  tonnes: number,
+  landfillTippingFeeInrPerT: number
+): number {
+  return tonnes * landfillTippingFeeInrPerT;
+}

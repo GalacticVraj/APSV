@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Leaf, LayoutDashboard, MapPin, BarChart2, Truck, Settings,
   LogOut, Bell, ChevronLeft, ChevronRight, Menu, X, MessageSquare,
-  FileText, Shield, Package
+  FileText, Shield, Package, TrendingUp
 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
@@ -20,6 +20,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Map', href: '/map', icon: MapPin },
+  { label: 'Economics', href: '/economics', icon: TrendingUp },
   { label: 'Reports', href: '/reports', icon: BarChart2 },
   { label: 'Admin Panel', href: '/dashboard', icon: Shield, roles: ['platform_admin', 'municipal_admin'] },
 ];

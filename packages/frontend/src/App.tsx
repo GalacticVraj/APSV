@@ -15,6 +15,7 @@ import LogisticsDashboard from './pages/dashboard/LogisticsDashboard';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import MapPage from './pages/MapPage';
 import ReportsPage from './pages/ReportsPage';
+import EconomicsPage from './pages/EconomicsPage';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -59,6 +60,7 @@ function AppContent() {
         <Route path="/dashboard" element={<RequireAuth><RoleDashboard /></RequireAuth>} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/reports" element={<RequireAuth><ReportsPage /></RequireAuth>} />
+        <Route path="/economics" element={<RequireAuth><EconomicsPage /></RequireAuth>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster

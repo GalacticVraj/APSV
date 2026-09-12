@@ -224,182 +224,174 @@ export default function GeneratorDashboard() {
 
   return (
     <AppLayout>
-      <div className="p-6 md:p-8 space-y-8 max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="page-header">
+      <div className="p-8 space-y-10 max-w-[1400px] mx-auto animate-fade-in">
+        {/* Header & Impact Summary - Stark, high-density */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-charcoal-200">
           <div>
-            <h1 className="page-title">Generator Dashboard</h1>
-            <p className="page-subtitle">Track your waste listings, matches, and carbon impact</p>
+            <h1 className="text-3xl font-bold text-charcoal-900 tracking-tight">Generator Operations</h1>
+            <p className="text-sm text-charcoal-500 mt-2 max-w-2xl">
+              Track your waste supply chain, routing decisions, and verified carbon abatement.
+            </p>
           </div>
-          <div className="flex gap-3">
-            <button onClick={() => setShowAI(!showAI)} className="btn-secondary">
-              <span className="text-lg">AI</span> Ask CarbonLoop AI
-            </button>
-            <button onClick={() => setShowCreate(true)} className="btn-primary">
-              <Plus className="w-4 h-4" /> New Listing
-            </button>
-          </div>
-        </div>
-
-        {/* Impact KPI cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { label: 'CO2 Sequestered', value: impact ? `${impact.total_co2_t.toFixed(2)} t` : '...', icon: Leaf, color: 'text-forest-700' },
-            { label: 'Waste Diverted', value: impact ? `${impact.total_waste_diverted_t.toFixed(1)} t` : '...', icon: Package, color: 'text-sage-700' },
-            { label: 'Completed Pickups', value: impact ? impact.completed_pickups.toString() : '...', icon: CheckCircle2, color: 'text-blue-600' },
-            { label: 'Active Listings', value: listings.filter((l) => l.status === 'open').length.toString(), icon: Clock, color: 'text-yellow-600' },
-          ].map((kpi) => (
-            <div key={kpi.label} className="card">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-semibold text-charcoal-500">{kpi.label}</p>
-                <kpi.icon className={`w-4 h-4 ${kpi.color}`} />
+          <div className="flex items-center gap-6">
+            <div className="text-right">
+              <p className="text-xs font-semibold text-charcoal-500 uppercase tracking-wider">Net Carbon Sequestered</p>
+              <div className="flex items-baseline gap-2 justify-end">
+                <p className="text-3xl font-bold text-forest-700">{impact ? impact.total_co2_t.toFixed(2) : '...'}</p>
+                <span className="text-sm font-semibold text-forest-700">tCO₂e</span>
               </div>
-              <p className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</p>
             </div>
-          ))}
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* CO2 trend chart */}
-          <div className="card lg:col-span-2">
-            <h2 className="text-sm font-bold text-charcoal-900 mb-4">Monthly CO2 Sequestered (tonnes)</h2>
-            {chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={180}>
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="co2Gradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#166534" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#166534" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                  <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#9ca3af" />
-                  <YAxis tick={{ fontSize: 11 }} stroke="#9ca3af" />
-                  <Tooltip formatter={(v: number) => [`${v.toFixed(2)} t CO2`, 'Sequestered']} />
-                  <Area type="monotone" dataKey="co2" stroke="#166534" strokeWidth={2}
-                    fill="url(#co2Gradient)" dot={{ r: 3, fill: '#166534' }} />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-44 flex items-center justify-center text-sm text-charcoal-400">
-                Complete pickups to see your CO2 trend
+            <div className="h-10 w-px bg-charcoal-200" />
+            <div className="text-right">
+              <p className="text-xs font-semibold text-charcoal-500 uppercase tracking-wider">Total Diverted</p>
+              <div className="flex items-baseline gap-2 justify-end">
+                <p className="text-3xl font-bold text-charcoal-900">{impact ? impact.total_waste_diverted_t.toFixed(1) : '...'}</p>
+                <span className="text-sm font-semibold text-charcoal-500">t</span>
               </div>
-            )}
-          </div>
-
-          {/* Recent matches */}
-          <div className="card">
-            <h2 className="text-sm font-bold text-charcoal-900 mb-4">Recent Matches</h2>
-            {matches.length === 0 ? (
-              <p className="text-sm text-charcoal-400 text-center py-8">No matches yet. Create a listing to get matched.</p>
-            ) : (
-              <div className="space-y-3">
-                {matches.slice(0, 4).map((match) => (
-                  <div key={match.id} className="flex items-start gap-3 p-3 rounded-xl bg-charcoal-50 border border-charcoal-100">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-sm ${
-                      match.score >= 80 ? 'bg-forest-100 text-forest-800' :
-                      match.score >= 60 ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-charcoal-100 text-charcoal-700'
-                    }`}>
-                      {Math.round(match.score)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-charcoal-900 truncate">{match.facility_name}</p>
-                      <p className="text-xs text-charcoal-500">{match.facility_city} - {conversionLabels[match.conversion_type]}</p>
-                      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full mt-1 inline-block ${
-                        match.status === 'accepted' ? 'bg-forest-100 text-forest-800' :
-                        match.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-charcoal-100 text-charcoal-600'
-                      }`}>{match.status}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Listings table */}
-        <div className="card">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-bold text-charcoal-900">Your Listings</h2>
-            <button onClick={() => setShowCreate(true)} className="text-xs text-forest-700 font-semibold hover:text-forest-900 flex items-center gap-1">
-              <Plus className="w-3.5 h-3.5" /> Add new
-            </button>
-          </div>
-          {listings.length === 0 ? (
-            <div className="text-center py-12">
-              <Package className="w-10 h-10 text-charcoal-300 mx-auto mb-3" />
-              <p className="text-sm text-charcoal-500 mb-4">No listings yet</p>
-              <button onClick={() => setShowCreate(true)} className="btn-primary text-sm">
-                Create your first listing
+            </div>
+            <div className="h-10 w-px bg-charcoal-200" />
+            <div className="flex gap-3">
+              <button onClick={() => setShowAI(!showAI)} className="btn-secondary">
+                Copilot
+              </button>
+              <button onClick={() => setShowCreate(true)} className="btn-primary">
+                New Listing
               </button>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-charcoal-100">
-                    <th className="text-left py-2.5 px-3 text-xs font-semibold text-charcoal-500">Waste type</th>
-                    <th className="text-left py-2.5 px-3 text-xs font-semibold text-charcoal-500">Volume</th>
-                    <th className="text-left py-2.5 px-3 text-xs font-semibold text-charcoal-500">Frequency</th>
-                    <th className="text-left py-2.5 px-3 text-xs font-semibold text-charcoal-500">Window</th>
-                    <th className="text-left py-2.5 px-3 text-xs font-semibold text-charcoal-500">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-charcoal-50">
-                  {listings.map((listing) => (
-                    <tr key={listing.id} className="hover:bg-charcoal-50 transition-colors">
-                      <td className="py-3 px-3 font-medium capitalize">{listing.waste_type.replace(/_/g, ' ')}</td>
-                      <td className="py-3 px-3 text-charcoal-600">{listing.volume_t} t</td>
-                      <td className="py-3 px-3 text-charcoal-600 capitalize">{listing.frequency.replace('_', ' ')}</td>
-                      <td className="py-3 px-3 text-charcoal-500 text-xs">
-                        {format(new Date(listing.pickup_window_start), 'dd MMM')}
-                      </td>
-                      <td className="py-3 px-3">
-                        <span className={statusClasses[listing.status] || 'badge-gray'}>
-                          {statusLabels[listing.status] || listing.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          </div>
         </div>
 
-        {/* Pickups */}
-        <div className="card">
-          <h2 className="text-sm font-bold text-charcoal-900 mb-4">Recent Pickups</h2>
-          {pickups.length === 0 ? (
-            <p className="text-sm text-charcoal-400 text-center py-8">No pickups yet</p>
-          ) : (
-            <div className="space-y-3">
-              {pickups.map((pickup) => (
-                <div key={pickup.id} className="flex items-center gap-4 p-3 rounded-xl border border-charcoal-100 hover:border-charcoal-200 transition-colors">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <p className="text-sm font-semibold text-charcoal-900">{pickup.facility_name || 'Facility'}</p>
-                      <span className={pickupStatusClasses[pickup.status] || 'status-requested'}>
-                        {pickup.status.replace(/_/g, ' ')}
-                      </span>
-                    </div>
-                    <p className="text-xs text-charcoal-500 capitalize">
-                      {pickup.waste_type?.replace(/_/g, ' ')} - {pickup.volume_t} t
-                      {pickup.scheduled_at && ` - ${format(new Date(pickup.scheduled_at), 'dd MMM')}`}
-                    </p>
-                  </div>
-                  {pickup.co2_sequestered_t > 0 && (
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-forest-700">{pickup.co2_sequestered_t.toFixed(2)} t</p>
-                      <p className="text-[10px] text-charcoal-400">CO2 sequestered</p>
-                    </div>
-                  )}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Supply Chain & Matches Table (2 columns) */}
+          <div className="lg:col-span-2 space-y-8">
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-bold text-charcoal-900 uppercase tracking-wider">Active Supply Chain</h2>
+                {listings.length > 0 && <span className="text-xs text-charcoal-500">{listings.length} nodes</span>}
+              </div>
+              
+              {listings.length === 0 ? (
+                <div className="border border-charcoal-200 bg-charcoal-50 rounded-sm p-8 text-center">
+                  <p className="text-sm font-semibold text-charcoal-900 mb-1">No active listings</p>
+                  <p className="text-xs text-charcoal-500 mb-4">You have no waste scheduled for network routing.</p>
+                  <button onClick={() => setShowCreate(true)} className="btn-primary text-xs">Inject Supply</button>
                 </div>
-              ))}
-            </div>
-          )}
+              ) : (
+                <div className="border border-charcoal-200 rounded-sm overflow-hidden bg-white">
+                  <table className="w-full text-sm">
+                    <thead className="bg-charcoal-50 border-b border-charcoal-200">
+                      <tr>
+                        <th className="text-left py-3 px-4 text-xs font-semibold text-charcoal-600 w-1/4">Source Stream</th>
+                        <th className="text-left py-3 px-4 text-xs font-semibold text-charcoal-600 w-1/6">Volume</th>
+                        <th className="text-left py-3 px-4 text-xs font-semibold text-charcoal-600 w-1/4">Time Window</th>
+                        <th className="text-left py-3 px-4 text-xs font-semibold text-charcoal-600 text-right">Routing Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-charcoal-100">
+                      {listings.map((listing) => (
+                        <tr key={listing.id} className="hover:bg-charcoal-50 transition-colors">
+                          <td className="py-4 px-4">
+                            <div className="font-semibold text-charcoal-900 capitalize">{listing.waste_type.replace(/_/g, ' ')}</div>
+                            <div className="text-xs text-charcoal-500 capitalize">{listing.frequency.replace('_', ' ')}</div>
+                          </td>
+                          <td className="py-4 px-4 font-mono text-charcoal-800">{listing.volume_t} t</td>
+                          <td className="py-4 px-4 text-xs text-charcoal-600">
+                            {format(new Date(listing.pickup_window_start), 'dd MMM yyyy')}
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-sm text-xs font-bold border ${
+                              listing.status === 'open' ? 'bg-yellow-50 text-yellow-800 border-yellow-200' :
+                              listing.status === 'matched' ? 'bg-blue-50 text-blue-800 border-blue-200' :
+                              'bg-forest-50 text-forest-800 border-forest-200'
+                            }`}>
+                              {listing.status.toUpperCase()}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+
+            {/* Verified Pickups / Abatement */}
+            <section>
+              <h2 className="text-sm font-bold text-charcoal-900 uppercase tracking-wider mb-4">Verified Abatement Ledger</h2>
+              {pickups.length === 0 ? (
+                <div className="border border-charcoal-200 rounded-sm p-6 text-center bg-white">
+                  <p className="text-xs text-charcoal-500">No completed pickups registered.</p>
+                </div>
+              ) : (
+                <div className="border border-charcoal-200 rounded-sm bg-white divide-y divide-charcoal-100">
+                  {pickups.map((pickup) => (
+                    <div key={pickup.id} className="p-4 flex items-center justify-between hover:bg-charcoal-50">
+                      <div className="flex items-center gap-6">
+                        <div className="w-24">
+                          <p className="text-xs font-mono text-charcoal-500">{format(new Date(pickup.scheduled_at || Date.now()), 'dd MMM')}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-charcoal-900">{pickup.facility_name || 'Network Facility'}</p>
+                          <p className="text-xs text-charcoal-500 capitalize">{pickup.waste_type?.replace(/_/g, ' ')} • {pickup.volume_t} t</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-8">
+                        <span className="text-xs font-bold text-charcoal-600 uppercase">{pickup.status.replace(/_/g, ' ')}</span>
+                        {pickup.co2_sequestered_t > 0 ? (
+                          <div className="text-right min-w-[80px]">
+                            <p className="text-sm font-bold text-forest-700">+{pickup.co2_sequestered_t.toFixed(2)} t</p>
+                            <p className="text-[10px] uppercase text-charcoal-400 font-semibold">CO₂e</p>
+                          </div>
+                        ) : (
+                          <div className="min-w-[80px] text-right">
+                            <span className="text-xs text-charcoal-400">Pending calc</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
+
+          {/* Sidebar / Match Proposals */}
+          <div className="space-y-8">
+            <section className="bg-white border border-charcoal-200 rounded-sm p-5">
+              <h2 className="text-sm font-bold text-charcoal-900 uppercase tracking-wider mb-4">Routing Proposals</h2>
+              <p className="text-xs text-charcoal-500 mb-4 leading-relaxed">
+                The network engine has computed the following optimal sinks for your listed supply based on proximity and conversion efficiency.
+              </p>
+              
+              {matches.length === 0 ? (
+                <div className="p-4 bg-charcoal-50 border border-charcoal-100 rounded-sm text-center">
+                  <p className="text-xs text-charcoal-500">No active proposals.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {matches.slice(0, 4).map((match) => (
+                    <div key={match.id} className="p-3 border border-forest-200 bg-forest-50/30 rounded-sm">
+                      <div className="flex justify-between items-start mb-2">
+                        <p className="text-xs font-bold text-forest-900">{match.facility_name}</p>
+                        <span className="text-xs font-mono font-bold text-forest-700 bg-forest-100 px-1.5 py-0.5 rounded-sm">
+                          Score {Math.round(match.score)}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-charcoal-600 mb-2 leading-relaxed">
+                        {match.explanation_text || `Optimal routing to ${conversionLabels[match.conversion_type]} in ${match.facility_city}.`}
+                      </p>
+                      <div className="flex justify-between items-center pt-2 border-t border-forest-100/50">
+                        <span className="text-[10px] uppercase font-bold text-charcoal-500">{match.status}</span>
+                        <button onClick={() => handleAcceptMatch(match.id)} className="text-[10px] font-bold text-forest-700 hover:text-forest-900 uppercase tracking-wide">
+                          View details →
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
         </div>
       </div>
 
@@ -408,10 +400,11 @@ export default function GeneratorDashboard() {
       )}
 
       {showAI && (
-        <div className="fixed bottom-6 right-6 z-40">
+        <div className="fixed bottom-6 right-6 z-40 shadow-panel">
           <AIChatPanel onClose={() => setShowAI(false)} />
         </div>
       )}
     </AppLayout>
   );
 }
+
