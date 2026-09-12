@@ -24,6 +24,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api, useResource, useTwin } from '../store.tsx';
 import { ErrorState, Loading, Panel, SectionHead, Tag } from '../components/Primitives.tsx';
+import { useRouter } from '../router.tsx';
 import { dateFull, num, pct } from '../format.ts';
 import type {
   AllocationTrace,
@@ -107,10 +108,43 @@ export default function CarbonLedger() {
     'Running Monte Carlo over every emission factor…',
   ]);
 
+  const { search } = useRouter();
   const [openLine, setOpenLine] = useState<string | null>(null);
   const [following, setFollowing] = useState(false);
   const [trace, setTrace] = useState<AllocationTrace | null>(null);
   const [traceError, setTraceError] = useState<string | null>(null);
+
+  /**
+   * Deep link from another screen: /carbon/ledger?source=…&facility=…
+   *
+   * Facilities and Pathways hand a specific contribution over rather than
+   * reimplementing the trace, so the reader lands already following it.
+   */
+  const deepLink = useMemo(() => {
+    const q = new URLSearchParams(search);
+    const source = q.get('source');
+    const facility = q.get('facility');
+    return source && facility ? { source, facility } : null;
+  }, [search]);
+
+  useEffect(() => {
+    if (!deepLink) return;
+    let cancelled = false;
+    setFollowing(true);
+    setOpenLine(null);
+    setTraceError(null);
+    api
+      .trace(deepLink.source, deepLink.facility)
+      .then((t) => !cancelled && setTrace(t))
+      .catch((e) => {
+        if (cancelled) return;
+        setTrace(null);
+        setTraceError(e instanceof Error ? e.message : 'That contribution could not be traced.');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [deepLink]);
 
   // Following a contribution clears any open evidence panel: they compete for
   // the same attention and the trace is the larger idea.

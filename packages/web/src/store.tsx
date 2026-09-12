@@ -41,6 +41,11 @@ import type {
 } from '../../engine/src/types.ts';
 import type { CarbonHistory } from '../../engine/src/history.ts';
 import type {
+  FacilityCarbon,
+  FacilityComparison,
+  FacilityRankRow,
+} from '../../engine/src/facility.ts';
+import type {
   PathwayDecision,
   PathwayDiff,
   MaterialCandidate,
@@ -108,6 +113,13 @@ export const api = {
       totals: NetworkTotals;
       provenance: Record<string, ProvenanceRow[]>;
     }>('/api/carbon'),
+  facilityCarbon: () => req<FacilityRankRow[]>('/api/facilities/carbon'),
+  facilityProfile: (id: string) =>
+    req<FacilityCarbon>(`/api/facilities/profile?id=${encodeURIComponent(id)}`),
+  facilityCompare: (a: string, b: string) =>
+    req<FacilityComparison>(
+      `/api/facilities/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`,
+    ),
   materials: () => req<MaterialCandidate[]>('/api/materials'),
   pathwayDecision: (sourceId: string, lens: ObjectiveMode) =>
     req<PathwayDecision>(

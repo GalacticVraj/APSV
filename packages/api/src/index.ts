@@ -202,6 +202,26 @@ const GET: Record<string, Handler> = {
       provenance: twin.getProvenance(),
     }),
 
+  '/api/facilities/carbon': (_req, res) => json(res, 200, twin.getFacilityRanking()),
+
+  '/api/facilities/profile': (_req, res, url) => {
+    const id = url.searchParams.get('id');
+    if (!id) return json(res, 400, { error: 'A facility "id" is required.' });
+    const profile = twin.getFacilityCarbon(id);
+    if (!profile) return json(res, 404, { error: `No facility "${id}" in the network.` });
+    json(res, 200, profile);
+  },
+
+  '/api/facilities/compare': (_req, res, url) => {
+    const a = url.searchParams.get('a');
+    const b = url.searchParams.get('b');
+    if (!a || !b) return json(res, 400, { error: 'Both "a" and "b" facility ids are required.' });
+    if (a === b) return json(res, 400, { error: 'Pick two different facilities to compare.' });
+    const cmp = twin.getFacilityComparison(a, b);
+    if (!cmp) return json(res, 404, { error: 'One of those facilities is not in the network.' });
+    json(res, 200, cmp);
+  },
+
   '/api/materials': (_req, res) => json(res, 200, twin.getMaterials()),
 
   '/api/pathways/decision': (_req, res, url) => {

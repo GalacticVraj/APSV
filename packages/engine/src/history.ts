@@ -67,6 +67,11 @@ export interface CarbonHistoryPoint {
   /** net tCO2e per tonne diverted — the intensity of the operation */
   intensityTPerT: number;
   tonnesByPathway: Partial<Record<PathwayId, number>>;
+  /**
+   * Net carbon booked at each facility that week, tCO2e per window. Facilities
+   * absent from the map received nothing that week — a real outcome, not a gap.
+   */
+  netByFacility: Record<string, number>;
 }
 
 export interface PeriodComparison {
@@ -114,6 +119,32 @@ function weeklySupply(state: NetworkState): Map<string, number[]> {
   return out;
 }
 
+/**
+ * Net carbon per facility for one week, each from that facility's own ledger under
+ * the week's dominant biochar feedstock — the same rule the Facilities page uses,
+ * so a facility's trend and its profile describe the same quantity.
+ */
+function netByFacility(
+  state: NetworkState,
+  allocations: Allocation[],
+): Record<string, number> {
+  const dominant = dominantBiocharStream(allocations);
+  const permanence = dominant
+    ? permanenceFor(dominant, state.assumptions.soilTempC)
+    : null;
+  const byFacility = new Map<string, Allocation[]>();
+  for (const a of allocations) {
+    const list = byFacility.get(a.facilityId);
+    if (list) list.push(a);
+    else byFacility.set(a.facilityId, [a]);
+  }
+  const out: Record<string, number> = {};
+  for (const [id, list] of byFacility) {
+    const agg = aggregateAllocations(list, state.facilities, state.vehicles, state.assumptions);
+    out[id] = buildLedger(agg, state.assumptions, permanence, false).netT;
+  }
+  return out;
+}
 function tonnesByPathway(allocations: Allocation[]): Partial<Record<PathwayId, number>> {
   const out: Partial<Record<PathwayId, number>> = {};
   for (const a of allocations) out[a.pathway] = (out[a.pathway] ?? 0) + a.tonnes;
@@ -183,6 +214,7 @@ export function carbonHistory(
       processEmissionsT: t.processEmissionsT,
       intensityTPerT: t.divertedT > 0 ? ledger.netT / t.divertedT : 0,
       tonnesByPathway: tonnesByPathway(result.allocations),
+      netByFacility: netByFacility(weekState, result.allocations),
     });
   }
 

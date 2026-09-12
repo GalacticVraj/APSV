@@ -43,6 +43,14 @@ import {
 import { forecastNetwork, type NetworkForecast } from './forecast.ts';
 import { carbonHistory, type CarbonHistory } from './history.ts';
 import {
+  compareFacilities,
+  facilityCarbon,
+  facilityRanking,
+  type FacilityCarbon,
+  type FacilityComparison,
+  type FacilityRankRow,
+} from './facility.ts';
+import {
   comparePathwayPair,
   materialCandidates,
   pathwayDecision,
@@ -102,6 +110,7 @@ export class Twin {
   private cacheForecast: NetworkForecast | null = null;
   private cachePareto: ParetoPoint[] | null = null;
   private cacheHistory: CarbonHistory | null = null;
+  private cacheFacilityRank: FacilityRankRow[] | null = null;
   private lastScenario: ScenarioResult | null = null;
 
   constructor() {
@@ -137,6 +146,7 @@ export class Twin {
     // History re-solves against the live estate and assumptions, so anything that
     // changes the plan changes the trend too.
     this.cacheHistory = null;
+    this.cacheFacilityRank = null;
     if (!keepForecast) this.cacheForecast = null;
   }
 
@@ -300,6 +310,23 @@ export class Twin {
     );
   }
 
+  /** Every facility ranked by its contribution to the network's net carbon. */
+  getFacilityRanking(): FacilityRankRow[] {
+    if (!this.cacheFacilityRank) {
+      this.cacheFacilityRank = facilityRanking(this.state, this.getResult());
+    }
+    return this.cacheFacilityRank;
+  }
+
+  /** The carbon profile of one plant, with its feeding arcs and opportunities. */
+  getFacilityCarbon(facilityId: string): FacilityCarbon | null {
+    return facilityCarbon(this.state, this.getResult(), facilityId, this.getStranded());
+  }
+
+  /** Two plants set against each other, arc for arc where they share a source. */
+  getFacilityComparison(aId: string, bId: string): FacilityComparison | null {
+    return compareFacilities(this.state, this.getResult(), aId, bId);
+  }
   /** Sources offered as a material context for the pathway decision. */
   getMaterials() {
     return materialCandidates(this.state);

@@ -283,6 +283,45 @@ arc field, that an infeasible pathway carries no partial result, that a trade-of
 only when the two bests genuinely differ, and that no explanation claims verification or
 credits. **146 tests.**
 
+## Phase 15 — Carbon Facilities
+
+The Carbon Manager's lens over the plant network, not a facility operations dashboard.
+Which plants help the net figure, which drag on it, and why.
+
+- A facility's ledger is built from the allocations arriving at it, through the network's
+  own `buildLedger` under the network's BC₁₀₀ — so the facilities **sum to the network
+  figure exactly** and a plant's carbon story is a decomposition rather than a second account.
+- **Each feeding arc is built the same way.** The first attempt read `Allocation.netCarbonT`,
+  which the optimiser computes with the arc's own permanence: the arcs summed to **84%** of
+  their facility, and the same haul would have shown one number here and another in the
+  Carbon Ledger. Arcs now sum to 100%, and an arc reads **2770.8029 on both screens**.
+- Transport is apportioned across arcs by their own tonne-kilometres — what the emission is
+  actually proportional to — not by tonnage or by headcount.
+- **Transport vs processing** is the page's central comparison, as a waterfall from gross
+  benefit to net, with the dominant charge named in words.
+- Opportunities appear **only where the engine can price them**: idle capacity with stranded
+  material that has a real arc, and binding capacity where the shadow price was measured by
+  re-optimisation. Each carries the reason the optimiser did not already take it — an
+  "opportunity" the solver rejected for a good reason is a misleading recommendation
+  unless that reason travels with it.
+- Comparison is arc-for-arc where two plants share a source, and says plainly when they do
+  not: aggregate averages describe different material and are not like-for-like.
+- Idle plants report **zero, not nothing** — capacity and reachability are still real.
+
+Cross-linking rather than duplication:
+
+- The router now carries a query string (`path` stays pathname-only, so route lookup cannot
+  see it), and the Carbon Ledger accepts `?source=…&facility=…`. Facilities hands a specific
+  contribution to the existing trace instead of reimplementing it: the reader lands already
+  following that tonne, with the ledger lines it feeds lit.
+- `history.ts` now carries per-facility net carbon per week, from the same weekly re-solve
+  and under the same basis statement — no new claim about measured history.
+
+**20 facility tests**, led by the two reconciliations (facilities to network, arcs to
+facility) and by an explicit cross-check that an arc shows the same figure here as in the
+Ledger trace. Also: opportunities only where headroom or a binding constraint actually
+exists, offline plants given no advice, and idle plants never implying a result. **166 tests.**
+
 ## Documentation
 
 - `README.md` — how to run it and what it does.
