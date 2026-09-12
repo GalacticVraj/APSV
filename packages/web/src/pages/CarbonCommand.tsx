@@ -40,6 +40,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api, useResource, useTwin } from '../store.tsx';
 import { CountUp, ErrorState, Loading } from '../components/Primitives.tsx';
 import { NetworkMap, type Selection } from '../components/NetworkMap.tsx';
+import { Drawer } from '../components/Drawer.tsx';
 import { Link, useRouter } from '../router.tsx';
 import { dateFull, inr, num, pct, timeShort } from '../format.ts';
 import type { AllocationTrace, TraceCandidate } from '../../../engine/src/trace.ts';
@@ -1074,39 +1075,5 @@ function FollowPanel({ version, onClose }: { version: number; onClose: () => voi
         </>
       )}
     </Drawer>
-  );
-}
-
-function Drawer({
-  title,
-  onClose,
-  wide,
-  children,
-}: {
-  title: string;
-  onClose: () => void;
-  wide?: boolean;
-  children: React.ReactNode;
-}) {
-  // Escape closes, because a drawer that traps the reader is worse than a page.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
-  return (
-    <>
-      <div className="dr-scrim" onClick={onClose} aria-hidden />
-      <aside className={`drawer ${wide ? 'wide' : ''}`} role="dialog" aria-label={title}>
-        <header className="dr-head">
-          <h2>{title}</h2>
-          <button className="dr-close" onClick={onClose} aria-label="Close">
-            ×
-          </button>
-        </header>
-        <div className="dr-body">{children}</div>
-      </aside>
-    </>
   );
 }
