@@ -1,29 +1,47 @@
 # Dependencies
 node_modules/
-venv/
-.venv/
-__pycache__/
-*.py[cod]
+packages/*/node_modules/
+shared/node_modules/
 
-# Build output
+# Build outputs
 dist/
 build/
+packages/*/dist/
+packages/*/build/
 .next/
 out/
 
-# Environment
+# Environment variables
 .env
 .env.local
 .env.*.local
+packages/*/.env
 
-# Logs
+# Python / Optimizer
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+.pytest_cache/
+venv/
+.venv/
+env/
+ENV/
+packages/optimizer/venv/
+packages/optimizer/__pycache__/
+
+# Logs & Temp
 *.log
 npm-debug.log*
+yarn-debug.log*
 yarn-error.log*
+.tempmediaStorage/
 
-# Editor / OS
-.vscode/
-.idea/
+# OS / IDE / Editor
 .DS_Store
 Thumbs.db
 desktop.ini
+.vscode/
+.idea/
+
