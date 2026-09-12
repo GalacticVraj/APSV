@@ -1,45 +1,46 @@
 /**
  * Carbon Control Center.
  *
- * One surface, four moves, and a network you can actually touch.
+ * Not a page with a map on it. The network *is* the screen, edge to edge, and it
+ * is moving before the reader has done anything. Everything else — the position,
+ * the opportunity, the risk, the chain from material to carbon — sits in a rail
+ * over it, so nothing is ever read in isolation from the system it describes.
  *
- * The screen this replaced was not wrong, it was crowded: a masthead, a status
- * list, a position block, a map, a decision pair, an event pulse — six competing
- * levels before the reader had decided anything. This version keeps one dominant
- * idea per band, in the order the job is done:
+ * What the reader gets, in the order they get it:
  *
- *   1. WHERE WE STAND    the number, its direction, and what you can do
- *   2. WHERE IT HAPPENS  the network, given the space it deserves
- *   3. WHAT TO DO        exactly one upside and exactly one risk
- *   4. HOW IT ADDS UP    one flow, from material to net
+ *   3 s   a network with material visibly moving through it
+ *   5 s   the carbon position of that network, beside it, not above it
+ *  10 s   one opportunity and one risk, each a single figure
+ *  20 s   four commands, each of which does something real
  *
- * Four actions, and every one is real:
+ * Four commands, and every one is a real engine call:
  *
- *   OPTIMIZE NETWORK   re-solves the live twin under a different objective and
- *                      reports the measured difference between two ledgers.
- *   SIMULATE SHOCK     runs a real ScenarioInstance and holds the before and
- *                      after plans so the map can show the network move.
- *   FOLLOW A TONNE     walks one real allocation from field to ledger line.
- *   WHY THIS NUMBER    opens the decomposition, which opens the Ledger, which
- *                      opens Evidence.
+ *   OPTIMIZE   re-solves the live twin under a chosen objective and reports the
+ *              difference between two ledgers.
+ *   SIMULATE   runs a real ScenarioInstance uncommitted, keeps both plans, and
+ *              the network redraws into the one you pick. The live twin is never
+ *              mutated by a simulation.
+ *   FOLLOW     walks one real allocation from field to ledger line.
+ *   TRACE      opens the decomposition, which opens the Ledger, which opens
+ *              Evidence.
  *
- * Rules this file keeps:
+ * Three things this file will not do:
  *
- *  - Nothing is computed here. Every figure comes from /api/brief, the optimiser
- *    result, or a scenario run. The map draws the real allocation set. If a
- *    number cannot be traced to the engine it does not appear.
- *  - No fabricated liveness. Arcs animate because material is allocated along
- *    them in the current plan, and the network only changes when the optimiser
- *    actually produced a different one. There is no invented telemetry, no
- *    synthetic clock, no fake vehicle moving down a road.
- *  - Selection opens a drawer, not a page. Losing the network to look at one
- *    plant is how the old flow lost people.
+ *  - Compute carbon. Every figure comes from /api/brief or a scenario run. An
+ *    allocation-level sum sits on a different permanence basis and would
+ *    disagree with the Plants screen by about 1.7%.
+ *  - Fabricate liveness. Tokens move because the optimiser allocated tonnes to
+ *    those arcs; plants pulse at a rate set by what they receive. No GPS, no
+ *    vehicles, no clock, no telemetry.
+ *  - Put engineering in the hero. Solver milliseconds and duality gap are real
+ *    and worth showing, but they belong behind "why this number", not in front
+ *    of someone deciding whether this product is worth their attention.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api, useResource, useTwin } from '../store.tsx';
 import { CountUp, ErrorState, Loading } from '../components/Primitives.tsx';
-import { NetworkMap, type Selection } from '../components/NetworkMap.tsx';
+import { LiveNetwork, type LiveSelection } from '../components/LiveNetwork.tsx';
 import { Drawer } from '../components/Drawer.tsx';
 import { Link, useRouter } from '../router.tsx';
 import { dateFull, inr, num, pct, timeShort } from '../format.ts';
@@ -47,15 +48,14 @@ import type { AllocationTrace, TraceCandidate } from '../../../engine/src/trace.
 import type { CarbonBrief } from '../../../engine/src/brief.ts';
 import type {
   Allocation,
+  Facility,
   ObjectiveMode,
   ScenarioResult,
+  WasteSource,
 } from '../../../engine/src/types.ts';
 import '../styles/carbon-command.css';
 
 type Overlay = null | 'why' | 'follow' | 'optimise' | 'simulate';
-
-/** Which plan the map is drawing: the live one, or a scenario's before/after. */
-type MapPlan = { label: string; allocations: Allocation[] } | null;
 
 export default function CarbonCommand() {
   const { boot, state, optimization, version, setObjective, busy } = useTwin();
@@ -67,41 +67,34 @@ export default function CarbonCommand() {
   ]);
 
   const [overlay, setOverlay] = useState<Overlay>(null);
+  const [selection, setSelection] = useState<LiveSelection>(null);
 
-  // Another screen can hand work over with ?do=simulate. Without this, the risk
-  // card on Facilities lands the reader here and then asks them to find the
-  // button themselves — which is the context loss drawers exist to avoid.
-  useEffect(() => {
-    const want = new URLSearchParams(search).get('do');
-    if (want === 'simulate' || want === 'optimise' || want === 'follow' || want === 'why') {
-      setOverlay(want === 'optimise' ? 'optimise' : (want as Overlay));
-    }
-  }, [search]);
-  const [selection, setSelection] = useState<Selection>(null);
-
-  /** A completed shock, kept so the map can be flipped between its two plans. */
+  /** A completed shock, kept so the network can be flipped between its two plans. */
   const [shock, setShock] = useState<ScenarioResult | null>(null);
   const [shockSide, setShockSide] = useState<'before' | 'after'>('after');
 
-  /** Before/after of a live re-optimisation. */
   const [pending, setPending] = useState<{ beforeT: number; beforeObjective: string } | null>(null);
-  const [optimiseResult, setOptimiseResult] = useState<{
-    deltaT: number;
-    fromLabel: string;
-    toLabel: string;
-  } | null>(null);
+  const [result, setResult] = useState<{ deltaT: number; from: string; to: string } | null>(null);
 
   const b = brief.data;
 
+  // Another screen can hand work over with ?do=simulate.
+  useEffect(() => {
+    const want = new URLSearchParams(search).get('do');
+    if (want === 'simulate' || want === 'optimise' || want === 'follow' || want === 'why') {
+      setOverlay(want as Overlay);
+    }
+  }, [search]);
+
   // When the twin re-solves under a new objective, report the difference between
-  // the two positions. Both figures are real ledger reads, a solve apart.
+  // two real ledger reads a solve apart.
   useEffect(() => {
     if (!pending || !b) return;
     if (b.objective === pending.beforeObjective) return;
-    setOptimiseResult({
+    setResult({
       deltaT: b.position.netT - pending.beforeT,
-      fromLabel: pending.beforeObjective.replace(/_/g, ' '),
-      toLabel: b.objectiveLabel,
+      from: pending.beforeObjective.replace(/_/g, ' '),
+      to: b.objectiveLabel,
     });
     setPending(null);
   }, [b, pending]);
@@ -109,74 +102,82 @@ export default function CarbonCommand() {
   const runOptimise = useCallback(
     async (mode: ObjectiveMode) => {
       if (!b || b.objective === mode) return;
-      setOptimiseResult(null);
+      setResult(null);
       setShock(null);
+      setSelection(null);
       setPending({ beforeT: b.position.netT, beforeObjective: b.objective });
       await setObjective(mode);
     },
     [b, setObjective],
   );
 
+  // Plants the scenario knocked out — drawn offline. Above the guards below,
+  // because hooks cannot run conditionally.
+  const offline = useMemo(() => {
+    if (!shock || shockSide !== 'after') return undefined;
+    const on = new Set(shock.after.allocations.map((a) => a.facilityId));
+    const was = new Set(shock.before.allocations.map((a) => a.facilityId));
+    const out = new Set<string>();
+    for (const id of was) if (!on.has(id)) out.add(id);
+    return out;
+  }, [shock, shockSide]);
+
   if (!boot || !state) return <Loading message="Loading…" />;
   if (brief.loading) return <Loading message={brief.message} />;
   if (brief.error) return <ErrorState message={brief.error} onRetry={brief.reload} />;
   if (!b) return null;
 
-  const livePlan = optimization?.result.allocations ?? [];
-  const plan: MapPlan = shock
-    ? {
-        label:
-          shockSide === 'after'
-            ? `${shock.label} — after`
-            : `${shock.label} — before`,
-        allocations: (shockSide === 'after' ? shock.after : shock.before).allocations,
-      }
-    : null;
+  const live = optimization?.result.allocations ?? [];
+  const plan: Allocation[] = shock
+    ? (shockSide === 'after' ? shock.after : shock.before).allocations
+    : live;
+
+  const movingT = plan.reduce((a, x) => a + x.tonnes, 0);
 
   return (
     <div className="cc">
-      <Hero
+      <CommandBar
         b={b}
+        flows={plan.length}
+        movingT={movingT}
+        plants={boot.network.facilities.length}
         busy={busy !== null}
-        result={optimiseResult}
-        onDismiss={() => setOptimiseResult(null)}
-        onWhy={() => setOverlay('why')}
-        onOptimise={() => setOverlay('optimise')}
-        onSimulate={() => setOverlay('simulate')}
-        onFollow={() => setOverlay('follow')}
-      />
-
-      <NetworkStage
-        b={b}
-        sources={boot.network.sources}
-        facilities={boot.network.facilities}
-        live={livePlan}
-        plan={plan}
         shock={shock}
         shockSide={shockSide}
         onShockSide={setShockSide}
         onClearShock={() => setShock(null)}
-        selection={selection}
-        onSelect={setSelection}
+        onOptimise={() => setOverlay('optimise')}
+        onSimulate={() => setOverlay('simulate')}
+        onFollow={() => setOverlay('follow')}
+        onTrace={() => setOverlay('why')}
       />
 
-      <Decisions
-        b={b}
-        onExplore={() => navigate('/carbon/opportunities')}
-        onSimulateRisk={() => setOverlay('simulate')}
-      />
+      <div className="cc-stage">
+        <LiveNetwork
+          sources={boot.network.sources}
+          facilities={boot.network.facilities}
+          allocations={plan}
+          selection={selection}
+          onSelect={setSelection}
+          busy={busy !== null}
+          offlineIds={offline}
+        />
 
-      <CarbonFlow b={b} onWhy={() => setOverlay('why')} />
+        <SignalRail
+          b={b}
+          result={result}
+          onDismiss={() => setResult(null)}
+          onTrace={() => setOverlay('why')}
+          onExplore={() => navigate('/carbon/opportunities')}
+          onSimulate={() => setOverlay('simulate')}
+          shock={shock}
+        />
+      </div>
 
       {overlay === 'why' && <WhyPanel b={b} onClose={() => setOverlay(null)} />}
       {overlay === 'follow' && <FollowPanel version={version} onClose={() => setOverlay(null)} />}
       {overlay === 'optimise' && (
-        <OptimisePanel
-          b={b}
-          busy={busy !== null}
-          onRun={runOptimise}
-          onClose={() => setOverlay(null)}
-        />
+        <OptimisePanel b={b} busy={busy !== null} onRun={runOptimise} onClose={() => setOverlay(null)} />
       )}
       {overlay === 'simulate' && (
         <SimulatePanel
@@ -196,7 +197,7 @@ export default function CarbonCommand() {
           selection={selection}
           sources={boot.network.sources}
           facilities={boot.network.facilities}
-          allocations={plan ? plan.allocations : livePlan}
+          allocations={plan}
           windowDays={b.windowDays}
           onClose={() => setSelection(null)}
         />
@@ -206,205 +207,251 @@ export default function CarbonCommand() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1 · Where we stand
+// The command bar
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * The number, its direction, and the four things you can do about it.
+ * One line of chrome, then the network.
  *
- * Deliberately not a KPI strip. There is one figure here at display size and
- * everything else is either its context or an action — a row of five equal
- * cards is what you build when you have not decided what matters.
+ * Name, what the network is doing right now in physical units, and four
+ * commands. No title block, no description paragraph, no tab strip, no solver
+ * telemetry — all of which the previous version spent about 220px of vertical
+ * space on before the reader reached anything worth looking at.
  */
-function Hero({
+function CommandBar({
   b,
+  flows,
+  movingT,
+  plants,
   busy,
-  result,
-  onDismiss,
-  onWhy,
+  shock,
+  shockSide,
+  onShockSide,
+  onClearShock,
   onOptimise,
   onSimulate,
   onFollow,
+  onTrace,
 }: {
   b: CarbonBrief;
+  flows: number;
+  movingT: number;
+  plants: number;
   busy: boolean;
-  result: { deltaT: number; fromLabel: string; toLabel: string } | null;
-  onDismiss: () => void;
-  onWhy: () => void;
+  shock: ScenarioResult | null;
+  shockSide: 'before' | 'after';
+  onShockSide: (s: 'before' | 'after') => void;
+  onClearShock: () => void;
   onOptimise: () => void;
   onSimulate: () => void;
   onFollow: () => void;
+  onTrace: () => void;
+}) {
+  return (
+    <header className="cc-bar">
+      <div className="cc-id">
+        <span className="cc-name">Carbon Control</span>
+        <span className="cc-live" aria-hidden />
+        <span className="cc-status">
+          {num(movingT)} t moving · {num(flows)} flows · {num(plants)} plants
+        </span>
+      </div>
+
+      {shock && (
+        <div className="cc-flip" role="group" aria-label="Compare plans">
+          <span className="cc-flip-l">{shock.label}</span>
+          <button className={shockSide === 'before' ? 'on' : ''} onClick={() => onShockSide('before')}>
+            Before
+          </button>
+          <button className={shockSide === 'after' ? 'on' : ''} onClick={() => onShockSide('after')}>
+            After
+          </button>
+          <button className="cc-flip-x" onClick={onClearShock} title="Return to the live network">
+            Return to live
+          </button>
+        </div>
+      )}
+
+      <div className="cc-cmds">
+        <button className="cc-cmd primary" onClick={onOptimise} disabled={busy}>
+          {busy ? 'Solving…' : 'Optimize'}
+        </button>
+        <button className="cc-cmd" onClick={onSimulate} disabled={busy}>
+          Simulate
+        </button>
+        <button className="cc-cmd" onClick={onFollow} disabled={busy}>
+          Follow
+        </button>
+        <button className="cc-cmd" onClick={onTrace} disabled={busy}>
+          Trace
+        </button>
+      </div>
+    </header>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// The signal rail
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * The position, and the two signals worth acting on, over the network.
+ *
+ * Deliberately a rail rather than a row of cards under the map. A number sitting
+ * on top of the system it measures reads as that system's state; the same number
+ * in a box below reads as a report about it.
+ */
+function SignalRail({
+  b,
+  result,
+  onDismiss,
+  onTrace,
+  onExplore,
+  onSimulate,
+  shock,
+}: {
+  b: CarbonBrief;
+  result: { deltaT: number; from: string; to: string } | null;
+  onDismiss: () => void;
+  onTrace: () => void;
+  onExplore: () => void;
+  onSimulate: () => void;
+  shock: ScenarioResult | null;
 }) {
   const p = b.position;
   const t = b.trend;
 
   return (
-    <section className="cc-hero">
-      <div className="cc-hero-fig">
-        <div className="cc-k">Net carbon impact</div>
-        <div className="cc-big">
+    <aside className="cc-rail">
+      <section className="cc-pos">
+        <div className="cc-k">Net carbon position</div>
+        <button className="cc-figure" onClick={onTrace} title="Why this number?">
           <span className="cc-sign">{p.netT >= 0 ? '+' : '−'}</span>
           <CountUp value={Math.abs(p.netT)} />
           <span className="cc-unit">tCO₂e</span>
-        </div>
-        <p className="cc-ctx">
-          Current network position across the {b.windowDays}-day planning window, on the{' '}
-          {b.objectiveLabel.toLowerCase()} objective.
-        </p>
-
+        </button>
         {t && (
           <div className={`cc-trend ${t.improving ? 'up' : 'down'}`}>
-            <span className="cc-arrow" aria-hidden>
-              {t.improving ? '↑' : '↓'}
-            </span>
-            {pct(Math.abs(t.deltaPct), 1)} against the previous {t.weeks}-week period
+            {t.improving ? '↑' : '↓'} {pct(Math.abs(t.deltaPct), 1)} vs the previous {t.weeks} weeks
           </div>
         )}
-
-        <button className="cc-why" onClick={onWhy}>
-          Why this number?
-        </button>
+        <div className="cc-basis">
+          {b.windowDays}-day window · {b.objectiveLabel.toLowerCase()} objective
+        </div>
 
         {result && (
           <div className="cc-result" role="status">
-            <span className={`cc-res-delta ${result.deltaT >= 0 ? 'pos' : 'neg'}`}>
+            <span className={`cc-res-d ${result.deltaT >= 0 ? 'pos' : 'neg'}`}>
               {result.deltaT >= 0 ? '+' : '−'}
-              {num(Math.abs(result.deltaT))} tCO₂e
+              {num(Math.abs(result.deltaT))}
             </span>
-            <span className="cc-res-txt">
-              measured after re-solving from {result.fromLabel} to{' '}
-              {result.toLabel.toLowerCase()}
+            <span className="cc-res-t">
+              measured, re-solving from {result.from} to {result.to.toLowerCase()}
             </span>
-            <button className="cc-res-x" onClick={onDismiss} aria-label="Dismiss">
+            <button onClick={onDismiss} aria-label="Dismiss">
               ×
             </button>
           </div>
         )}
-      </div>
 
-      <div className="cc-hero-act">
-        <button className="cc-btn primary" onClick={onOptimise} disabled={busy}>
-          <span className="cc-btn-l">Optimize network</span>
-          <span className="cc-btn-s">Re-solve under a different objective</span>
+        {shock && <ShockReadout shock={shock} />}
+      </section>
+
+      {b.action && (
+        <button className="cc-sig up" onClick={onExplore}>
+          <span className="cc-sig-k">Opportunity</span>
+          <span className="cc-sig-v">+{num(b.action.carbonDeltaT)}</span>
+          <span className="cc-sig-u">tCO₂e</span>
+          <span className="cc-sig-t">{b.action.headline}</span>
+          <span className="cc-sig-m">
+            {b.action.marginDeltaInr >= 0 ? '+' : '−'}
+            {inr(Math.abs(b.action.marginDeltaInr))} margin
+          </span>
         </button>
-        <button className="cc-btn" onClick={onSimulate} disabled={busy}>
-          <span className="cc-btn-l">Simulate shock</span>
-          <span className="cc-btn-s">Take something away and watch it reroute</span>
+      )}
+
+      {b.risk && (
+        <button className="cc-sig risk" onClick={onSimulate}>
+          <span className="cc-sig-k">Risk</span>
+          <span className="cc-sig-v">−{num(Math.abs(b.risk.carbonDeltaT))}</span>
+          <span className="cc-sig-u">tCO₂e</span>
+          <span className="cc-sig-t">{b.risk.facilityName} offline</span>
+          <span className="cc-sig-m">
+            {pct(Math.abs(b.risk.carbonLossPct), 1)} of the network · {b.risk.resilienceGrade}
+          </span>
         </button>
-        <button className="cc-btn" onClick={onFollow} disabled={busy}>
-          <span className="cc-btn-l">Follow a tonne</span>
-          <span className="cc-btn-s">One consignment, field to ledger line</span>
-        </button>
-      </div>
-    </section>
+      )}
+
+      <Chain b={b} />
+
+      <p className="cc-note">
+        Modelled network activity. Material moves on the routes the optimiser allocated it to —
+        there is no live telemetry in this product.
+      </p>
+    </aside>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 2 · Where it happens
-// ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * The network, given the space it deserves.
+ * What the shock cost, on the ledger basis.
  *
- * This is the only element on the page allowed to be large, because it is the
- * only one that answers "where" — and "where" is most of a carbon manager's
- * job. After a shock it holds both plans and flips between them, which is the
- * whole point: you see the same region rerouted rather than two tables.
+ * NOT . That pair is the
+ * optimiser's own running total, which sits on a different permanence basis
+ * than the ledger and reports this scenario as −5,816 where the ledger — and
+ * the risk card three inches above it — says −7,038. The engine already
+ * computed the right figure into `deltas`; this reads it rather than
+ * recomputing it.
  */
-function NetworkStage({
-  b,
-  sources,
-  facilities,
-  live,
-  plan,
-  shock,
-  shockSide,
-  onShockSide,
-  onClearShock,
-  selection,
-  onSelect,
-}: {
-  b: CarbonBrief;
-  sources: NonNullable<ReturnType<typeof useTwin>['boot']>['network']['sources'];
-  facilities: NonNullable<ReturnType<typeof useTwin>['boot']>['network']['facilities'];
-  live: Allocation[];
-  plan: MapPlan;
-  shock: ScenarioResult | null;
-  shockSide: 'before' | 'after';
-  onShockSide: (s: 'before' | 'after') => void;
-  onClearShock: () => void;
-  selection: Selection;
-  onSelect: (s: Selection) => void;
-}) {
-  const allocations = plan ? plan.allocations : live;
-  const movingT = allocations.reduce((a, x) => a + x.tonnes, 0);
-
+function ShockReadout({ shock }: { shock: ScenarioResult }) {
+  const carbon = shock.deltas.find((d) => d.key === 'netCarbonT');
+  const margin = shock.deltas.find((d) => d.key === 'marginInr');
+  if (!carbon) return null;
   return (
-    <section className="cc-net">
-      <div className="cc-net-bar">
-        <span className="cc-net-title">{plan ? plan.label : 'Live carbon network'}</span>
-        <span className="cc-net-sub">
-          {num(sources.length)} sources · {num(facilities.length)} plants ·{' '}
-          {num(allocations.length)} flows · {num(movingT)} t moving
-        </span>
+    <div className="cc-result shock" role="status">
+      <span className={`cc-res-d ${carbon.delta >= 0 ? 'pos' : 'neg'}`}>
+        {carbon.delta >= 0 ? '+' : '−'}
+        {num(Math.abs(carbon.delta))}
+      </span>
+      <span className="cc-res-t">
+        tCO₂e against the live plan
+        {margin
+          ? `, and ${margin.delta >= 0 ? '+' : '−'}${inr(Math.abs(margin.delta))} of margin`
+          : ''}
+        . {shock.flowChanges.length} flows moved. The live network is untouched.
+      </span>
+    </div>
+  );
+}
 
-        {shock ? (
-          <div className="cc-flip" role="group" aria-label="Compare plans">
-            <button
-              className={shockSide === 'before' ? 'on' : ''}
-              onClick={() => onShockSide('before')}
-            >
-              Before
-            </button>
-            <button
-              className={shockSide === 'after' ? 'on' : ''}
-              onClick={() => onShockSide('after')}
-            >
-              After
-            </button>
-            <button className="cc-flip-x" onClick={onClearShock} title="Return to the live plan">
-              ×
-            </button>
-          </div>
-        ) : (
-          <Link to="/carbon/facilities" className="cc-net-link">
-            Open network
-          </Link>
-        )}
-      </div>
-
-      <div className={`cc-canvas ${selection ? 'focused' : ''}`}>
-        <NetworkMap
-          sources={sources}
-          facilities={facilities}
-          allocations={allocations}
-          selection={selection}
-          onSelect={onSelect}
-          showLegend={false}
-          showLabels
-        />
-      </div>
-
-      <div className="cc-net-foot">
-        {shock ? (
-          <span className="cc-net-hint">
-            {shock.flowChanges.length} flows moved and {shock.affectedEntityIds.length}{' '}
-            {shock.affectedEntityIds.length === 1 ? 'entity' : 'entities'} changed between these two
-            plans. Both are real optimiser runs — switch above to see the same region before and
-            after.
+/**
+ * Material → pathway → carbon, as one band per conversion route.
+ *
+ * The brief already groups the network this way, so this selects and formats;
+ * it does not re-derive anything.
+ */
+function Chain({ b }: { b: CarbonBrief }) {
+  const max = Math.max(...b.flow.map((f) => f.netT), 1);
+  return (
+    <section className="cc-chain">
+      <div className="cc-k">Material → pathway → carbon</div>
+      {b.flow.map((f) => (
+        <div className="cc-chain-row" key={f.pathway}>
+          <span className="cc-chain-n">{f.label}</span>
+          <span className="cc-chain-t">{num(f.tonnes)} t</span>
+          <span className="cc-chain-track">
+            <span className="cc-chain-fill" style={{ width: `${(f.netT / max) * 100}%` }} />
           </span>
-        ) : (
-          <span className="cc-net-hint">
-            Select a plant, a source or a flow for its carbon detail. Arcs carry the material
-            allocated in the plan currently in force — they redraw whenever the optimiser produces
-            a different one.
-          </span>
-        )}
-      </div>
+          <span className="cc-chain-v">+{num(f.netT)}</span>
+        </div>
+      ))}
     </section>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Inspection
+// ─────────────────────────────────────────────────────────────────────────────
 
 /**
  * What one selected thing is worth, without leaving the network.
@@ -420,9 +467,9 @@ function SelectionDrawer({
   windowDays,
   onClose,
 }: {
-  selection: NonNullable<Selection>;
-  sources: NonNullable<ReturnType<typeof useTwin>['boot']>['network']['sources'];
-  facilities: NonNullable<ReturnType<typeof useTwin>['boot']>['network']['facilities'];
+  selection: Exclude<LiveSelection, null>;
+  sources: WasteSource[];
+  facilities: Facility[];
   allocations: Allocation[];
   windowDays: number;
   onClose: () => void;
@@ -517,152 +564,6 @@ function SelectionDrawer({
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 3 · What to do
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Exactly one upside and exactly one risk.
- *
- * The Opportunities screen ranks thirteen findings and the resilience report
- * ranks eighteen plants. Neither belongs here. A control centre that shows
- * twenty options has not made a decision about what matters, and neither will
- * the reader.
- */
-function Decisions({
-  b,
-  onExplore,
-  onSimulateRisk,
-}: {
-  b: CarbonBrief;
-  onExplore: () => void;
-  onSimulateRisk: () => void;
-}) {
-  const a = b.action;
-  const r = b.risk;
-  if (!a && !r) return null;
-
-  return (
-    <section className="cc-dec">
-      {a && (
-        <article className="cc-card up">
-          <div className="cc-card-k">What should we do next?</div>
-          <h3>{a.headline}</h3>
-          <div className="cc-card-figs">
-            <span className="cc-card-fig pos">
-              +{num(a.carbonDeltaT)} <i>tCO₂e</i>
-            </span>
-            {a.marginDeltaInr !== 0 && (
-              <span className={`cc-card-fig ${a.marginDeltaInr >= 0 ? 'pos' : 'neg'}`}>
-                {a.marginDeltaInr >= 0 ? '+' : '−'}
-                {inr(Math.abs(a.marginDeltaInr))}
-              </span>
-            )}
-          </div>
-          <p>{a.why}</p>
-          <p className="cc-card-note">{a.whyNotAlready}</p>
-          <button className="cc-btn sm primary" onClick={onExplore}>
-            Explore opportunity
-          </button>
-        </article>
-      )}
-
-      {r && (
-        <article className="cc-card risk">
-          <div className="cc-card-k">Biggest network risk</div>
-          <h3>{r.facilityName}</h3>
-          <div className="cc-card-figs">
-            <span className="cc-card-fig neg">
-              −{num(Math.abs(r.carbonDeltaT))} <i>tCO₂e</i>
-            </span>
-            <span className="cc-card-fig muted">
-              {pct(Math.abs(r.carbonLossPct), 1)} of the network
-            </span>
-          </div>
-          <p>{r.why}</p>
-          <p className="cc-card-note">
-            Resilience {r.resilienceGrade} · {r.flowsChanged} flows would move ·{' '}
-            {num(Math.abs(r.strandedDeltaT))} t would strand.
-          </p>
-          <button className="cc-btn sm" onClick={onSimulateRisk}>
-            Simulate this
-          </button>
-        </article>
-      )}
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 4 · How it adds up
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * One flow, from material to net. Not six charts.
- *
- * Each band is proportional to its own magnitude, and the three that add and
- * the two that subtract are coloured accordingly — so the shape of the bar is
- * the argument. Removal, avoidance and substitution stay on separate bands
- * because they are different commodities and this product never sums them into
- * one flattering figure.
- */
-function CarbonFlow({ b, onWhy }: { b: CarbonBrief; onWhy: () => void }) {
-  const p = b.position;
-
-  const bands = [
-    { k: 'Durable removal', v: p.removalT, sign: 1, note: 'Carbon held in solid form, after the permanence adjustment.' },
-    { k: 'Avoided emissions', v: p.avoidedT, sign: 1, note: 'What the counterfactual fate would have released. Not a removal.' },
-    { k: 'Fossil substitution', v: p.substitutionT, sign: 1, note: 'Fossil energy and synthetic nitrogen the products displaced.' },
-    { k: 'Transport', v: p.transportT, sign: -1, note: 'Diesel burned hauling material to the plants.' },
-    { k: 'Processing', v: p.processT, sign: -1, note: 'Energy the conversion itself consumed.' },
-  ].filter((x) => Math.abs(x.v) > 0.5);
-
-  const max = Math.max(...bands.map((x) => Math.abs(x.v)), 1);
-
-  return (
-    <section className="cc-flow">
-      <div className="cc-flow-head">
-        <span className="cc-k">How the number is built</span>
-        <button className="cc-why sm" onClick={onWhy}>
-          Open the full decomposition
-        </button>
-      </div>
-
-      <div className="cc-bands">
-        {bands.map((x) => (
-          <div className="cc-band" key={x.k}>
-            <span className="cc-band-k">{x.k}</span>
-            <span className="cc-band-track">
-              <span
-                className={`cc-band-fill ${x.sign > 0 ? 'add' : 'sub'}`}
-                style={{ width: `${(Math.abs(x.v) / max) * 100}%` }}
-              />
-            </span>
-            <span className={`cc-band-v ${x.sign > 0 ? 'add' : 'sub'}`}>
-              {x.sign > 0 ? '+' : '−'}
-              {num(Math.abs(x.v))}
-            </span>
-            <span className="cc-band-n">{x.note}</span>
-          </div>
-        ))}
-
-        <div className="cc-band net">
-          <span className="cc-band-k">Net</span>
-          <span className="cc-band-track" />
-          <span className="cc-band-v">
-            {p.netT >= 0 ? '+' : '−'}
-            {num(Math.abs(p.netT))}
-          </span>
-          <span className="cc-band-n">
-            {num(p.divertedT)} t placed of {num(p.suppliedT)} t offered ·{' '}
-            {p.perTonneT.toFixed(3)} tCO₂e per tonne
-          </span>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Optimise
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**

@@ -152,19 +152,28 @@ export function Shell({ children, demoActive }: { children: ReactNode; demoActiv
           </span>
         </div>
 
-        <div className="topbar-div" />
-        <div className="topbar-field">
-          <span className="k">Solver</span>
-          <span className="v">
-            {busy ? (
-              <span style={{ color: 'var(--green-300)' }}>computing…</span>
-            ) : telemetry ? (
-              `${telemetry.solveMs} ms · gap ${telemetry.gapPct.toFixed(2)}%`
-            ) : (
-              '—'
-            )}
-          </span>
-        </div>
+        {/* Solve time and duality gap are real and worth showing — but they are
+            engineering, and engineering belongs behind "why this number" rather
+            than in front of someone still deciding whether the product is worth
+            their attention. The Carbon workspace hides them; Network keeps them,
+            because there the reader came for the optimiser. */}
+        {workspace !== 'carbon' && (
+          <>
+            <div className="topbar-div" />
+            <div className="topbar-field">
+              <span className="k">Solver</span>
+              <span className="v">
+                {busy ? (
+                  <span style={{ color: 'var(--green-300)' }}>computing…</span>
+                ) : telemetry ? (
+                  `${telemetry.solveMs} ms · gap ${telemetry.gapPct.toFixed(2)}%`
+                ) : (
+                  '—'
+                )}
+              </span>
+            </div>
+          </>
+        )}
 
         {scenarioCount > 0 && (
           <>

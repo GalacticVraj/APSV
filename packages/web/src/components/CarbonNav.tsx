@@ -43,79 +43,93 @@ export interface CarbonGroup {
 
 export const CARBON_GROUPS: CarbonGroup[] = [
   {
-    key: 'position',
-    label: 'Position',
-    question: 'How much, and which way is it moving?',
+    key: 'control',
+    label: 'Control',
+    question: 'What is happening?',
     views: [
       {
         to: '/carbon',
-        label: 'Overview',
+        label: 'Control Center',
         blurb:
-          'The number in force on the live network, with the map and the flows it came off.',
+          'The carbon position of the network currently in force, on the network itself.',
       },
       {
         to: '/carbon/impact',
         label: 'Breakdown',
         blurb:
-          'The net atmospheric effect of the plan currently in force, and the arithmetic behind it. Every term opens into the physical quantities, factors and citations it was built from.',
+          'The same number opened into its six terms, with how it moved against the previous period.',
       },
     ],
   },
   {
-    key: 'sources',
-    label: 'Where it comes from',
-    question: 'Which plants, which routes, which tonnes?',
+    key: 'network',
+    label: 'Network',
+    question: 'Where is it happening?',
     views: [
       {
         to: '/carbon/facilities',
         label: 'Plants',
         blurb:
-          'Plants are carbon decision points: a haul distance, a conversion efficiency and a feedstock chemistry meeting at one gate. Which of them help the net figure, and which drag on it.',
+          'Which plants create the carbon, which drag on it, and where material can still be placed.',
       },
       {
         to: '/carbon/pathways',
         label: 'Pathways',
         blurb:
-          'For one consignment of material, every conversion route the network can actually offer it — ranked on carbon, with the gate that excluded the rest and the margin given up by choosing the carbon winner.',
-      },
-      {
-        to: '/carbon/ledger',
-        label: 'Trace',
-        blurb:
-          'Every figure here resolves to a physical quantity, a published factor and a citation. Open any line for its evidence, or follow a single contribution from the field to the net result.',
+          'For one consignment, every conversion route the network can actually offer it — ranked on carbon, with the gate that excluded the rest.',
       },
     ],
   },
   {
-    key: 'actions',
-    label: 'What to do',
-    question: 'What is the next move worth?',
+    key: 'decisions',
+    label: 'Decisions',
+    question: 'What should change?',
     views: [
       {
         to: '/carbon/opportunities',
         label: 'Opportunities',
         blurb:
-          'Each finding was measured by applying the change and re-running the optimiser. The improvement is the difference between two real solves — and every one says why the optimiser has not already taken it.',
-      },
-      {
-        to: '/carbon/scenarios',
-        label: 'Scenarios',
-        blurb:
-          'Change one real constraint and the whole network re-solves. Everything here is the difference between two full optimiser runs, including which source now goes to which plant.',
+          'Each finding was measured by applying the change and re-running the optimiser — the difference between two real solves, with the reason it has not already been taken.',
       },
     ],
   },
   {
-    key: 'defend',
-    label: 'Can I defend it',
-    question: 'Where did every figure come from?',
+    key: 'simulate',
+    label: 'Simulate',
+    question: 'What happens if reality changes?',
     views: [
       {
-        to: '/carbon/evidence',
-        label: 'Method',
+        to: '/carbon/scenarios',
+        label: 'Scenarios',
         blurb:
-          'Every carbon figure in this system is a model output. What each one was built from, which allocations produced it, and where the factors came from — so the basis can be inspected rather than taken on trust.',
+          'Change one real constraint and the whole network re-solves. The live network is never modified.',
       },
+    ],
+  },
+  {
+    key: 'trace',
+    label: 'Trace',
+    question: 'Why should I trust this number?',
+    views: [
+      {
+        to: '/carbon/ledger',
+        label: 'Ledger',
+        blurb:
+          'Every figure resolves to a physical quantity, a published factor and a citation. Follow one contribution from the field to the net result.',
+      },
+      {
+        to: '/carbon/evidence',
+        label: 'Evidence',
+        blurb:
+          'What each figure was built from, which allocations produced it, and where this model agrees or disagrees with published work.',
+      },
+    ],
+  },
+  {
+    key: 'report',
+    label: 'Report',
+    question: 'What should I communicate?',
+    views: [
       {
         to: '/carbon/report',
         label: 'Brief',
