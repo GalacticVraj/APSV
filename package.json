@@ -18,9 +18,9 @@
     "dev:web": "npm run dev -w @terraflux/web",
     "build": "npm run build -w @terraflux/web",
     "start": "npm run build && node --experimental-strip-types packages/api/src/index.ts",
-    "test": "node --experimental-strip-types --test \"packages/engine/tests/*.test.ts\"",
+    "test": "node --experimental-strip-types --test \"packages/*/tests/*.test.ts\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test:watch": "node --experimental-strip-types --test --watch \"packages/engine/tests/*.test.ts\""
+    "test:watch": "node --experimental-strip-types --test --watch \"packages/*/tests/*.test.ts\""
   },
   "devDependencies": {
     "@types/node": "^22.20.2",

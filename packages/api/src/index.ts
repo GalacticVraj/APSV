@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { Twin } from '../../engine/src/state.ts';
 import { ask, comparePathways, SUGGESTED_QUESTIONS, TOOL_DEFS } from '../../engine/src/copilot.ts';
 import { scenarioDefs } from '../../engine/src/scenario.ts';
+import { validateScenarioParams } from './validate.ts';
 import { STREAMS, COUNTERFACTUALS } from '../../engine/src/streams.ts';
 import { PATHWAYS } from '../../engine/src/pathways.ts';
 import { SEASON } from '../../engine/src/forecast.ts';
@@ -274,15 +275,19 @@ const POST: Record<string, Handler> = {
   '/api/scenario': async (req, res) => {
     const body = await readBody(req);
     const kind = String(body.kind ?? '');
-    const defs = scenarioDefs(twin.getState());
-    if (!defs.some((d) => d.kind === kind)) {
+    const net = twin.getState();
+    const defs = scenarioDefs(net);
+    const def = defs.find((d) => d.kind === kind);
+    if (!def) {
       return json(res, 400, {
         error: `Unknown scenario "${kind}". Expected one of: ${defs.map((d) => d.kind).join(', ')}.`,
       });
     }
+    const checked = validateScenarioParams(def, net, body.params);
+    if ('error' in checked) return json(res, 400, { error: checked.error });
     const scenario: ScenarioInstance = {
       kind: kind as ScenarioInstance['kind'],
-      params: (body.params as Record<string, string | number>) ?? {},
+      params: checked.params,
     };
     const commit = body.commit === true;
     const result = commit ? twin.commitScenario(scenario) : twin.previewScenario(scenario);

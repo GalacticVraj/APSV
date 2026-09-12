@@ -128,6 +128,23 @@ Two corrections after the first end-to-end solve:
 - Explained the counterintuitive result rather than hiding it: the optimiser diverts less
   tonnage than the status-quo heuristic *on purpose*, and the Overview now says why.
 
+## Phase 11 — Input validation
+
+- **Scenario parameters were the one unvalidated input.** `/api/scenario` checked the
+  scenario kind against the definition list but forwarded `params` untouched. A scenario
+  posted without its parameters reached the solver with `undefined` where a price belonged;
+  that became NaN, every arc cost became NaN, nothing could be placed, and the API answered
+  **200 with a fully formed result claiming carbon had fallen 100%** and a label reading
+  "Durable CDR at ₹NaN/tCO₂e". Nothing threw, so nothing surfaced it.
+- `packages/api/src/validate.ts` now validates against the scenario definition itself —
+  the same metadata the client renders its controls from, so there is no second copy of the
+  rules to drift. Unknown keys, non-numeric numbers, out-of-bounds numbers and choices
+  outside the declared options are rejected with the reason; an absent parameter falls back
+  to the definition's default rather than reaching the solver undefined.
+- **10 validation tests**, including two that sweep every scenario: each accepts all of its
+  declared choices and both of its numeric bounds, and every parameter is finite when
+  nothing is supplied. Engine plus API now stands at **85 tests**; `npm test` runs both.
+
 ## Documentation
 
 - `README.md` — how to run it and what it does.
