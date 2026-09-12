@@ -11,6 +11,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from '../router.tsx';
 import { api, useTwin } from '../store.tsx';
 import { NetworkMap, type Selection } from '../components/NetworkMap.tsx';
 import {
@@ -20,6 +21,8 @@ import {
   Panel,
   SectionHead,
   Tag,
+  DecisionBanner,
+  ValueFlowChain,
 } from '../components/Primitives.tsx';
 import { inr, num, signedPct, deltaClass, km } from '../format.ts';
 import type { ScenarioDef, ScenarioResult } from '../../../engine/src/types.ts';
@@ -27,6 +30,7 @@ import type { ScenarioDef, ScenarioResult } from '../../../engine/src/types.ts';
 export default function Scenarios() {
   const { boot, state, optimization, commitScenario, lastScenario, setLastScenario, busy } =
     useTwin();
+  const { search } = useRouter();
   const [kind, setKind] = useState<string>('facility_offline');
   const [params, setParams] = useState<Record<string, string | number>>({});
   const [running, setRunning] = useState(false);
@@ -49,6 +53,44 @@ export default function Scenarios() {
     for (const p of def.params) next[p.key] = p.defaultValue;
     setParams(next);
   }, [def?.kind]);
+
+  /**
+   * A scenario can arrive as a deep link: /scenarios?kind=…&param=…
+   *
+   * Carbon Opportunities hands over the exact instance it measured, so the user
+   * re-runs that change rather than rebuilding it from memory. Adopted once, then
+   * the controls behave normally — this preselects, it does not lock.
+   */
+  const adoptedLink = useRef(false);
+  useEffect(() => {
+    if (adoptedLink.current || defs.length === 0) return;
+    const q = new URLSearchParams(search);
+    const linked = q.get('kind');
+    if (!linked) return;
+    const target = defs.find((d) => d.kind === linked);
+    if (!target) return;
+
+    adoptedLink.current = true;
+    adopting.current = true;
+    const next: Record<string, string | number> = {};
+    for (const pd of target.params) {
+      const raw = q.get(pd.key);
+      if (raw === null) {
+        next[pd.key] = pd.defaultValue;
+        continue;
+      }
+      // Numbers arrive as strings; anything unparseable falls back to the
+      // declared default rather than reaching the solver as NaN.
+      if (pd.type === 'number') {
+        const v = Number(raw);
+        next[pd.key] = Number.isFinite(v) ? v : pd.defaultValue;
+      } else {
+        next[pd.key] = raw;
+      }
+    }
+    setKind(target.kind);
+    setParams(next);
+  }, [search, defs.length]);
 
   // A scenario can also arrive from outside this screen — the guided demo runs
   // one directly. When that happens, adopt its selection so the controls describe
@@ -277,7 +319,38 @@ export default function Scenarios() {
               </div>
 
               <div style={{ padding: 14 }}>
-                <div className="stat-label">What happened</div>
+                {(() => {
+                  const carbonDelta = sc.deltas.find((d) => d.key === 'netCarbonT')?.deltaPct ?? 0;
+                  const marginDelta = sc.deltas.find((d) => d.key === 'marginInr')?.deltaPct ?? 0;
+                  return (
+                    <>
+                      <DecisionBanner
+                        badge="Scenario Impact State"
+                        happening={sc.narrative[0] ?? sc.label}
+                        why={
+                          <>
+                            Carbon shift: <strong>{signedPct(carbonDelta)}</strong> ({num(sc.after.totals.netCarbonT - sc.before.totals.netCarbonT)} tCO₂e), Margin shift: <strong>{signedPct(marginDelta)}</strong> ({inr(sc.after.totals.marginInr - sc.before.totals.marginInr)}).
+                          </>
+                        }
+                        action="Press 'Apply' to commit this scenario state to the live network digital twin."
+                        actionLabel="Apply to Network"
+                        onAction={() => commitScenario(sc.scenario)}
+                      />
+
+                      <ValueFlowChain
+                        title="Scenario Shift Flow"
+                        steps={[
+                          { label: 'Shock Type', value: sc.label, sub: 'State Mutation' },
+                          { label: 'Flow Changes', value: `${sc.flowChanges.length} Arcs`, sub: `${sc.after.telemetry.solveMs} ms Re-solve` },
+                          { label: 'Net Carbon Shift', value: `${signedPct(carbonDelta)}`, sub: `${num(sc.after.totals.netCarbonT)} tCO₂e After`, tone: carbonDelta >= 0 ? 'pos' : 'neg' },
+                          { label: 'Margin Impact', value: `${signedPct(marginDelta)}`, sub: `${inr(sc.after.totals.marginInr)} After`, tone: marginDelta >= 0 ? 'pos' : 'neg' },
+                        ]}
+                      />
+                    </>
+                  );
+                })()}
+
+                <div className="stat-label">Detailed Narrative</div>
                 <ul style={{ margin: '7px 0 0', paddingLeft: 16, fontSize: 12, lineHeight: 1.6 }}>
                   {sc.narrative.slice(1).map((n, i) => (
                     <li key={i} style={{ marginBottom: 4 }}>

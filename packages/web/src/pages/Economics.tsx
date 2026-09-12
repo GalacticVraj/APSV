@@ -9,7 +9,7 @@
 import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { api, useResource, useTwin } from '../store.tsx';
-import { ErrorState, Loading } from '../components/Primitives.tsx';
+import { DecisionBanner, ErrorState, Loading } from '../components/Primitives.tsx';
 import { PATHWAY_SHORT } from '../components/NetworkMap.tsx';
 import { inr, num, pct } from '../format.ts';
 import type { PathwayId } from '../../../engine/src/types.ts';
@@ -218,6 +218,27 @@ export default function Economics() {
           caption={`${pct(T.divertedPct, 0)} of supply · ${state.assumptions.windowDays}d window`}
         />
       </div>
+
+      {/* Sukruti's decision banner: the margin position stated before the views. */}
+      <DecisionBanner
+        badge="Unit Economics & Margin Decision State"
+        happening={
+          <>
+            Total net margin: <strong>{inr(T.marginInr)}</strong> ({inr(T.marginPerTonneInr)}/t) over the{' '}
+            {state.assumptions.windowDays}-day planning window.
+          </>
+        }
+        why={
+          <>
+            <strong>{num(freeCo2)} tCO₂e</strong> ({pct(totalCo2 > 0 ? (freeCo2 / totalCo2) * 100 : 0, 0)}) of
+            carbon abatement is <strong>self-funding</strong> — negative abatement cost before any
+            carbon credit is sold.
+          </>
+        }
+        action="Execute the self-funding pathways first, then apply carbon revenue to bridge the routes that still cost money."
+        actionLabel="See the carbon side →"
+        to="/carbon"
+      />
 
       <div className="econ-body">
         {/* ── Left nav rail ─────────────────────────────────────────────── */}

@@ -25,6 +25,7 @@ import type {
   StreamId,
 } from './types.ts';
 import { cloneNetwork } from './network.ts';
+import { networkLedger, OWN_BASIS } from './carbon.ts';
 import { optimize } from './optimizer.ts';
 import { detectBottlenecks } from './bottleneck.ts';
 import { STREAMS } from './streams.ts';
@@ -594,7 +595,21 @@ export function diffFlows(
   return changes.sort((a, b2) => b2.tonnes - a.tonnes);
 }
 
+/**
+ * Before/after deltas for a scenario.
+ *
+ * Carbon lines come from `networkLedger()`, not from `OptimizationResult.totals`.
+ * The optimiser's totals aggregate each allocation under its own permanence and
+ * read about a tenth below the ledger; using them here made this screen report
+ * +1,174 tCO₂e for the same capacity change that Carbon Opportunities measured at
+ * +1,410. Two screens disagreeing about one change is the failure the whole
+ * product is built to avoid, so the ledger is the only carbon source here.
+ *
+ * `net` is required for that: a ledger needs the facilities, vehicles and
+ * assumptions the allocations were solved against.
+ */
 export function buildDeltas(
+  net: NetworkState,
   before: OptimizationResult,
   after: OptimizationResult,
 ): ScenarioDelta[] {
@@ -618,25 +633,40 @@ export function buildDeltas(
 
   const B = before.totals;
   const A = after.totals;
+  // Whole plans on both sides, each on its own feedstock mix.
+  const bL = networkLedger(
+    before.allocations,
+    net.facilities,
+    net.vehicles,
+    net.assumptions,
+    OWN_BASIS,
+  );
+  const aL = networkLedger(
+    after.allocations,
+    net.facilities,
+    net.vehicles,
+    net.assumptions,
+    OWN_BASIS,
+  );
 
   return [
     mk('divertedT', 'Waste diverted', 't', B.divertedT, A.divertedT, true),
     mk('strandedT', 'Waste stranded', 't', B.strandedT, A.strandedT, false),
-    mk('netCarbonT', 'Net carbon impact', 'tCO₂e', B.netCarbonT, A.netCarbonT, true),
+    mk('netCarbonT', 'Net carbon impact', 'tCO₂e', bL.netT, aL.netT, true),
     mk(
       'durableRemovalT',
       'Durable removal',
       'tCO₂e',
-      B.durableRemovalT,
-      A.durableRemovalT,
+      bL.durableRemovalT,
+      aL.durableRemovalT,
       true,
     ),
     mk(
       'avoidedEmissionsT',
       'Avoided emissions',
       'tCO₂e',
-      B.avoidedEmissionsT,
-      A.avoidedEmissionsT,
+      bL.avoidedEmissionsT,
+      aL.avoidedEmissionsT,
       true,
     ),
     mk(
@@ -704,7 +734,7 @@ export function runScenario(
 
   t = Date.now();
   const flowChanges = diffFlows(applied.state, baseResult, afterResult);
-  const deltas = buildDeltas(baseResult, afterResult);
+  const deltas = buildDeltas(net, baseResult, afterResult);
   stages.push({
     label: 'Attribute the difference',
     detail: `${flowChanges.length} flow changes identified`,

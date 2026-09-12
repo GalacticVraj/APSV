@@ -51,8 +51,8 @@ export const PATHWAY_SHORT: Record<PathwayId, string> = {
 // Projection
 // ─────────────────────────────────────────────────────────────────────────────
 
-const VB_W = 1000;
-const VB_H = 720;
+export const VB_W = 1000;
+export const VB_H = 720;
 
 /**
  * Web-Mercator northing, expressed in the same units as longitude (degrees).
@@ -88,7 +88,7 @@ const BOUNDS = (() => {
   return { minLon, maxLon, minLat, maxLat };
 })();
 
-const PROJ = (() => {
+export const PROJ = (() => {
   const pad = 26;
   const x0 = BOUNDS.minLon;
   const x1 = BOUNDS.maxLon;
@@ -127,8 +127,8 @@ function pathOf(polys: Poly[]): string {
   return d;
 }
 
-const CORE_PATHS = REGION.core.map((d, i) => ({ key: `${d.s}/${d.d}/${i}`, name: d.d, d: pathOf(d.p) }));
-const CONTEXT_PATHS = REGION.context.map((d, i) => ({ key: `${d.s}/${d.d}/${i}`, d: pathOf(d.p) }));
+export const CORE_PATHS = REGION.core.map((d, i) => ({ key: `${d.s}/${d.d}/${i}`, name: d.d, d: pathOf(d.p) }));
+export const CONTEXT_PATHS = REGION.context.map((d, i) => ({ key: `${d.s}/${d.d}/${i}`, d: pathOf(d.p) }));
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Markers

@@ -8,24 +8,53 @@ import Overview from './pages/Overview.tsx';
 import MapPage from './pages/MapPage.tsx';
 import Sources from './pages/Sources.tsx';
 import Facilities from './pages/Facilities.tsx';
+import FacilityCommand from './pages/FacilityCommand.tsx';
 import Optimization from './pages/Optimization.tsx';
 import Scenarios from './pages/Scenarios.tsx';
-import Carbon from './pages/Carbon.tsx';
+import CarbonImpact from './pages/Carbon.tsx';
+import CarbonCommand from './pages/CarbonCommand.tsx';
+import CarbonLedger from './pages/CarbonLedger.tsx';
+import CarbonPathways from './pages/CarbonPathways.tsx';
+import CarbonFacilities from './pages/CarbonFacilities.tsx';
+import CarbonEvidence from './pages/CarbonEvidence.tsx';
+import CarbonOpportunities from './pages/CarbonOpportunities.tsx';
+import CarbonScenarios from './pages/CarbonScenarios.tsx';
+import CarbonReport from './pages/CarbonReport.tsx';
 import Economics from './pages/Economics.tsx';
 import Logistics from './pages/Logistics.tsx';
 import Bottlenecks from './pages/Bottlenecks.tsx';
 import Activity from './pages/Activity.tsx';
 import System from './pages/System.tsx';
 import Copilot from './pages/Copilot.tsx';
+import SitingPage from './pages/SitingPage.tsx';
+import Landing from './pages/Landing.tsx';
+
+import PersonaLanding from './pages/PersonaLanding.tsx';
+import GeneratorModule from './pages/GeneratorModule.tsx';
+import TrueLanding from './pages/TrueLanding.tsx';
 
 const ROUTES: Record<string, () => JSX.Element | null> = {
-  '/': Overview,
+  '/overview': Overview,
+  '/welcome': TrueLanding,
+  '/landing': TrueLanding,
+  '/entry': PersonaLanding,
+  '/generator': GeneratorModule,
   '/map': MapPage,
   '/sources': Sources,
   '/facilities': Facilities,
+  '/facility-command': FacilityCommand,
+  '/siting': SitingPage,
   '/optimization': Optimization,
   '/scenarios': Scenarios,
-  '/carbon': Carbon,
+  '/carbon': CarbonCommand,
+  '/carbon/impact': CarbonImpact,
+  '/carbon/ledger': CarbonLedger,
+  '/carbon/pathways': CarbonPathways,
+  '/carbon/facilities': CarbonFacilities,
+  '/carbon/evidence': CarbonEvidence,
+  '/carbon/opportunities': CarbonOpportunities,
+  '/carbon/scenarios': CarbonScenarios,
+  '/carbon/report': CarbonReport,
   '/economics': Economics,
   '/logistics': Logistics,
   '/bottlenecks': Bottlenecks,
@@ -33,6 +62,7 @@ const ROUTES: Record<string, () => JSX.Element | null> = {
   '/system': System,
   '/copilot': Copilot,
   '/demo': Overview,
+  '/': Overview,
 };
 
 function Routed() {
@@ -97,6 +127,22 @@ function Boot() {
         </div>
       </div>
     );
+  }
+
+  if (path === '/' || path === '/welcome' || path === '/landing') {
+    return <Landing />;
+  }
+
+  if (path === '/legacy-welcome') {
+    return <TrueLanding />;
+  }
+
+  if (path === '/entry') {
+    return <PersonaLanding />;
+  }
+
+  if (path === '/generator') {
+    return <GeneratorModule />;
   }
 
   return (

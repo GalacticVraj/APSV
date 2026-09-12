@@ -750,6 +750,80 @@ export function aggregateAllocations(
  * permanence report represents the network. Reported explicitly in the UI so it is
  * clear the headline BC100 is feedstock-weighted, not universal.
  */
+/**
+ * The network ledger for a set of allocations.
+ *
+ * Exists so that every module computing "share of network net carbon" divides by
+ * the same number. `OptimizationResult.totals.netCarbonT` is NOT that number: the
+ * optimiser aggregates each allocation under its own permanence, which for this
+ * network reads 31,736 against the ledger's 34,921. Both are internally
+ * consistent; only one is the figure the product displays.
+ */
+export type PermanenceBasis =
+  | {
+      /**
+       * These allocations are a complete plan, valued in its own right. The
+       * permanence feedstock is derived from them — correct when comparing two
+       * whole plans, because each should be valued on its own feedstock mix.
+       */
+      kind: 'own';
+    }
+  | {
+      /**
+       * These allocations are a SLICE of a larger plan. The permanence feedstock
+       * comes from the whole, so the parts sum to it.
+       *
+       * `stream` is the whole plan's dominant biochar feedstock — normally
+       * `dominantBiocharStream(wholePlanAllocations)`. Null means the whole plan
+       * produced no durable removal, which is a real answer and not "unset".
+       */
+      kind: 'inherit';
+      stream: StreamId | null;
+    };
+
+/**
+ * The carbon ledger for a set of allocations.
+ *
+ * `basis` is required and has no default, deliberately. BC100 is derived from the
+ * dominant biochar feedstock, so a slice left to derive its own basis is valued
+ * differently from the plan it belongs to — and the result still looks like a
+ * plausible number. That defect shipped four times before this contract existed:
+ * share denominators, scenario deltas, resilience loss percentages and the
+ * brief's pathway bands. Every one was silent.
+ *
+ * The rule:
+ *
+ *   comparing whole plans       →  { kind: 'own' }        on each side
+ *   decomposing one plan        →  { kind: 'inherit', stream }  on every part
+ *
+ * Never mix the two across figures a reader will see together.
+ */
+export function networkLedger(
+  allocations: Allocation[],
+  facilities: Facility[],
+  vehicles: VehicleType[],
+  assumptions: Assumptions,
+  basis: PermanenceBasis,
+): CarbonLedger {
+  const dominant =
+    basis.kind === 'inherit' ? basis.stream : dominantBiocharStream(allocations);
+  const permanence = dominant ? permanenceFor(dominant, assumptions.soilTempC) : null;
+  return buildLedger(
+    aggregateAllocations(allocations, facilities, vehicles, assumptions),
+    assumptions,
+    permanence,
+    false,
+  );
+}
+
+/** Convenience for the common "slice of this plan" case. */
+export function inheritFrom(wholePlan: Allocation[]): PermanenceBasis {
+  return { kind: 'inherit', stream: dominantBiocharStream(wholePlan) };
+}
+
+/** The basis for a complete plan valued on its own feedstock mix. */
+export const OWN_BASIS: PermanenceBasis = { kind: 'own' };
+
 export function dominantBiocharStream(allocations: Allocation[]): StreamId | null {
   const byStream = new Map<StreamId, number>();
   for (const a of allocations) {

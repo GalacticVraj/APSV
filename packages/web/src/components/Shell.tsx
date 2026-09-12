@@ -8,49 +8,109 @@
 
 import type { ReactNode } from 'react';
 import { Link, useRouter } from '../router.tsx';
+import { CARBON_GROUPS, CarbonNav, carbonGroupFor } from './CarbonNav.tsx';
+import { CarbonExportProvider } from './CarbonExport.tsx';
 import { useTwin } from '../store.tsx';
 import type { ObjectiveMode } from '../../../engine/src/types.ts';
 import { dateFull, num, pct } from '../format.ts';
 
-const NAV: Array<{ group: string; items: Array<{ to: string; label: string }> }> = [
-  {
-    group: 'Operations',
-    items: [
-      { to: '/', label: 'Overview' },
-      { to: '/map', label: 'Network Map' },
-      { to: '/activity', label: 'Network Activity' },
+interface NavGroup {
+  group: string;
+  items: Array<{ to: string; label: string }>;
+  /** rendered larger and first: the workspace's primary surface */
+  primary?: boolean;
+}
+
+/**
+ * Two workspaces, not one menu.
+ *
+ * A Carbon Manager's job is not a subset of network operations, and a rail that
+ * lists both as peers makes the product feel like an admin tool with a carbon
+ * section. Selecting CARBON makes the whole rail carbon-first: one command
+ * surface, with the analytical modules beneath it as supporting capability.
+ *
+ * The structure is deliberately extensible — GENERATOR, FACILITY, ECONOMICS and
+ * DIRECTOR workspaces slot in beside these without touching the shell.
+ */
+const WORKSPACES: Record<string, { label: string; tagline: string; nav: NavGroup[] }> = {
+  carbon: {
+    label: 'Carbon',
+    tagline: 'Carbon Network',
+    // Four questions, not nine nouns — see CarbonNav.tsx for why.
+    nav: [
+      {
+        group: 'Carbon',
+        primary: true,
+        items: CARBON_GROUPS.map((g) => ({ to: g.views[0].to, label: g.label })),
+      },
     ],
   },
-  {
-    group: 'Assets',
-    items: [
-      { to: '/sources', label: 'Waste Sources' },
-      { to: '/facilities', label: 'Facilities' },
-      { to: '/logistics', label: 'Logistics' },
+  network: {
+    label: 'Network',
+    tagline: 'Operations',
+    nav: [
+      {
+        group: 'Portals',
+        items: [
+          { to: '/', label: 'Landing' },
+          { to: '/entry', label: 'Choose Persona' },
+          { to: '/generator', label: 'Farmer Waste App' },
+        ],
+      },
+      {
+        group: 'Operations',
+        items: [
+          { to: '/overview', label: 'Overview' },
+          { to: '/map', label: 'Network Map' },
+          { to: '/activity', label: 'Network Activity' },
+        ],
+      },
+      {
+        group: 'Assets',
+        items: [
+          { to: '/sources', label: 'Waste Sources' },
+          { to: '/facilities', label: 'Facilities' },
+          { to: '/siting', label: 'Siting Screener' },
+          { to: '/logistics', label: 'Logistics' },
+        ],
+      },
+      {
+        group: 'Intelligence',
+        items: [
+          { to: '/optimization', label: 'Optimization' },
+          { to: '/scenarios', label: 'Scenarios' },
+          { to: '/bottlenecks', label: 'Bottlenecks' },
+          { to: '/copilot', label: 'Copilot' },
+        ],
+      },
+      {
+        group: 'Accounting',
+        items: [
+          { to: '/economics', label: 'Economics' },
+          { to: '/system', label: 'System & Data' },
+        ],
+      },
     ],
   },
-  {
-    group: 'Intelligence',
-    items: [
-      { to: '/optimization', label: 'Optimization' },
-      { to: '/scenarios', label: 'Scenarios' },
-      { to: '/bottlenecks', label: 'Bottlenecks' },
-      { to: '/copilot', label: 'Copilot' },
-    ],
-  },
-  {
-    group: 'Accounting',
-    items: [
-      { to: '/carbon', label: 'Carbon' },
-      { to: '/economics', label: 'Economics' },
-      { to: '/system', label: 'System & Data' },
-    ],
-  },
-];
+};
+
+/** The workspace a path belongs to, so a deep link lands in the right rail. */
+function workspaceFor(path: string): 'carbon' | 'network' {
+  return path.startsWith('/carbon') ? 'carbon' : 'network';
+}
+
+/** True when `path` is any view of the carbon group whose first view is `to`. */
+function inCarbonGroup(path: string, to: string): boolean {
+  const here = carbonGroupFor(path);
+  const target = carbonGroupFor(to);
+  return !!here && !!target && here.key === target.key;
+}
 
 export function Shell({ children, demoActive }: { children: ReactNode; demoActive: boolean }) {
   const { boot, state, optimization, busy, setObjective, reset } = useTwin();
-  const { navigate } = useRouter();
+  const { navigate, path } = useRouter();
+  const workspace = workspaceFor(path);
+  const ws = WORKSPACES[workspace];
 
   const objectives = boot?.reference.objectives ?? {};
   const current = state?.objective ?? 'balanced';
@@ -142,6 +202,14 @@ export function Shell({ children, demoActive }: { children: ReactNode; demoActiv
 
         <button
           className="topbtn accent"
+          onClick={() => navigate('/generator')}
+          title="Open the Farmer Waste Generator module"
+        >
+          Farmer App 🌾
+        </button>
+
+        <button
+          className="topbtn accent"
           onClick={() => navigate('/demo')}
           title="Run the guided three-minute walkthrough"
         >
@@ -151,9 +219,24 @@ export function Shell({ children, demoActive }: { children: ReactNode; demoActiv
 
       <div className="body">
         <nav className="rail" aria-label="Sections">
-          {NAV.map((g) => (
-            <div className="rail-group" key={g.group}>
-              <div className="rail-group-label">{g.group}</div>
+          <div className="wsswitch" role="tablist" aria-label="Workspace">
+            {(Object.keys(WORKSPACES) as Array<'carbon' | 'network'>).map((k) => (
+              <button
+                key={k}
+                role="tab"
+                aria-selected={workspace === k}
+                className={`wss-btn ${workspace === k ? 'on' : ''}`}
+                onClick={() => navigate(k === 'carbon' ? '/carbon' : '/')}
+              >
+                {WORKSPACES[k].label}
+              </button>
+            ))}
+          </div>
+          <div className="ws-tagline">{ws.tagline}</div>
+
+          {ws.nav.map((g) => (
+            <div className={`rail-group ${g.primary ? 'primary' : ''}`} key={g.group}>
+              {!g.primary && <div className="rail-group-label">{g.group}</div>}
               {g.items.map((it) => (
                 <Link key={it.to} to={it.to}>
                   <span>{it.label}</span>
@@ -171,7 +254,14 @@ export function Shell({ children, demoActive }: { children: ReactNode; demoActiv
           </div>
         </nav>
 
-        <main className="main">{children}</main>
+        <main className="main">
+          {/* The provider has to sit above both, so the strip can render a
+              button for an export the page below it registers. */}
+          <CarbonExportProvider>
+            <CarbonNav />
+            {children}
+          </CarbonExportProvider>
+        </main>
       </div>
     </div>
   );

@@ -16,11 +16,14 @@ import {
 } from 'react';
 
 interface RouterCtx {
+  /** pathname only — route lookup must never see a query string */
   path: string;
+  /** the current query string, for screens that accept a deep link */
+  search: string;
   navigate: (to: string) => void;
 }
 
-const Ctx = createContext<RouterCtx>({ path: '/', navigate: () => {} });
+const Ctx = createContext<RouterCtx>({ path: '/', search: '', navigate: () => {} });
 
 export function useRouter(): RouterCtx {
   return useContext(Ctx);
@@ -28,22 +31,30 @@ export function useRouter(): RouterCtx {
 
 export function RouterProvider({ children }: { children: ReactNode }) {
   const [path, setPath] = useState(() => window.location.pathname || '/');
+  const [search, setSearch] = useState(() => window.location.search);
 
   useEffect(() => {
-    const onPop = () => setPath(window.location.pathname || '/');
+    const onPop = () => {
+      setPath(window.location.pathname || '/');
+      setSearch(window.location.search);
+    };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);
 
   const navigate = useCallback((to: string) => {
-    if (to === window.location.pathname) return;
+    if (to === window.location.pathname + window.location.search) return;
     window.history.pushState({}, '', to);
-    setPath(to);
+    // Split before storing: ROUTES is keyed by pathname, so a query string reaching
+    // it would fall through to the not-found screen.
+    const [nextPath, nextSearch] = to.split('?');
+    setPath(nextPath || '/');
+    setSearch(nextSearch ? `?${nextSearch}` : '');
     // Return the reader to the top of the new page, as a full navigation would.
     document.querySelector('.main')?.scrollTo({ top: 0 });
   }, []);
 
-  return <Ctx.Provider value={{ path, navigate }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ path, search, navigate }}>{children}</Ctx.Provider>;
 }
 
 export function Link({
@@ -58,7 +69,7 @@ export function Link({
   onClick?: () => void;
 }) {
   const { path, navigate } = useRouter();
-  const active = path === to;
+  const active = path === to.split('?')[0];
   return (
     <a
       href={to}

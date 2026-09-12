@@ -16,6 +16,7 @@ import type {
   NetworkState,
   ObjectiveMode,
   OpportunityScore,
+  PathwayId,
   OptimizationResult,
   ResilienceReport,
   RoutingResult,
@@ -40,6 +41,52 @@ import {
   strandedLots,
 } from './bottleneck.ts';
 import { forecastNetwork, type NetworkForecast } from './forecast.ts';
+import { carbonHistory, type CarbonHistory } from './history.ts';
+import { buildBrief, type CarbonBrief } from './brief.ts';
+import {
+  compareObjectives,
+  runShock,
+  type ObjectiveOutcome,
+  type ShockResult,
+} from './shock.ts';
+import {
+  explainOpportunity,
+  findOpportunities,
+  type OpportunityReport,
+} from './opportunity.ts';
+import {
+  evidenceHealth,
+  evidenceRegister,
+  lineContributors,
+  modelBasis,
+  type EvidenceHealth,
+  type EvidenceRecord,
+  type LineContributor,
+  type ModelBasis,
+} from './evidence.ts';
+import {
+  compareFacilities,
+  facilityCarbon,
+  facilityRanking,
+  type FacilityCarbon,
+  type FacilityComparison,
+  type FacilityRankRow,
+} from './facility.ts';
+import {
+  comparePathwayPair,
+  materialCandidates,
+  pathwayDecision,
+  type PathwayDecision,
+  type PathwayDiff,
+} from './pathwaychoice.ts';
+import {
+  provenanceFor,
+  traceAllocation,
+  traceCandidates,
+  type AllocationTrace,
+  type ProvenanceRow,
+  type TraceCandidate,
+} from './trace.ts';
 import { applyScenario, runScenario } from './scenario.ts';
 import { rollupEconomics, type EconAggregate } from './economics.ts';
 import { solveTransport } from './mincostflow.ts';
@@ -84,6 +131,15 @@ export class Twin {
   private cacheResilience: ResilienceReport | null = null;
   private cacheForecast: NetworkForecast | null = null;
   private cachePareto: ParetoPoint[] | null = null;
+  private cacheHistory: CarbonHistory | null = null;
+  private cacheFacilityRank: FacilityRankRow[] | null = null;
+  private cacheOpportunityReport: OpportunityReport | null = null;
+  private cacheBrief: CarbonBrief | null = null;
+  private cacheEvidence: {
+    records: EvidenceRecord[];
+    health: EvidenceHealth;
+    basis: ModelBasis;
+  } | null = null;
   private lastScenario: ScenarioResult | null = null;
 
   constructor() {
@@ -116,6 +172,13 @@ export class Twin {
     this.cacheOpportunities = null;
     this.cacheResilience = null;
     this.cachePareto = null;
+    // History re-solves against the live estate and assumptions, so anything that
+    // changes the plan changes the trend too.
+    this.cacheHistory = null;
+    this.cacheFacilityRank = null;
+    this.cacheEvidence = null;
+    this.cacheOpportunityReport = null;
+    this.cacheBrief = null;
     if (!keepForecast) this.cacheForecast = null;
   }
 
@@ -260,6 +323,172 @@ export class Twin {
     return this.cacheResilience;
   }
 
+  /**
+   * Carbon over the trailing weeks, each point a real re-solve on that week's
+   * observed supply. Memoised like every other derived artefact: twenty solves is
+   * cheap enough to compute on demand but not cheap enough to repeat per request.
+   */
+  /**
+   * Inputs behind each line of the network ledger. Derived from the same
+   * aggregate the ledger was built from, so it cannot describe a different plan.
+   */
+  getProvenance(): Record<string, ProvenanceRow[]> {
+    const result = this.getResult();
+    return provenanceFor(
+      this.getCarbonAggregate(),
+      this.state.assumptions.soilTempC,
+      this.state.assumptions.gridEfTPerMwh,
+      dominantBiocharStream(result.allocations),
+    );
+  }
+
+  /**
+   * The evidence register: every ledger line with its inputs, factor and citation.
+   * Memoised because it runs one ledger per allocation to count contributors.
+   */
+  getEvidence(): { records: EvidenceRecord[]; health: EvidenceHealth; basis: ModelBasis } {
+    if (!this.cacheEvidence) {
+      const records = evidenceRegister(this.state, this.getResult(), this.getLedger());
+      this.cacheEvidence = {
+        records,
+        health: evidenceHealth(records),
+        basis: modelBasis(this.state, this.getResult(), this.version),
+      };
+    }
+    return this.cacheEvidence;
+  }
+
+  /**
+   * Carbon opportunities, each measured by actually applying the change to a
+   * clone of the network and re-optimising. ~300 ms for the full sweep, so it is
+   * memoised rather than approximated.
+   */
+  getCarbonOpportunities(): OpportunityReport {
+    if (!this.cacheOpportunityReport) {
+      this.cacheOpportunityReport = findOpportunities(this.state, this.getResult());
+    }
+    return this.cacheOpportunityReport;
+  }
+
+  /**
+   * A shock, read as carbon. Never mutates the live network: runScenario works
+   * on a deep clone and this returns a reading of that clone's solve.
+   */
+  runShock(scenario: ScenarioInstance): ShockResult {
+    const res = runShock(this.state, this.getResult(), scenario, this.objective);
+    this.log(
+      'scenario',
+      'info',
+      `Shock evaluated: ${res.label}`,
+      `Net carbon ${res.carbonDeltaT >= 0 ? '+' : ''}${res.carbonDeltaT.toFixed(0)} tCO₂e over ${res.solveMs} ms of re-optimisation.`,
+      res.changedFacilities.map((f) => f.id),
+    );
+    return res;
+  }
+
+  /**
+   * The Carbon Intelligence Brief.
+   *
+   * Pure composition: every artefact below is already memoised by its own
+   * accessor, so a reader arriving here first pays for them once and every other
+   * Carbon screen is then warm. The brief itself computes nothing.
+   */
+  getBrief(): CarbonBrief {
+    if (!this.cacheBrief) {
+      const result = this.getResult();
+      const resilience = this.getResilience();
+      // The worst contingency is selected by the existing N-1 analysis and then
+      // measured by the shock engine, so the figure shown is ledger-based.
+      const worst = resilience.worstCaseFacilityId
+        ? this.runShock({
+            kind: 'facility_offline',
+            params: { facilityId: resilience.worstCaseFacilityId },
+          })
+        : null;
+      this.cacheBrief = buildBrief({
+        state: this.state,
+        result,
+        version: this.version,
+        ledger: this.getLedger(),
+        history: this.getCarbonHistory(),
+        opportunities: this.getCarbonOpportunities().opportunities,
+        ranking: this.getFacilityRanking(),
+        evidence: this.getEvidence().health,
+        resilience,
+        worstShock: worst,
+        objectives: worst ? this.compareShockObjectives(worst.scenario) : null,
+      });
+    }
+    return this.cacheBrief;
+  }
+  /** The same shock under every objective, each against its own baseline. */
+  compareShockObjectives(scenario: ScenarioInstance): ObjectiveOutcome[] {
+    return compareObjectives(this.state, scenario, this.objective);
+  }
+  /** One opportunity re-run, with the scenario engine's own flow-level diff. */
+  getOpportunityDetail(scenario: ScenarioInstance) {
+    return explainOpportunity(this.state, this.getResult(), scenario);
+  }
+  /** Which allocations produced one ledger line, and in what proportion. */
+  getLineContributors(lineKey: string): LineContributor[] {
+    return lineContributors(this.state, this.getResult(), lineKey);
+  }
+  /** Every facility ranked by its contribution to the network's net carbon. */
+  getFacilityRanking(): FacilityRankRow[] {
+    if (!this.cacheFacilityRank) {
+      this.cacheFacilityRank = facilityRanking(this.state, this.getResult());
+    }
+    return this.cacheFacilityRank;
+  }
+
+  /** The carbon profile of one plant, with its feeding arcs and opportunities. */
+  getFacilityCarbon(facilityId: string): FacilityCarbon | null {
+    return facilityCarbon(this.state, this.getResult(), facilityId, this.getStranded());
+  }
+
+  /** Two plants set against each other, arc for arc where they share a source. */
+  getFacilityComparison(aId: string, bId: string): FacilityComparison | null {
+    return compareFacilities(this.state, this.getResult(), aId, bId);
+  }
+  /** Sources offered as a material context for the pathway decision. */
+  getMaterials() {
+    return materialCandidates(this.state);
+  }
+
+  /**
+   * Every pathway evaluated for one source's material under a comparison lens.
+   * Not memoised: it is keyed by source and lens rather than by version alone,
+   * and one call costs a single arc build.
+   */
+  getPathwayDecision(sourceId: string, lens: ObjectiveMode): PathwayDecision | null {
+    return pathwayDecision(this.state, this.getResult(), sourceId, lens);
+  }
+
+  /** What switching between two pathways changes for that material. */
+  getPathwayDiff(
+    sourceId: string,
+    lens: ObjectiveMode,
+    from: PathwayId,
+    to: PathwayId,
+  ): PathwayDiff | null {
+    const decision = this.getPathwayDecision(sourceId, lens);
+    return decision ? comparePathwayPair(decision, from, to) : null;
+  }
+  /** Allocations offered for tracing, largest carbon contribution first. */
+  getTraceCandidates(): TraceCandidate[] {
+    return traceCandidates(this.state, this.getResult());
+  }
+
+  /** The full chain behind one allocation, or null if it is not in the plan. */
+  getTrace(sourceId: string, facilityId: string): AllocationTrace | null {
+    return traceAllocation(this.state, this.getResult(), sourceId, facilityId);
+  }
+  getCarbonHistory(): CarbonHistory {
+    if (!this.cacheHistory) {
+      this.cacheHistory = carbonHistory(this.state, this.objective);
+    }
+    return this.cacheHistory;
+  }
   getForecast(): NetworkForecast {
     if (!this.cacheForecast) {
       this.cacheForecast = forecastNetwork(

@@ -10,7 +10,7 @@
 import { useMemo, useState } from 'react';
 import { useTwin } from '../store.tsx';
 import { NetworkMap, PATHWAY_SHORT, type Selection } from '../components/NetworkMap.tsx';
-import { Loading, Tag, StatusDot, Empty } from '../components/Primitives.tsx';
+import { Loading, Tag, StatusDot, Empty, DecisionBanner, ValueFlowChain } from '../components/Primitives.tsx';
 import { inr, num, pct, km, tonnes } from '../format.ts';
 import type { PathwayId, StreamId } from '../../../engine/src/types.ts';
 
@@ -109,11 +109,21 @@ function Inspector({
     return (
       <div>
         <div className="inspect-head">
-          <div className="kind">Network</div>
-          <h3>Nothing selected</h3>
-          <div className="sub">Click a source, a facility or a flow.</div>
+          <div className="kind">Network Topology</div>
+          <h3>Overview & GIS Map</h3>
+          <div className="sub">Click a source, a facility or a flow to inspect details.</div>
         </div>
         <div style={{ padding: 14 }}>
+          <DecisionBanner
+            badge="GIS Spatial State"
+            happening={
+              <>
+                <strong>{num(allocations.length)} active routing arcs</strong> moving {num(T.divertedT)} t of biomass.
+              </>
+            }
+            why="Live map visualizes physical spatial allocations, transport distances, and district boundaries."
+            action="Click any node on the map to view source supply or facility utilisation."
+          />
           <dl className="kv">
             <dt>Supply available</dt>
             <dd>{num(T.suppliedT)} t</dd>
