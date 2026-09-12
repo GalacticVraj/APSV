@@ -3493,3 +3493,9 @@ a.cd-item:hover { background: var(--surface-sunken); }
   flex: none;
 }
 
+
+/* The Economics KPI strip is sticky, so the decision banner beneath it needs
+   room for its badge, which hangs above its own top edge. */
+.econ-shell > .decision-banner {
+  margin: 14px 0 0;
+}
