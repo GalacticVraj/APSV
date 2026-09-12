@@ -32,7 +32,12 @@ import {
   VEHICLES,
 } from '../../engine/src/constants.ts';
 import { PRODUCT } from '../../engine/src/index.ts';
-import type { ObjectiveMode, ScenarioInstance, StreamId } from '../../engine/src/types.ts';
+import type {
+  ObjectiveMode,
+  PathwayId,
+  ScenarioInstance,
+  StreamId,
+} from '../../engine/src/types.ts';
 import { DEMO_SCRIPT } from './demo.ts';
 
 const PORT = Number(process.env.PORT ?? 5174);
@@ -192,7 +197,119 @@ const GET: Record<string, Handler> = {
       ledger: twin.getLedger(),
       aggregate: twin.getCarbonAggregate(),
       totals: twin.getResult().totals,
+      // Derived from the same aggregate the ledger was built from, so the
+      // evidence panel cannot describe a different plan than the lines above it.
+      provenance: twin.getProvenance(),
     }),
+
+  '/api/opportunities': (_req, res) => json(res, 200, twin.getCarbonOpportunities()),
+
+  '/api/evidence': (_req, res) => json(res, 200, twin.getEvidence()),
+
+  '/api/evidence/contributors': (_req, res, url) => {
+    const line = url.searchParams.get('line');
+    if (!line) return json(res, 400, { error: 'A ledger line "line" key is required.' });
+    const rows = twin.getLineContributors(line);
+    if (rows.length === 0) {
+      // Not an error: the line may exist but be produced by no allocation in this
+      // plan, which is a real answer about the plan rather than a lookup failure.
+      return json(res, 200, { line, contributors: [], note: 'No allocation in the current plan contributes to this line.' });
+    }
+    json(res, 200, { line, contributors: rows, note: null });
+  },
+
+  '/api/facilities/carbon': (_req, res) => json(res, 200, twin.getFacilityRanking()),
+
+  '/api/facilities/profile': (_req, res, url) => {
+    const id = url.searchParams.get('id');
+    if (!id) return json(res, 400, { error: 'A facility "id" is required.' });
+    const profile = twin.getFacilityCarbon(id);
+    if (!profile) return json(res, 404, { error: `No facility "${id}" in the network.` });
+    json(res, 200, profile);
+  },
+
+  '/api/facilities/compare': (_req, res, url) => {
+    const a = url.searchParams.get('a');
+    const b = url.searchParams.get('b');
+    if (!a || !b) return json(res, 400, { error: 'Both "a" and "b" facility ids are required.' });
+    if (a === b) return json(res, 400, { error: 'Pick two different facilities to compare.' });
+    const cmp = twin.getFacilityComparison(a, b);
+    if (!cmp) return json(res, 404, { error: 'One of those facilities is not in the network.' });
+    json(res, 200, cmp);
+  },
+
+  '/api/materials': (_req, res) => json(res, 200, twin.getMaterials()),
+
+  '/api/pathways/decision': (_req, res, url) => {
+    const sourceId = url.searchParams.get('sourceId');
+    if (!sourceId) return json(res, 400, { error: 'A "sourceId" is required.' });
+    const lens = String(url.searchParams.get('lens') ?? 'carbon_first');
+    if (!VALID_OBJECTIVES.has(lens)) {
+      return json(res, 400, {
+        error: `Unknown lens "${lens}". Expected one of: ${[...VALID_OBJECTIVES].join(', ')}.`,
+      });
+    }
+    const decision = twin.getPathwayDecision(sourceId, lens as ObjectiveMode);
+    if (!decision) return json(res, 404, { error: `No source "${sourceId}" in the network.` });
+    json(res, 200, decision);
+  },
+
+  '/api/pathways/diff': (_req, res, url) => {
+    const sourceId = url.searchParams.get('sourceId');
+    const from = url.searchParams.get('from');
+    const to = url.searchParams.get('to');
+    if (!sourceId || !from || !to) {
+      return json(res, 400, { error: '"sourceId", "from" and "to" are all required.' });
+    }
+    const lens = String(url.searchParams.get('lens') ?? 'carbon_first');
+    if (!VALID_OBJECTIVES.has(lens)) {
+      return json(res, 400, { error: `Unknown lens "${lens}".` });
+    }
+    if (!(from in PATHWAYS) || !(to in PATHWAYS)) {
+      return json(res, 400, {
+        error: `Unknown pathway. Expected one of: ${Object.keys(PATHWAYS).join(', ')}.`,
+      });
+    }
+    const diff = twin.getPathwayDiff(
+      sourceId,
+      lens as ObjectiveMode,
+      from as PathwayId,
+      to as PathwayId,
+    );
+    if (!diff) {
+      // Both pathways exist but at least one produced no result for this material.
+      return json(res, 404, {
+        error:
+          'Those two pathways cannot be compared for this material: at least one has no feasible destination in the current network.',
+      });
+    }
+    json(res, 200, diff);
+  },
+
+  '/api/trace/candidates': (_req, res) => json(res, 200, twin.getTraceCandidates()),
+
+  '/api/trace': (_req, res, url) => {
+    const sourceId = url.searchParams.get('sourceId');
+    const facilityId = url.searchParams.get('facilityId');
+    if (!sourceId || !facilityId) {
+      return json(res, 400, {
+        error: 'Both "sourceId" and "facilityId" are required to trace a contribution.',
+      });
+    }
+    const trace = twin.getTrace(sourceId, facilityId);
+    if (!trace) {
+      // Not an error: the pair may be stranded, or the plan may have moved since
+      // the client last read the candidate list.
+      return json(res, 404, {
+        error: `No allocation from ${sourceId} to ${facilityId} in the current plan. It may have been stranded, or the plan may have changed.`,
+      });
+    }
+    json(res, 200, trace);
+  },
+
+  // Split from /api/carbon because it costs twenty optimiser runs: the Carbon Home
+  // renders its headline immediately and fills the trend in when this arrives.
+  '/api/carbon/history': (_req, res) => json(res, 200, twin.getCarbonHistory()),
 
   '/api/economics': (_req, res) =>
     json(res, 200, {
@@ -270,6 +387,27 @@ const POST: Record<string, Handler> = {
     }
     twin.updateAssumptions(patch);
     json(res, 200, { assumptions: twin.getState().assumptions, version: twin.getVersion() });
+  },
+
+  '/api/shock': async (req, res) => {
+    const body = await readBody(req);
+    const kind = String(body.kind ?? '');
+    const net = twin.getState();
+    const defs = scenarioDefs(net);
+    const def = defs.find((d) => d.kind === kind);
+    if (!def) {
+      return json(res, 400, {
+        error: `Unknown scenario "${kind}". Expected one of: ${defs.map((d) => d.kind).join(', ')}.`,
+      });
+    }
+    const checked = validateScenarioParams(def, net, body.params);
+    if ('error' in checked) return json(res, 400, { error: checked.error });
+    const scenario: ScenarioInstance = { kind: kind as ScenarioInstance['kind'], params: checked.params };
+
+    const shock = twin.runShock(scenario);
+    // The objective sweep costs eight solves, so it is opt-in per request.
+    const objectives = body.compareObjectives === true ? twin.compareShockObjectives(scenario) : null;
+    json(res, 200, { shock, objectives });
   },
 
   '/api/scenario': async (req, res) => {

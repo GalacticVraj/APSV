@@ -39,6 +39,30 @@ import type {
   VehicleType,
   WasteSource,
 } from '../../engine/src/types.ts';
+import type { CarbonHistory } from '../../engine/src/history.ts';
+import type { OpportunityReport } from '../../engine/src/opportunity.ts';
+import type { ObjectiveOutcome, ShockResult } from '../../engine/src/shock.ts';
+import type {
+  EvidenceHealth,
+  EvidenceRecord,
+  LineContributor,
+  ModelBasis,
+} from '../../engine/src/evidence.ts';
+import type {
+  FacilityCarbon,
+  FacilityComparison,
+  FacilityRankRow,
+} from '../../engine/src/facility.ts';
+import type {
+  PathwayDecision,
+  PathwayDiff,
+  MaterialCandidate,
+} from '../../engine/src/pathwaychoice.ts';
+import type {
+  AllocationTrace,
+  ProvenanceRow,
+  TraceCandidate,
+} from '../../engine/src/trace.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Transport
@@ -90,7 +114,48 @@ export const api = {
       '/api/optimization',
     ),
   routing: () => req<RoutingResult>('/api/routing'),
-  carbon: () => req<{ ledger: CarbonLedger; aggregate: unknown; totals: NetworkTotals }>('/api/carbon'),
+  carbon: () =>
+    req<{
+      ledger: CarbonLedger;
+      aggregate: unknown;
+      totals: NetworkTotals;
+      provenance: Record<string, ProvenanceRow[]>;
+    }>('/api/carbon'),
+  opportunities: () => req<OpportunityReport>('/api/opportunities'),
+  shock: (scenario: ScenarioInstance, compareObjectives: boolean) =>
+    req<{ shock: ShockResult; objectives: ObjectiveOutcome[] | null }>('/api/shock', {
+      method: 'POST',
+      body: JSON.stringify({ ...scenario, compareObjectives }),
+    }),
+  evidence: () =>
+    req<{ records: EvidenceRecord[]; health: EvidenceHealth; basis: ModelBasis }>('/api/evidence'),
+  lineContributors: (line: string) =>
+    req<{ line: string; contributors: LineContributor[]; note: string | null }>(
+      `/api/evidence/contributors?line=${encodeURIComponent(line)}`,
+    ),
+  facilityCarbon: () => req<FacilityRankRow[]>('/api/facilities/carbon'),
+  facilityProfile: (id: string) =>
+    req<FacilityCarbon>(`/api/facilities/profile?id=${encodeURIComponent(id)}`),
+  facilityCompare: (a: string, b: string) =>
+    req<FacilityComparison>(
+      `/api/facilities/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`,
+    ),
+  materials: () => req<MaterialCandidate[]>('/api/materials'),
+  pathwayDecision: (sourceId: string, lens: ObjectiveMode) =>
+    req<PathwayDecision>(
+      `/api/pathways/decision?sourceId=${encodeURIComponent(sourceId)}&lens=${lens}`,
+    ),
+  pathwayDiff: (sourceId: string, lens: ObjectiveMode, from: string, to: string) =>
+    req<PathwayDiff>(
+      `/api/pathways/diff?sourceId=${encodeURIComponent(sourceId)}&lens=${lens}` +
+        `&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`,
+    ),
+  traceCandidates: () => req<TraceCandidate[]>('/api/trace/candidates'),
+  trace: (sourceId: string, facilityId: string) =>
+    req<AllocationTrace>(
+      `/api/trace?sourceId=${encodeURIComponent(sourceId)}&facilityId=${encodeURIComponent(facilityId)}`,
+    ),
+  carbonHistory: () => req<CarbonHistory>('/api/carbon/history'),
   economics: () => req<EconomicsPayload>('/api/economics'),
   bottlenecks: () =>
     req<{ bottlenecks: Bottleneck[]; stranded: StrandedLot[]; opportunities: OpportunityScore[] }>(

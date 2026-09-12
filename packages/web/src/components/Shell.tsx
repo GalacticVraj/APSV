@@ -47,9 +47,20 @@ const NAV: Array<{ group: string; items: Array<{ to: string; label: string }> }>
     ],
   },
   {
+    group: 'Carbon',
+    items: [
+      { to: '/carbon', label: 'Carbon Home' },
+      { to: '/carbon/ledger', label: 'Carbon Ledger' },
+      { to: '/carbon/pathways', label: 'Pathways' },
+      { to: '/carbon/facilities', label: 'Facilities' },
+      { to: '/carbon/opportunities', label: 'Opportunities' },
+      { to: '/carbon/scenarios', label: 'Scenarios' },
+      { to: '/carbon/evidence', label: 'Evidence (MRV)' },
+    ],
+  },
+  {
     group: 'Accounting',
     items: [
-      { to: '/carbon', label: 'Carbon' },
       { to: '/economics', label: 'Economics' },
       { to: '/system', label: 'System & Data' },
     ],
