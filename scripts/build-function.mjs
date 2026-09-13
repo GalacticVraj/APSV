@@ -37,9 +37,10 @@ mkdirSync('api', { recursive: true });
 
 const result = await build({
   entryPoints: ['packages/api/src/vercel-entry.ts'],
-  // Vercel's catch-all convention: every /api/* path reaches this one function
-  // with the URL the browser actually asked for.
-  outfile: 'api/[...path].js',
+  // One plain filename. A bracketed catch-all matched /api/health but not
+  // /api/carbon/history, so the route comes from an explicit rewrite instead,
+  // which hands the original path over as __path for the entry to restore.
+  outfile: 'api/index.js',
   bundle: true,
   platform: 'node',
   // The repo is ESM ("type": "module"), and so is the function.
@@ -51,8 +52,8 @@ const result = await build({
   metafile: true,
 });
 
-const out = result.metafile.outputs['api/[...path].js'];
+const out = result.metafile.outputs['api/index.js'];
 console.log(
-  `api/[...path].js  ${(out.bytes / 1024).toFixed(1)} kB  ` +
+  `api/index.js  ${(out.bytes / 1024).toFixed(1)} kB  ` +
     `(${Object.keys(out.inputs).length} modules inlined)`,
 );

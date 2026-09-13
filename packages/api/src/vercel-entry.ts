@@ -42,11 +42,37 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { handleRequest } from './index.ts';
 
+/**
+ * Put the originally requested path back on the request.
+ *
+ * A catch-all function file matched `/api/health` but not `/api/carbon/history`
+ * — every two-segment route fell through to the platform's own 404 and never
+ * reached this code at all. Rather than depend on how a host expands a
+ * bracketed filename, the rewrite hands the original path over explicitly as
+ * `__path`, and this puts it back before the router sees it.
+ *
+ * The router dispatches on `url.pathname`, so it must be given the path the
+ * browser asked for, not the destination the rewrite chose. Any other query
+ * parameters are preserved: several routes read them (`?id=`, `?line=`,
+ * `?sourceId=`).
+ */
+function restorePath(req: IncomingMessage): void {
+  if (!req.url) return;
+  const url = new URL(req.url, 'http://localhost');
+  const original = url.searchParams.get('__path');
+  if (original === null) return;
+
+  url.searchParams.delete('__path');
+  const query = url.searchParams.toString();
+  req.url = `/api/${original.replace(/^\/+/, '')}${query ? `?${query}` : ''}`;
+}
+
 export default async function handler(
   req: IncomingMessage,
   res: ServerResponse,
 ): Promise<void> {
   try {
+    restorePath(req);
     await handleRequest(req, res);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

@@ -6,6 +6,10 @@
   "framework": null,
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "/api/index?__path=$1"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

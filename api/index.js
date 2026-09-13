@@ -8591,8 +8591,18 @@ if (isDirectRun()) {
 }
 
 // packages/api/src/vercel-entry.ts
+function restorePath(req) {
+  if (!req.url) return;
+  const url = new URL(req.url, "http://localhost");
+  const original = url.searchParams.get("__path");
+  if (original === null) return;
+  url.searchParams.delete("__path");
+  const query = url.searchParams.toString();
+  req.url = `/api/${original.replace(/^\/+/, "")}${query ? `?${query}` : ""}`;
+}
 async function handler(req, res) {
   try {
+    restorePath(req);
     await handleRequest(req, res);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
