@@ -30,10 +30,8 @@ import {
   FeedstockOutlookChart,
   AllocationFlow,
   WhatIfBars,
-  SourceScoreBar,
   type AllocSource,
   type OutlookPoint,
-  type SourceScore,
 } from '../components/FacilityCharts.tsx';
 import { PATHWAY_SHORT } from '../components/NetworkMap.tsx';
 import { num, pct, inr, inrExact, km, dateShort } from '../format.ts';
@@ -232,11 +230,7 @@ function WhatIfSection({ facilityId, district }: { facilityId: string; district:
           </button>
         )}
       </SectionHead>
-      <div style={{ fontSize: 11, color: 'var(--ink-3)', marginBottom: 10, lineHeight: 1.5 }}>
-        Run a real network re-optimisation against a hypothetical scenario — without committing to the live twin.
-        Adjust a slider and the optimiser re-solves the network in the background.
-        The Before → After result shows the actual consequence, not a visual estimate.
-      </div>
+
       <div className="grid g2" style={{ gap: 14 }}>
         <Panel title="Supply shock">
           <div className="field">
@@ -270,11 +264,6 @@ function WhatIfSection({ facilityId, district }: { facilityId: string; district:
                 schedulePreview(v, 0);
               }}
             />
-            <div className="hint">
-              Simulates a district-wide supply surge or shortage.
-              Uses the <strong>supply_surge</strong> / <strong>supply_shortage</strong> scenario
-              engine (<code>commit: false</code>). The live twin is <strong>not changed</strong>.
-            </div>
           </div>
         </Panel>
 
@@ -303,11 +292,6 @@ function WhatIfSection({ facilityId, district }: { facilityId: string; district:
                 schedulePreview(0, v);
               }}
             />
-            <div className="hint">
-              Simulates a partial capacity loss (e.g. equipment downgrade).
-              Uses the <strong>facility_derate</strong> scenario engine.
-              The live twin is <strong>not changed</strong> — preview only.
-            </div>
           </div>
         </Panel>
       </div>
@@ -699,7 +683,7 @@ export default function FacilityCommand() {
       {/* ── Feedstock Availability Outlook ── */}
       <div className="section">
         <SectionHead
-          title="Feedstock Availability Outlook"
+          title="Supply Outlook"
         >
           <InfoTip content="Green area = forecasted source supply (with uncertainty band). Dashed line = optimiser allocation. Solid line = nameplate ceiling." />
         </SectionHead>
@@ -785,32 +769,13 @@ export default function FacilityCommand() {
       <div className="section">
         <div className="grid g-3-2" style={{ gap: 14 }}>
           {/* Left: score bars + flow diagram */}
-          <Panel title={`Current Feedstock Allocation (${allocSources.length} sources)`}>
+          <Panel title={`Allocation (${allocSources.length} sources)`}>
             {/* Concise header with InfoTip instead of long paragraph */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--ink-3)', marginBottom: 10 }}>
               Optimiser-routed feedstock batches this window.
               <strong style={{ color: 'var(--ink)' }}>Click any source</strong> for details.
               <InfoTip content="These are the feedstock batches the optimiser has routed to this facility this window. Each source shows tonnes allocated. Click any source to see feedstock type, haul distance, trips and margin." />
             </div>
-
-            {/* Source score breakdown */}
-            {allocSources.length > 0 && (
-              <div style={{ marginBottom: 14, paddingBottom: 12, borderBottom: '1px solid var(--rule)' }}>
-                <div style={{ fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, marginBottom: 6 }}>
-                  Source match quality
-                </div>
-                <SourceScoreBar
-                  sources={allocSources.map((s) => ({
-                    id: s.id,
-                    name: s.name,
-                    distanceKm: s.distanceKm,
-                    tonnes: s.tonnes,
-                    marginInr: s.marginInr,
-                    carbonPerT: loadT > 0 ? carbonTTotal / loadT : 0,
-                  }))}
-                />
-              </div>
-            )}
 
             {allocSources.length === 0 ? (
               <Empty
@@ -826,22 +791,18 @@ export default function FacilityCommand() {
                   selectedSourceId={selectedSourceId}
                   height={Math.max(120, Math.min(allocSources.length, 14) * 34 + 24)}
                 />
-                {selectedSrc ? (
+                {selectedSrc && (
                   <SourceDetail
                     src={selectedSrc}
                     onClose={() => setSelectedSourceId(null)}
                   />
-                ) : (
-                  <div style={{ marginTop: 8, fontSize: 11, color: 'var(--ink-4)', fontStyle: 'italic' }}>
-                    Click a source to inspect allocation details.
-                  </div>
                 )}
               </>
             )}
           </Panel>
 
           {/* Right: capacity intelligence — visual parameter matrix */}
-          <Panel title="Capacity Intelligence">
+          <Panel title="Capacity">
             {/* Parameter matrix: label | value | bar | dot */}
             <div style={{ marginBottom: 10 }}>
               <ParameterRow
@@ -929,10 +890,7 @@ export default function FacilityCommand() {
       {opportunity && (
         <div className="section">
           <SectionHead title="Capacity Opportunity" />
-          <div style={{ fontSize: 11, color: 'var(--ink-3)', marginBottom: 8, lineHeight: 1.5 }}>
-            The optimisation engine has identified unallocated feedstock supply that this facility has headroom to absorb.
-            This is <em>not</em> a manual estimate — it comes directly from the bottleneck analysis.
-          </div>
+
           <div
             style={{
               background: 'var(--green-100)',
