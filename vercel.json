@@ -4,15 +4,15 @@
   "outputDirectory": "packages/web/dist",
   "installCommand": "npm install --include=dev --no-audit --no-fund",
   "framework": null,
-  "functions": {
-    "api/[...path].ts": {
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
     {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "functions": {
+    "api/**": {
+      "maxDuration": 30
+    }
+  }
 }
