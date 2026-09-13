@@ -12,22 +12,30 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
+@font-face {
+  font-family: 'PineForest';
+  src: url('/fonts/PineForest.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  /* Surfaces — warm off-white, never pure white for the page ground */
-  --bg: #faf9f6;
+  /* Surfaces — warm smooth flat beige sitewide (#E8DCC8) */
+  --bg: #E8DCC8;
   --surface: #ffffff;
-  --surface-sunken: #f4f2ed;
+  --surface-sunken: #DDD0BA;
   --surface-raised: #ffffff;
 
-  /* Ink */
+  /* Ink — crisp dark neutral text on light beige ground */
   --ink: #14181a;
   --ink-2: #4e585c;
   --ink-3: #7c868a;
   --ink-4: #a7afb2;
 
-  /* Rules — the primary structural device in this UI */
-  --rule: #e4e1d9;
-  --rule-2: #cfcbc1;
+  /* Rules — primary structural device in UI */
+  --rule: #cfcbc1;
+  --rule-2: #b8b3a7;
   --rule-strong: #14181a;
 
   /* The single accent */
@@ -71,7 +79,7 @@ html, body, #root { height: 100%; }
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 13px;

@@ -21,7 +21,8 @@ import {
   HalftoneFacilityIcon,
   HalftoneCarbonIcon,
   HalftoneEconomyIcon,
-  ScallopedGinghamCorner,
+  GinghamSideStrip,
+  TornFabricSideStrip,
   GoldSpark,
 } from '../components/FarmerIcons.tsx';
 
@@ -73,9 +74,9 @@ export default function PersonaLanding() {
 
   return (
     <div className="generator-app" style={{ minHeight: '100vh', paddingBottom: 60, position: 'relative', overflow: 'hidden' }}>
-      {/* CHANGE 9: Smooth Scalloped Corner Accents Top-Left and Bottom-Right (Matching /welcome) */}
-      <ScallopedGinghamCorner position="top-left" />
-      <ScallopedGinghamCorner position="bottom-right" />
+      {/* SIDE ACCENTS SITEWIDE SYSTEM (Fix 4) */}
+      <GinghamSideStrip />
+      <TornFabricSideStrip />
 
       {/* CHANGE 10: Top-Right Compact Language Selector Dropdown (🌐 EN ▾) */}
       <div style={{ position: 'absolute', top: 24, right: 28, zIndex: 30 }}>

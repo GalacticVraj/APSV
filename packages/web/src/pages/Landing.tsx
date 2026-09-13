@@ -35,6 +35,7 @@ import {
   VB_H,
 } from '../components/NetworkMap.tsx';
 import { inr, num } from '../format.ts';
+import { TexturedHeadline } from '../components/FarmerIcons.tsx';
 import '../styles/landing.css';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -515,12 +516,14 @@ export default function Landing() {
 
         <div className="lp-hero-copy">
           <div className="lp-eyebrow">Punjab · Haryana · Chandigarh</div>
+          {/* Sukruti's wordmark: PineForest set in SVG and filled with a woven
+              fabric pattern rather than flat colour. It is the one place in the
+              product that carries any texture, and it is what makes the front
+              door look like it belongs to the farmer portal rather than to a
+              dashboard. */}
           <h1 className="lp-title">
-            {'TERRAFLUX'.split('').map((c, i) => (
-              <span key={i} className="lp-ch" style={{ animationDelay: `${140 + i * 55}ms` }}>
-                {c}
-              </span>
-            ))}
+            <span className="sr-only">TERRAFLUX</span>
+            <TexturedHeadline text="TERRAFLUX" />
           </h1>
           <p className="lp-sub">
             An operating system for turning crop residue into carbon. One network, four

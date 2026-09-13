@@ -162,6 +162,10 @@ export const DICTIONARY: Record<LanguageCode, Record<string, string>> = {
     btn_back_step: '← Back',
     btn_next_step: 'Next Step →',
     btn_complete_intake: 'Complete & View Recommendation →',
+    field_required: 'This field is required',
+    field_required_other: 'Please specify details for Other',
+    validation_summary_error: 'Please fill in all required fields before submitting',
+    form_page_title: 'Waste Intake Form',
     why_we_ask: 'Why we ask ⓘ',
     why_ask_agri: 'Agricultural residue is often suitable for biochar/pyrolysis, but moisture, quantity, seasonality and transport distance strongly affect what is possible.',
     why_ask_muni: 'Usually anaerobic digestion/biogas, depending on composition, contamination and operating conditions.',
@@ -415,6 +419,10 @@ export const DICTIONARY: Record<LanguageCode, Record<string, string>> = {
     btn_back_step: '← पीछे जाएं',
     btn_next_step: 'अगला चरण →',
     btn_complete_intake: 'पूरा करें और अनुशंसा देखें →',
+    field_required: 'यह क्षेत्र आवश्यक है',
+    field_required_other: 'कृपया अन्य विवरण निर्दिष्ट करें',
+    validation_summary_error: 'कृपया सबमिट करने से पहले सभी आवश्यक क्षेत्र भरें',
+    form_page_title: 'अपशिष्ट इनटेक फॉर्म',
     why_we_ask: 'हम यह क्यों पूछते हैं ⓘ',
     why_ask_agri: 'कृषि अवशेष अक्सर बायोचार/पायरोलिसिस के लिए उपयुक्त होते हैं।',
     why_ask_muni: 'संरचना और स्वच्छता के आधार पर बायोगैस के लिए उपयुक्त।',
@@ -433,8 +441,6 @@ export const DICTIONARY: Record<LanguageCode, Record<string, string>> = {
     opt_paddy_straw: 'धान की पराली',
     opt_wheat_straw: 'गेहूं की भूसी',
     opt_corn_stalks: 'मक्के का डंठल',
-    opt_husk: 'छिलका / भुट्टा',
-    opt_sugarcane_residue: 'गन्ने की खोई',
     opt_pruning_waste: 'लकड़ी / छंटाई कचरा',
     opt_other: 'अन्य',
 
@@ -462,7 +468,6 @@ export const DICTIONARY: Record<LanguageCode, Record<string, string>> = {
   },
 
   pa: {
-    // Persona Landing
     select_role: 'ਆਪਣੀ ਭੂਮਿਕਾ ਚੁਣੋ',
     role_subtitle: 'ਟੈਰਾਫਲਕਸ ਨੈੱਟਵਰਕ ਵਿੱਚ ਆਪਣਾ ਦਾਖਲਾ ਪੁਆਇੰਟ ਚੁਣੋ',
     role_generator: 'ਕਚਰਾ ਉਤਪਾਦਕ',
@@ -473,96 +478,29 @@ export const DICTIONARY: Record<LanguageCode, Record<string, string>> = {
     role_carbon_sub: 'ਕਾਰਬਨ ਬੱਚਤ ਅਤੇ ਸਥਿਰਤਾ',
     role_economy: 'ਆਰਥਿਕ ਮੁੱਲ',
     role_economy_sub: 'ਮੰਡੀ ਅਤੇ ਆਮਦਨ',
-
-    // Language Selector
     select_language: 'ਭਾਸ਼ਾ ਚੁਣੋ',
     select_language_sub: 'ਕਚਰਾ ਉਤਪਾਦਕ ਮੋਡਿਊਲ ਲਈ ਆਪਣੀ ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ ਚੁਣੋ',
     continue_btn: 'ਅੱਗੇ ਵਧੋ →',
-
-    // Nav
     nav_home: 'ਮੇਰੀ ਪਰਾਲੀ',
     nav_pathway: 'ਸਭ ਤੋਂ ਵਧੀਆ ਰਸਤਾ',
     nav_journey: 'ਸਫਰ ਟਰੈਕ ਕਰੋ',
     nav_lang: 'ਭਾਸ਼ਾ ਬਦਲੋ',
     nav_back_terminal: '← ਆਪਰੇਟਿੰਗ ਟਰਮੀਨਲ',
-
-    // Header & Offline
     farmer_module_title: 'ਕਿਸਾਨ ਰਹਿੰਦ-ਖੂੰਹਦ ਪੋਰਟਲ',
     synced_status: '2 ਮਿੰਟ ਪਹਿਲਾਂ ਸਿੰਕ ਹੋਇਆ · ਆਫਲਾਈਨ ਤਿਆਰ',
-
-    // Home / My Material
     hero_available_label: 'ਮੌਜੂਦ ਪਰਾਲੀ',
     hero_available_value: '8.4 ਟਨ ਮੌਜੂਦ',
     hero_material_type: 'ਝੋਨੇ ਦੀ ਪਰਾਲੀ (ਖੇਤੀਬਾੜੀ ਰਹਿੰਦ-ਖੂੰਹਦ)',
     hero_status: 'ਅੱਜ ਚੁੱਕਣ ਲਈ ਤਿਆਰ',
-    
     rec_badge: 'ਟੈਰਾਫਲਕਸ ਦੀ ਸਿਫਾਰਸ਼',
     rec_title: 'ਬਾਇਓਚਾਰ → ਫੈਸਿਲਿਟੀ 02 (ਬਟਾਲਾ)',
     rec_meta: '18.4 ਕਿਲੋਮੀਟਰ ਦੂਰੀ · +4.8 ਟਨ ਕਾਰਬਨ ਬੱਚਤ · ₹12,400 ਅੰਦਾਜ਼ਨ ਮੁੱਲ',
     view_best_pathway_btn: 'ਸਭ ਤੋਂ ਵਧੀਆ ਰਸਤਾ ਦੇਖੋ →',
-
     quick_facts: 'ਪਰਾਲੀ ਦੇ ਤੱਥ',
-    fact_moisture: 'ਸਿੱਲ: 14% (ਸੁੱਕੀ - ਪਾਇਰੋਲਿਸਿਸ ਲਈ ਢੁਕਵੀਂ)',
-    fact_ash: 'ਸੁਆਹ: 12% (ਮਿਆਰੀ)',
-    fact_pickup: 'ਚੁੱਕਣ ਦਾ ਸਮਾਂ: 24 ਘੰਟਿਆਂ ਦੇ ਅੰਦਰ',
-
-    // Best Pathway Screen
-    pathways_title: 'ਰਸਤਿਆਂ ਦੀ ਤੁਲਨਾ',
-    pathways_sub: 'ਤੁਹਾਡੀ 8.4 ਟਨ ਪਰਾਲੀ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ ਵਿਕਲਪ',
-    recommended_badge: 'ਸਿਫਾਰਸ਼ੀ',
-    rec_reason_biochar: 'ਇਸ ਪਰਾਲੀ ਲਈ ਸਭ ਤੋਂ ਵੱਧ ਕਾਰਬਨ ਅਤੇ ਆਰਥਿਕ ਮੁੱਲ।',
-    rec_reason_biogas: 'ਘੱਟ ਦੂਰੀ, ਪਰ ਕਾਰਬਨ ਸਥਿਰਤਾ ਥੋੜ੍ਹੀ ਘੱਟ।',
-    rec_reason_compost: 'ਸਧਾਰਨ ਤਰੀਕਾ, ਪਰ ਘੱਟ ਵਿੱਤੀ ਲਾਭ।',
-
-    val_per_tonne: 'ਮੁੱਲ / ਟਨ',
-    net_carbon: 'ਕਾਰਬਨ ਬੱਚਤ',
-    haul_distance: 'ਦੂਰੀ',
-    process_time: 'ਅੰਦਾਜ਼ਨ ਸਮਾਂ',
-
-    what_changed_title: 'ਕੀ ਬਦਲਿਆ?',
-    delta_biochar_to_biogas: '₹1,200 ਘੱਟ ਮੁੱਲ, ਪਰ 6.2 ਕਿਲੋਮੀਟਰ ਨੇੜੇ।',
-    delta_biochar_to_compost: '₹3,400 ਘੱਟ ਮੁੱਲ, ਪਰ ਸੁਕਾਉਣ ਦੀ ਲੋੜ ਨਹੀਂ।',
-    delta_biogas_to_biochar: '₹1,200 ਵੱਧ ਮੁੱਲ ਅਤੇ +1.6 ਟਨ ਵਾਧੂ ਕਾਰਬਨ ਬੱਚਤ।',
-
-    select_this_pathway: 'ਇਹ ਰਸਤਾ ਚੁਣੋ',
-
-    // Follow My Tonne (Journey)
-    journey_title: 'ਪਰਾਲੀ ਦਾ ਸਫਰ',
-    journey_sub: 'ਦੇਖੋ ਕਿ ਤੁਹਾਡੀ ਪਰਾਲੀ ਕਾਰਬਨ ਬੱਚਤ ਅਤੇ ਪੈਸਿਆਂ ਵਿੱਚ ਕਿਵੇਂ ਬਦਲਦੀ ਹੈ',
-    
-    step_waste: 'ਮੇਰੀ ਪਰਾਲੀ',
-    step_waste_desc: 'ਖੇਤ ਵਿੱਚ 8.4 ਟਨ ਝੋਨੇ ਦੀ ਪਰਾਲੀ ਇਕੱਠੀ।',
-    
-    step_collection: 'ਟ੍ਰਾਂਸਪੋਰਟ',
-    step_collection_desc: '16 ਟਨ ਟਰੱਕ ਰਵਾਨਾ। ਦੂਰੀ: 18.4 ਕਿਲੋਮੀਟਰ।',
-    
-    step_facility: 'ਪਲਾਂਟ',
-    step_facility_desc: 'ਫੈਸਿਲਿਟੀ 02 (ਬਟਾਲਾ ਬਾਇਓਚਾਰ ਯੂਨਿਟ) ਪਹੁੰਚ।',
-    
-    step_processing: 'ਪ੍ਰੋਸੈਸਿੰਗ',
-    step_processing_desc: '550°C ਤੇ ਬਾਇਓਚਾਰ ਵਿੱਚ ਤਬਦੀਲ।',
-    
-    step_carbon: 'ਕਾਰਬਨ ਬੱਚਤ',
-    step_carbon_desc: '+4.8 ਟਨ ਕਾਰਬਨ 100 ਸਾਲਾਂ ਲਈ ਸੁਰੱਖਿਅਤ।',
-    
-    step_value: 'ਆਮਦਨ',
-    step_value_desc: '₹12,400 ਕੁੱਲ ਰਕਮ ਕਿਸਾਨ ਖਾਤੇ ਵਿੱਚ ਜਮ੍ਹਾ।',
-
-    // Common
-    coming_soon: 'ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ',
-    coming_soon_desc: 'ਇਹ ਮੋਡਿਊਲ ਤਿਆਰ ਹੋ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕਚਰਾ ਉਤਪਾਦਕ ਮੋਡਿਊਲ ਵਰਤੋ।',
-    back_to_entry: '← ਮੁੱਖ ਮੇਨੂ ਤੇ ਵਾਪਸ',
-
-    // True Landing (/welcome)
-    welcome_eyebrow: 'ਸਰਕੂਲਰ ਕਾਰਬਨ ਨੈੱਟਵਰਕ ਆਪਰੇਟਿੰਗ ਸਿਸਟਮ',
-    welcome_subtitle: 'ਕਚਰੇ ਤੋਂ ਕਾਰਬਨ ਮੁੱਲ ਲੜੀ · ਪੰਜਾਬ ਅਤੇ ਹਰਿਆਣਾ',
-    welcome_tagline: 'ਕਚਰੇ ਨੂੰ ਜੋੜਨਾ। ਮੁੱਲ ਬਣਾਉਣਾ। ਇੱਕ ਸਵੱਛ ਭਵਿੱਖ ਦਾ ਨਿਰਮਾਣ।',
-    select_role_btn: 'ਭੂਮਿਕਾ ਚੁਣੋ',
-    farmer_app_btn: 'ਕਿਸਾਨ ਐਪ',
-    control_tower_btn: 'ਕੰਟਰੋਲ ਟਾਵਰ ਟਰਮੀਨਲ',
-    welcome_footer_left: 'ਘੱਟ ਕਚਰਾ',
-    welcome_footer_mid: 'ਵੱਧ ਮੁੱਲ',
-    welcome_footer_right: 'ਹਰਿਆ ਭਰਿਆ ਭਵਿੱਖ',
+    field_required: 'ਇਹ ਖੇਤਰ ਜ਼ਰੂਰੀ ਹੈ',
+    field_required_other: 'ਕਿਰਪਾ ਕਰਕੇ ਹੋਰ ਵੇਰਵੇ ਦੱਸੋ',
+    validation_summary_error: 'ਕਿਰਪਾ ਕਰਕੇ ਜਮ੍ਹਾਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਸਾਰੇ ਜ਼ਰੂਰੀ ਖੇਤਰ ਭਰੋ',
+    form_page_title: 'ਵੇਸਟ ਇਨਟੇਕ ਫਾਰਮ',
   },
 
   mr: {
@@ -667,6 +605,11 @@ export const DICTIONARY: Record<LanguageCode, Record<string, string>> = {
     welcome_footer_left: 'कमी कचरा',
     welcome_footer_mid: 'अधिक मूल्य',
     welcome_footer_right: 'हिरवे भविष्य',
+
+    field_required: 'हे क्षेत्र आवश्यक आहे',
+    field_required_other: 'कृपया तपशील नमूद करा',
+    validation_summary_error: 'कृपया सबमिट करण्यापूर्वी सर्व आवश्यक क्षेत्रे भरा',
+    form_page_title: 'कचरा इनटेक फॉर्म',
   },
 };
 

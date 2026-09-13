@@ -19,49 +19,72 @@ export function GoldSpark({ className = '', style = {} }: { className?: string; 
   );
 }
 
-export function TornGinghamCorner({ position = 'top-right' }: { position?: 'top-right' | 'bottom-left' }) {
-  const isTopRight = position === 'top-right';
+export interface GinghamCornerProps {
+  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export function TornGinghamCorner({ position = 'top-left', className = '', style = {} }: GinghamCornerProps) {
+  const isTop = position.startsWith('top');
+  const isLeft = position.endsWith('left');
+
   return (
     <div
-      className={`torn-corner ${position}`}
+      className={`torn-corner ${position} ${className}`}
       style={{
         position: 'absolute',
-        top: isTopRight ? 0 : 'auto',
-        bottom: isTopRight ? 'auto' : 0,
-        right: isTopRight ? 0 : 'auto',
-        left: isTopRight ? 'auto' : 0,
-        width: 140,
-        height: 140,
+        top: isTop ? 0 : 'auto',
+        bottom: isTop ? 'auto' : 0,
+        left: isLeft ? 0 : 'auto',
+        right: isLeft ? 'auto' : 0,
+        width: 'clamp(220px, 26vw, 360px)',
+        height: 'clamp(220px, 26vw, 360px)',
         pointerEvents: 'none',
-        zIndex: 2,
+        zIndex: 5,
         overflow: 'hidden',
+        ...style,
       }}
     >
-      <svg viewBox="0 0 140 140" style={{ width: '100%', height: '100%', display: 'block' }}>
+      <svg viewBox="0 0 320 320" style={{ width: '100%', height: '100%', display: 'block' }}>
         <defs>
-          <pattern id="ginghamPattern" width="20" height="20" patternUnits="userSpaceOnUse">
-            <rect width="20" height="20" fill="#FFFFFF" />
-            <rect width="10" height="10" fill="#3D6B4E" fillOpacity="0.85" />
-            <rect x="10" y="10" width="10" height="10" fill="#3D6B4E" fillOpacity="0.85" />
-            <rect x="10" y="0" width="10" height="10" fill="#2E523B" fillOpacity="0.95" />
-            <rect x="0" y="10" width="10" height="10" fill="#2E523B" fillOpacity="0.95" />
+          {/* Photorealistic Gingham Fabric Check Pattern with Visible Weave */}
+          <pattern id={`ginghamFabricPattern_${position}`} width="60" height="60" patternUnits="userSpaceOnUse">
+            <image href="/gingham-fabric.jpg" width="60" height="60" preserveAspectRatio="xMidYMid slice" />
           </pattern>
-          <filter id="paperShadow" x="-10%" y="-10%" width="130%" height="130%">
-            <feDropShadow dx="1" dy="2" stdDeviation="2" floodColor="#2A2A22" floodOpacity="0.2" />
+
+          {/* Realistic Torn Paper Layer Drop Shadow */}
+          <filter id={`tornPaperShadow_${position}`} x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="2" dy="4" stdDeviation="4" floodColor="#14181A" floodOpacity="0.28" />
           </filter>
         </defs>
-        {isTopRight ? (
+
+        {position === 'top-left' && (
           <path
-            d="M 20 0 Q 35 15 50 5 Q 65 25 80 10 Q 95 30 110 15 Q 125 35 140 20 L 140 140 L 0 140 Z"
-            fill="url(#ginghamPattern)"
-            transform="rotate(90 70 70)"
-            filter="url(#paperShadow)"
+            d="M 0 0 L 0 295 L 14 286 L 22 292 L 36 274 L 48 280 L 64 256 L 76 262 L 94 238 L 108 244 L 126 218 L 142 224 L 160 196 L 176 202 L 195 174 L 210 180 L 228 152 L 244 158 L 262 130 L 276 136 L 292 108 L 304 114 L 316 0 Z"
+            fill={`url(#ginghamFabricPattern_${position})`}
+            filter={`url(#tornPaperShadow_${position})`}
           />
-        ) : (
+        )}
+        {position === 'bottom-right' && (
           <path
-            d="M 0 120 Q 15 105 30 115 Q 45 95 60 110 Q 75 90 90 105 Q 105 85 120 100 L 0 0 Z"
-            fill="url(#ginghamPattern)"
-            filter="url(#paperShadow)"
+            d="M 320 320 L 320 25 L 306 34 L 298 28 L 284 46 L 272 40 L 256 64 L 244 58 L 226 82 L 212 76 L 194 102 L 178 96 L 160 124 L 144 118 L 125 146 L 110 140 L 92 168 L 76 162 L 58 190 L 44 184 L 28 212 L 16 206 L 0 320 Z"
+            fill={`url(#ginghamFabricPattern_${position})`}
+            filter={`url(#tornPaperShadow_${position})`}
+          />
+        )}
+        {position === 'top-right' && (
+          <path
+            d="M 320 0 L 320 295 L 306 286 L 298 292 L 284 274 L 272 280 L 256 256 L 244 262 L 226 238 L 212 244 L 194 218 L 178 224 L 160 196 L 144 202 L 125 174 L 110 180 L 92 152 L 76 158 L 58 130 L 44 136 L 28 108 L 16 114 L 0 0 Z"
+            fill={`url(#ginghamFabricPattern_${position})`}
+            filter={`url(#tornPaperShadow_${position})`}
+          />
+        )}
+        {position === 'bottom-left' && (
+          <path
+            d="M 0 320 L 0 25 L 14 34 L 22 28 L 36 46 L 48 40 L 64 64 L 76 58 L 94 82 L 108 76 L 126 102 L 142 96 L 160 124 L 176 118 L 195 146 L 210 140 L 228 168 L 244 162 L 262 190 L 276 184 L 292 212 L 304 206 L 320 320 Z"
+            fill={`url(#ginghamFabricPattern_${position})`}
+            filter={`url(#tornPaperShadow_${position})`}
           />
         )}
       </svg>
@@ -69,54 +92,207 @@ export function TornGinghamCorner({ position = 'top-right' }: { position?: 'top-
   );
 }
 
-export function ScallopedGinghamCorner({ position = 'top-left' }: { position?: 'top-left' | 'bottom-right' }) {
-  const isTopLeft = position === 'top-left';
+// Re-export ScallopedGinghamCorner pointing to TornGinghamCorner (supersedes smooth scallops sitewide per Change 12)
+export const ScallopedGinghamCorner = TornGinghamCorner;
+
+export function SidebarLeafIllustration({ style = {} }: { style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 100 120" style={{ width: 64, height: 76, display: 'block', ...style }}>
+      <g stroke="#3D6B4E" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.45">
+        <path d="M 20 110 C 25 80, 45 50, 75 20" />
+        <path d="M 32 90 C 15 85, 10 70, 22 65 C 32 75, 30 85, 32 90 Z" fill="#7B9C85" fillOpacity="0.4" />
+        <path d="M 45 72 C 60 65, 65 50, 52 48 C 43 58, 44 68, 45 72 Z" fill="#7B9C85" fillOpacity="0.4" />
+        <path d="M 58 52 C 40 45, 38 30, 48 26 C 58 35, 57 45, 58 52 Z" fill="#7B9C85" fillOpacity="0.4" />
+        <path d="M 68 35 C 80 25, 82 10, 70 12 C 62 20, 64 30, 68 35 Z" fill="#7B9C85" fillOpacity="0.4" />
+      </g>
+    </svg>
+  );
+}
+
+/* CHANGE 16: NEW SIDE STRIP ACCENTS & REGIONAL CHOROPLETH MAP */
+export function GinghamSideStrip({ style = {} }: { style?: React.CSSProperties }) {
   return (
     <div
-      className={`scalloped-corner ${position}`}
       style={{
         position: 'absolute',
-        top: isTopLeft ? 0 : 'auto',
-        bottom: isTopLeft ? 'auto' : 0,
-        left: isTopLeft ? 0 : 'auto',
-        right: isTopLeft ? 'auto' : 0,
-        width: 'clamp(140px, 20vw, 240px)',
-        height: 'clamp(140px, 20vw, 240px)',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        width: 'clamp(32px, 3.5vw, 48px)',
+        zIndex: 15,
         pointerEvents: 'none',
-        zIndex: 5,
         overflow: 'hidden',
+        ...style,
       }}
     >
-      <svg viewBox="0 0 240 240" style={{ width: '100%', height: '100%', display: 'block' }}>
+      <svg viewBox="0 0 48 1000" preserveAspectRatio="none" style={{ width: '100%', height: '100%', display: 'block' }}>
         <defs>
-          <pattern id={`ginghamPatternScallop_${position}`} width="20" height="20" patternUnits="userSpaceOnUse">
-            <rect width="20" height="20" fill="#FFFFFF" />
-            <rect width="10" height="10" fill="#3D6B4E" fillOpacity="0.85" />
-            <rect x="10" y="10" width="10" height="10" fill="#3D6B4E" fillOpacity="0.85" />
-            <rect x="10" y="0" width="10" height="10" fill="#2E523B" fillOpacity="0.95" />
-            <rect x="0" y="10" width="10" height="10" fill="#2E523B" fillOpacity="0.95" />
+          <pattern id="ginghamSidePattern" width="40" height="40" patternUnits="userSpaceOnUse">
+            <rect width="40" height="40" fill="#EBF2EE" />
+            <rect width="20" height="20" fill="#3D6B4E" fillOpacity="0.75" />
+            <rect x="20" y="20" width="20" height="20" fill="#3D6B4E" fillOpacity="0.75" />
+            <rect x="20" y="0" width="20" height="20" fill="#75A083" fillOpacity="0.45" />
+            <rect x="0" y="20" width="20" height="20" fill="#75A083" fillOpacity="0.45" />
           </pattern>
-          <filter id={`paperShadowScallop_${position}`} x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="1" dy="2" stdDeviation="3" floodColor="#2A2A22" floodOpacity="0.2" />
+          <filter id="sideStripShadow" x="-20%" y="-10%" width="150%" height="120%">
+            <feDropShadow dx="3" dy="0" stdDeviation="3" floodColor="#1A2A20" floodOpacity="0.18" />
           </filter>
         </defs>
-        {isTopLeft ? (
-          <path
-            d="M 0 0 L 0 220 A 32 32 0 0 1 44 176 A 32 32 0 0 1 88 132 A 32 32 0 0 1 132 88 A 32 32 0 0 1 176 44 A 32 32 0 0 1 220 0 L 0 0 Z"
-            fill={`url(#ginghamPatternScallop_${position})`}
-            filter={`url(#paperShadowScallop_${position})`}
-          />
-        ) : (
-          <path
-            d="M 240 240 L 240 20 A 32 32 0 0 1 196 64 A 32 32 0 0 1 152 108 A 32 32 0 0 1 108 152 A 32 32 0 0 1 64 196 A 32 32 0 0 1 20 240 L 240 240 Z"
-            fill={`url(#ginghamPatternScallop_${position})`}
-            filter={`url(#paperShadowScallop_${position})`}
-          />
-        )}
+        <path
+          d="M 0 0 L 38 0 L 36 80 L 42 160 L 37 240 L 41 320 L 36 400 L 40 480 L 35 560 L 41 640 L 37 720 L 42 800 L 36 880 L 40 960 L 38 1000 L 0 1000 Z"
+          fill="url(#ginghamSidePattern)"
+          filter="url(#sideStripShadow)"
+        />
       </svg>
     </div>
   );
 }
+
+export function TornFabricSideStrip({ style = {} }: { style?: React.CSSProperties }) {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        width: 'clamp(32px, 3.5vw, 48px)',
+        zIndex: 15,
+        pointerEvents: 'none',
+        overflow: 'hidden',
+        ...style,
+      }}
+    >
+      <svg viewBox="0 0 48 1000" preserveAspectRatio="none" style={{ width: '100%', height: '100%', display: 'block' }}>
+        <defs>
+          <linearGradient id="fabricSideGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#CDC6B8" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#BDB5A5" stopOpacity="0.85" />
+          </linearGradient>
+          <filter id="rightSideShadow" x="-40%" y="-10%" width="150%" height="120%">
+            <feDropShadow dx="-3" dy="0" stdDeviation="3" floodColor="#1A2A20" floodOpacity="0.18" />
+          </filter>
+        </defs>
+        <path
+          d="M 48 0 L 10 0 L 14 80 L 8 160 L 13 240 L 7 320 L 12 400 L 8 480 L 14 560 L 7 640 L 12 720 L 7 800 L 13 880 L 8 960 L 10 1000 L 48 1000 Z"
+          fill="url(#fabricSideGrad)"
+          filter="url(#rightSideShadow)"
+        />
+      </svg>
+    </div>
+  );
+}
+
+export function ContourLinesBg({ style = {} }: { style?: React.CSSProperties }) {
+  // Disregard contour-line decorations per CHANGE 21 final background spec
+  return null;
+}
+
+export function RegionalChoroplethMap({ style = {} }: { style?: React.CSSProperties }) {
+  return (
+    <div style={{ position: 'relative', width: '100%', maxWidth: 780, margin: '0 auto', ...style }}>
+      <svg viewBox="0 0 800 380" preserveAspectRatio="xMidYMid meet" style={{ width: '100%', height: 'auto', display: 'block' }}>
+        <defs>
+          <filter id="mapShadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="0" dy="6" stdDeviation="8" floodColor="#2A3A2E" floodOpacity="0.12" />
+          </filter>
+          <linearGradient id="mapGrad1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#A2BEAA" />
+            <stop offset="100%" stopColor="#8EAFA0" />
+          </linearGradient>
+          <linearGradient id="mapGrad2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#B4CBB9" />
+            <stop offset="100%" stopColor="#9BB8A4" />
+          </linearGradient>
+        </defs>
+
+        <g filter="url(#mapShadow)" stroke="#FFFFFF" strokeWidth="1.2" strokeLinejoin="round" style={{ cursor: 'pointer' }}>
+          {/* District Polygons - Punjab North (Gurdaspur, Amritsar, Hoshiarpur) */}
+          <path className="map-district-poly" d="M 280 80 L 330 40 L 390 55 L 420 95 L 370 120 L 310 110 Z" fill="url(#mapGrad1)" />
+          <path className="map-district-poly" d="M 220 110 L 280 80 L 310 110 L 290 160 L 230 150 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 310 110 L 370 120 L 410 165 L 360 185 L 310 160 Z" fill="url(#mapGrad1)" />
+          
+          {/* Punjab Central (Ludhiana, Jalandhar, Firozpur, Kapurthala) */}
+          <path className="map-district-poly" d="M 370 120 L 420 95 L 480 115 L 460 170 L 410 165 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 290 160 L 360 185 L 340 240 L 270 220 L 250 180 Z" fill="url(#mapGrad1)" />
+          <path className="map-district-poly" d="M 360 185 L 440 170 L 450 230 L 390 250 L 340 240 Z" fill="url(#mapGrad2)" />
+          
+          {/* Punjab South & Chandigarh Hub (Patiala, Sangrur, Bathinda, Mohali, Chandigarh) */}
+          <path className="map-district-poly" d="M 440 170 L 510 160 L 540 210 L 480 235 L 450 230 Z" fill="url(#mapGrad1)" />
+          <path className="map-district-poly" d="M 480 115 L 560 110 L 580 165 L 510 160 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 390 250 L 450 230 L 480 235 L 460 300 L 380 290 Z" fill="url(#mapGrad1)" />
+
+          {/* Haryana North & Central (Ambala, Yamunanagar, Kurukshetra, Karnal, Panipat) */}
+          <path className="map-district-poly" d="M 540 210 L 620 190 L 650 245 L 570 260 L 480 235 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 560 110 L 640 120 L 680 175 L 620 190 L 580 165 Z" fill="url(#mapGrad1)" />
+          <path className="map-district-poly" d="M 570 260 L 650 245 L 670 310 L 590 320 Z" fill="url(#mapGrad2)" />
+          
+          {/* Haryana West & South (Hisar, Sirsa, Rohtak, Jind, Sonipat) */}
+          <path className="map-district-poly" d="M 340 240 L 390 250 L 380 290 L 310 290 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 460 300 L 570 260 L 590 320 L 500 340 Z" fill="url(#mapGrad1)" />
+          <path className="map-district-poly" d="M 380 290 L 460 300 L 500 340 L 420 350 Z" fill="url(#mapGrad2)" />
+        </g>
+
+        {/* Network Nodes / Active Location Indicators */}
+        <circle cx="345" cy="85" r="7" fill="#3D6B4E" fillOpacity="0.3" className="map-pulse-halo" />
+        <circle cx="345" cy="85" r="3.5" fill="#3D6B4E" />
+        <circle cx="345" cy="85" r="1.5" fill="#F2B84C" />
+
+        <circle cx="265" cy="125" r="6" fill="#3D6B4E" fillOpacity="0.3" className="map-pulse-halo" />
+        <circle cx="265" cy="125" r="3" fill="#3D6B4E" />
+
+        <circle cx="405" cy="205" r="7" fill="#3D6B4E" fillOpacity="0.3" className="map-pulse-halo" />
+        <circle cx="405" cy="205" r="3.5" fill="#3D6B4E" />
+        <circle cx="405" cy="205" r="1.5" fill="#F2B84C" />
+
+        <circle cx="530" cy="175" r="8" fill="#3D6B4E" fillOpacity="0.3" className="map-pulse-halo" />
+        <circle cx="530" cy="175" r="4" fill="#3D6B4E" />
+        <circle cx="530" cy="175" r="1.5" fill="#F2B84C" />
+
+        <circle cx="610" cy="230" r="6" fill="#3D6B4E" fillOpacity="0.3" className="map-pulse-halo" />
+        <circle cx="610" cy="230" r="3" fill="#3D6B4E" />
+
+        {/* Small floating node labels */}
+        <text x="345" y="72" textAnchor="middle" fill="#2E523B" fontSize="10" fontWeight="700">Batala</text>
+        <text x="405" y="222" textAnchor="middle" fill="#2E523B" fontSize="10" fontWeight="700">Ludhiana</text>
+        <text x="530" y="162" textAnchor="middle" fill="#2E523B" fontSize="10" fontWeight="700">Chandigarh</text>
+      </svg>
+    </div>
+  );
+}
+
+export function TexturedHeadline({ text = 'TERRAFLUX' }: { text?: string }) {
+  return (
+    <div className="textured-headline-container">
+      <svg viewBox="0 0 1000 160" preserveAspectRatio="xMidYMid meet" style={{ width: '100%', maxWidth: 940, height: 'auto', display: 'block', margin: '0 auto' }}>
+        <defs>
+          <pattern id="headlineFabricTexture" width="120" height="120" patternUnits="userSpaceOnUse">
+            <rect width="120" height="120" fill="#3D6B4E" />
+            <circle cx="20" cy="20" r="1.5" fill="#2E523B" />
+            <circle cx="60" cy="40" r="1.5" fill="#254330" />
+            <circle cx="90" cy="80" r="1.5" fill="#2E523B" />
+            <line x1="0" y1="0" x2="120" y2="120" stroke="#31573F" strokeWidth="0.8" opacity="0.4" />
+            <line x1="120" y1="0" x2="0" y2="120" stroke="#31573F" strokeWidth="0.8" opacity="0.4" />
+          </pattern>
+        </defs>
+        <text
+          x="500"
+          y="122"
+          textAnchor="middle"
+          fill="url(#headlineFabricTexture)"
+          fontSize="118"
+          fontWeight="normal"
+          fontFamily="'PineForest', 'Inter', system-ui, -apple-system, sans-serif"
+          letterSpacing="0.05em"
+        >
+          {text}
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+
 
 export function WelcomeBackgroundLandscape() {
   return (

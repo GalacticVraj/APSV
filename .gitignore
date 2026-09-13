@@ -10,6 +10,9 @@ packages/*/dist/
 packages/*/build/
 .next/
 out/
+.vite/
+packages/*/.vite/
+
 
 # Environment variables
 .env
