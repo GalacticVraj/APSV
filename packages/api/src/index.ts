@@ -479,7 +479,15 @@ const POST: Record<string, Handler> = {
 // Server
 // ─────────────────────────────────────────────────────────────────────────────
 
-const server = createServer(async (req, res) => {
+/**
+ * One request, handled.
+ *
+ * Extracted from the createServer callback so the same routing can run in two
+ * places: the long-lived Node server below, and a serverless function on a host
+ * that does not let you keep a port open. Nothing about the behaviour differs
+ * between them.
+ */
+export async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
   const started = Date.now();
   const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
 
@@ -494,7 +502,8 @@ const server = createServer(async (req, res) => {
   }
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
-    return res.end();
+    res.end();
+    return;
   }
 
   try {
@@ -520,13 +529,20 @@ const server = createServer(async (req, res) => {
   if (url.pathname.startsWith('/api/') && ms > 150) {
     console.log(`[api] ${req.method} ${url.pathname} ${ms}ms`);
   }
-});
+}
 
-server.listen(PORT, HOST, () => {
-  const t = Date.now();
-  // Warm the solver so the first UI request is not the one that pays for it.
-  twin.getResult();
-  console.log(`
+const server = createServer(handleRequest);
+
+const IS_ENTRY =
+  process.argv[1] !== undefined &&
+  resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
+
+if (IS_ENTRY) {
+  server.listen(PORT, HOST, () => {
+    const t = Date.now();
+    // Warm the solver so the first UI request is not the one that pays for it.
+    twin.getResult();
+    console.log(`
   TERRAFLUX  ${PRODUCT.tagline}
   ${PRODUCT.problemStatement}
 
@@ -536,4 +552,5 @@ server.listen(PORT, HOST, () => {
 
   All demo data is synthetic. Emission factors and prices are cited from published sources.
 `);
-});
+  });
+}

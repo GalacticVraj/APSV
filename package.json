@@ -21,7 +21,7 @@
     "test": "node --experimental-strip-types --test \"packages/engine/tests/*.test.ts\" \"packages/api/tests/*.test.ts\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:watch": "node --experimental-strip-types --test --watch \"packages/engine/tests/*.test.ts\" \"packages/api/tests/*.test.ts\"",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "devDependencies": {
     "@types/node": "^22.20.2",
