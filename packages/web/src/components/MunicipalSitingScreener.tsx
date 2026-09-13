@@ -161,16 +161,13 @@ export function MunicipalSitingScreener() {
           {/* Top Floating Legend */}
           <div style={{ position: 'absolute', top: 12, left: 14, zIndex: 10, display: 'flex', gap: 14, alignItems: 'center', background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(4px)', padding: '6px 14px', borderRadius: 20, border: '1px solid rgba(0,0,0,0.08)', fontSize: 11, fontWeight: 600, color: 'var(--ink-2)' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#4F835B' }} /> Wet Organic Node
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#4F835B' }} /> Wet
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#C58A42' }} /> Dry Lignocellulosic Node
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#C58A42' }} /> Dry
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid #2563eb' }} /> Facility (Capacity Ring)
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ width: 16, height: 0, borderTop: '2px dashed #64748b' }} /> Break-Even Catchment
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#fff', border: '2px solid #2563eb' }} /> Facility
             </span>
           </div>
 
@@ -230,9 +227,7 @@ export function MunicipalSitingScreener() {
               strokeWidth="18"
               strokeLinecap="round"
             />
-            <text x="560" y="110" fill="#64748b" fontSize="12" fontWeight="600" opacity="0.7" transform="rotate(75, 560, 110)">
-              Sabarmati River Basin
-            </text>
+
 
             {/* Heatmap Glows */}
             {(activeLayer === 'all' || activeLayer === 'density') && (
@@ -244,19 +239,7 @@ export function MunicipalSitingScreener() {
               </g>
             )}
 
-            {/* Catchment Buffers */}
-            {(activeLayer === 'all' || activeLayer === 'catchment') && (
-              <g style={{ transition: 'opacity 0.3s' }}>
-                {/* Sabarmati CSTR */}
-                <circle cx="530" cy="220" r="105" fill="#2563eb" fillOpacity="0.03" stroke="#2563eb" strokeWidth="1.5" strokeDasharray="5 5" opacity="0.6" />
-                {/* GreenGas CBG */}
-                <circle cx="470" cy="330" r="95" fill="#2563eb" fillOpacity="0.03" stroke="#2563eb" strokeWidth="1.5" strokeDasharray="5 5" opacity="0.6" />
-                {/* Kheda Biochar */}
-                <circle cx="710" cy="390" r="90" fill="#b45309" fillOpacity="0.03" stroke="#b45309" strokeWidth="1.5" strokeDasharray="5 5" opacity="0.6" />
-                {/* Sanand Deficit (Proposed) */}
-                <circle cx="330" cy="240" r="85" fill="#d97706" fillOpacity="0.04" stroke="#d97706" strokeWidth="2" strokeDasharray="3 3" opacity="0.9" />
-              </g>
-            )}
+
 
             {/* Haul Routes */}
             <g stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.6">
@@ -268,10 +251,9 @@ export function MunicipalSitingScreener() {
               <line x1="330" y1="240" x2="710" y2="390" stroke="#ef4444" strokeWidth="2" strokeDasharray="6 4" opacity="0.8" />
             </g>
 
-            {/* Floating Callout Badge for Deadheading (replacing rotated text) */}
             <g transform="translate(520, 315)">
-              <rect x="-90" y="-12" width="180" height="24" rx="12" fill="#fef2f2" stroke="#f87171" strokeWidth="1" />
-              <text x="0" y="4" textAnchor="middle" fill="#dc2626" fontSize="10" fontWeight="700">34.8 km Deadheading ➔ RISK</text>
+              <rect x="-38" y="-12" width="76" height="24" rx="12" fill="#fef2f2" stroke="#f87171" strokeWidth="1" />
+              <text x="0" y="4" textAnchor="middle" fill="#dc2626" fontSize="10" fontWeight="700">RISK</text>
             </g>
 
             {/* ── GENERATORS ── */}
@@ -291,8 +273,6 @@ export function MunicipalSitingScreener() {
               </circle>
               <circle r="18" fill="#d97706" stroke="#ffffff" strokeWidth="3" />
               <text textAnchor="middle" dy="4" fill="#ffffff" fontSize="11" fontWeight="800">9.4t</text>
-              <rect x="-22" y="-32" width="44" height="16" rx="4" fill="#fff" stroke="#d97706" strokeWidth="1" />
-              <text x="0" y="-21" textAnchor="middle" fill="#b45309" fontSize="10" fontWeight="700">22% M</text>
               <text x="0" y="34" textAnchor="middle" fill="#1e293b" fontSize="12" fontWeight="700">Sanand GIDC</text>
             </g>
 
@@ -324,44 +304,36 @@ export function MunicipalSitingScreener() {
               <text x="0" y="28" textAnchor="middle" fill="#334155" fontSize="11" fontWeight="600">Anand APMC</text>
             </g>
 
-            {/* ── FACILITIES (with Capacity Rings) ── */}
             {/* Sabarmati CSTR (92%) */}
             <g transform="translate(530, 220)">
-              {/* Outer track */}
-              <circle r="26" fill="none" stroke="#e2e8f0" strokeWidth="3" />
-              {/* Utilisation arc (Circumference ~163.3) */}
-              <circle r="26" fill="none" stroke="#dc2626" strokeWidth="3" strokeDasharray="163.36" strokeDashoffset={163.36 * (1 - 0.92)} transform="rotate(-90)" />
-              {/* Inner node */}
-              <circle r="20" fill="#ffffff" stroke="#dc2626" strokeWidth="1" />
-              <text textAnchor="middle" dy="4" fill="#dc2626" fontSize="10" fontWeight="800">92%</text>
-              <text x="0" y="42" textAnchor="middle" fill="#1e293b" fontSize="12" fontWeight="700">Sabarmati CSTR</text>
+              <circle r="20" fill="#ffffff" stroke="#dc2626" strokeWidth="2" />
+              <circle r="5" fill="#dc2626" cx="0" cy="0" />
+              <text x="10" y="4" fill="#dc2626" fontSize="10" fontWeight="800">92%</text>
+              <text x="0" y="36" textAnchor="middle" fill="#1e293b" fontSize="12" fontWeight="700">Sabarmati CSTR</text>
             </g>
 
             {/* GreenGas CBG (73%) */}
             <g transform="translate(470, 330)">
-              <circle r="24" fill="none" stroke="#e2e8f0" strokeWidth="3" />
-              <circle r="24" fill="none" stroke="#2563eb" strokeWidth="3" strokeDasharray="150.8" strokeDashoffset={150.8 * (1 - 0.73)} transform="rotate(-90)" />
-              <circle r="18" fill="#ffffff" stroke="#2563eb" strokeWidth="1" />
-              <text textAnchor="middle" dy="4" fill="#2563eb" fontSize="9" fontWeight="800">73%</text>
-              <text x="0" y="40" textAnchor="middle" fill="#1e293b" fontSize="11" fontWeight="600">GreenGas CBG</text>
+              <circle r="18" fill="#ffffff" stroke="#2563eb" strokeWidth="2" />
+              <circle r="5" fill="#2563eb" cx="0" cy="0" />
+              <text x="9" y="4" fill="#2563eb" fontSize="9" fontWeight="800">73%</text>
+              <text x="0" y="34" textAnchor="middle" fill="#1e293b" fontSize="11" fontWeight="600">GreenGas CBG</text>
             </g>
 
             {/* Kheda Biochar (70%) */}
             <g transform="translate(710, 390)">
-              <circle r="24" fill="none" stroke="#e2e8f0" strokeWidth="3" />
-              <circle r="24" fill="none" stroke="#475569" strokeWidth="3" strokeDasharray="150.8" strokeDashoffset={150.8 * (1 - 0.70)} transform="rotate(-90)" />
-              <circle r="18" fill="#ffffff" stroke="#475569" strokeWidth="1" />
-              <text textAnchor="middle" dy="4" fill="#475569" fontSize="9" fontWeight="800">70%</text>
-              <text x="0" y="40" textAnchor="middle" fill="#1e293b" fontSize="11" fontWeight="600">Kheda Retort</text>
+              <circle r="18" fill="#ffffff" stroke="#475569" strokeWidth="2" />
+              <circle r="5" fill="#475569" cx="0" cy="0" />
+              <text x="9" y="4" fill="#475569" fontSize="9" fontWeight="800">70%</text>
+              <text x="0" y="34" textAnchor="middle" fill="#1e293b" fontSize="11" fontWeight="600">Kheda Retort</text>
             </g>
 
             {/* Anand Co-Digestion (86%) */}
             <g transform="translate(820, 460)">
-              <circle r="24" fill="none" stroke="#e2e8f0" strokeWidth="3" />
-              <circle r="24" fill="none" stroke="#1d4ed8" strokeWidth="3" strokeDasharray="150.8" strokeDashoffset={150.8 * (1 - 0.86)} transform="rotate(-90)" />
-              <circle r="18" fill="#ffffff" stroke="#1d4ed8" strokeWidth="1" />
-              <text textAnchor="middle" dy="4" fill="#1d4ed8" fontSize="9" fontWeight="800">86%</text>
-              <text x="0" y="40" textAnchor="middle" fill="#1e293b" fontSize="11" fontWeight="600">Anand Co-Digestion</text>
+              <circle r="18" fill="#ffffff" stroke="#1d4ed8" strokeWidth="2" />
+              <circle r="5" fill="#1d4ed8" cx="0" cy="0" />
+              <text x="9" y="4" fill="#1d4ed8" fontSize="9" fontWeight="800">86%</text>
+              <text x="0" y="34" textAnchor="middle" fill="#1e293b" fontSize="11" fontWeight="600">Anand Co-Digestion</text>
             </g>
           </svg>
         </div>
