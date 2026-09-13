@@ -1,74 +1,83 @@
 <div align="center">
 
-<!-- Animated Banner SVG -->
-<svg width="860" height="160" viewBox="0 0 860 160" xmlns="http://www.w3.org/2000/svg">
+<!-- Animated Banner SVG — warm earth / forest-green theme matching /generator -->
+<svg width="860" height="180" viewBox="0 0 860 180" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0a0f1e"/>
-      <stop offset="100%" style="stop-color:#0d1f0f"/>
+      <stop offset="0%" style="stop-color:#e8e3d8"/>
+      <stop offset="50%" style="stop-color:#ede8df"/>
+      <stop offset="100%" style="stop-color:#ddd8ce"/>
     </linearGradient>
     <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#10b981"/>
-      <stop offset="50%" style="stop-color:#34d399"/>
-      <stop offset="100%" style="stop-color:#6ee7b7"/>
+      <stop offset="0%" style="stop-color:#1a4a2e"/>
+      <stop offset="50%" style="stop-color:#2d6a4f"/>
+      <stop offset="100%" style="stop-color:#40916c"/>
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="subtleGlow">
-      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
-      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
+    <pattern id="gingham" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+      <rect width="12" height="12" fill="#ede8df"/>
+      <rect width="6" height="6" fill="#1a4a2e" fill-opacity="0.12"/>
+      <rect x="6" y="6" width="6" height="6" fill="#1a4a2e" fill-opacity="0.12"/>
+    </pattern>
   </defs>
-  <rect width="860" height="160" rx="12" fill="url(#bg)"/>
-  <g stroke="#10b981" stroke-opacity="0.07" stroke-width="1">
-    <line x1="0" y1="20" x2="860" y2="20"/><line x1="0" y1="40" x2="860" y2="40"/>
-    <line x1="0" y1="60" x2="860" y2="60"/><line x1="0" y1="80" x2="860" y2="80"/>
-    <line x1="0" y1="100" x2="860" y2="100"/><line x1="0" y1="120" x2="860" y2="120"/>
-    <line x1="0" y1="140" x2="860" y2="140"/>
-    <line x1="86" y1="0" x2="86" y2="160"/><line x1="172" y1="0" x2="172" y2="160"/>
-    <line x1="258" y1="0" x2="258" y2="160"/><line x1="344" y1="0" x2="344" y2="160"/>
-    <line x1="430" y1="0" x2="430" y2="160"/><line x1="516" y1="0" x2="516" y2="160"/>
-    <line x1="602" y1="0" x2="602" y2="160"/><line x1="688" y1="0" x2="688" y2="160"/>
-  </g>
-  <circle cx="50" cy="80" r="28" fill="none" stroke="#10b981" stroke-width="1" stroke-opacity="0.4">
-    <animate attributeName="r" values="28;36;28" dur="3s" repeatCount="indefinite"/>
-    <animate attributeName="stroke-opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="50" cy="80" r="12" fill="#10b981" fill-opacity="0.15">
-    <animate attributeName="r" values="12;16;12" dur="3s" repeatCount="indefinite"/>
-  </circle>
-  <text x="50" y="85" text-anchor="middle" font-family="monospace" font-size="14" fill="#10b981" filter="url(#glow)">TF</text>
-  <text x="430" y="68" text-anchor="middle" font-family="'Courier New', monospace" font-size="46" font-weight="900" fill="url(#textGrad)" filter="url(#glow)" letter-spacing="8">TERRAFLUX</text>
-  <text x="430" y="96" text-anchor="middle" font-family="'Courier New', monospace" font-size="12" fill="#6ee7b7" letter-spacing="3" font-weight="400">WASTE-TO-CARBON INTELLIGENCE PLATFORM</text>
-  <text x="430" y="130" text-anchor="middle" font-family="'Courier New', monospace" font-size="10" fill="#34d399" fill-opacity="0.7" letter-spacing="2">HackOut 26 · PS11 · Team Last Commit</text>
-  <rect x="0" y="0" width="860" height="2" fill="#10b981" fill-opacity="0.5" rx="1">
-    <animate attributeName="y" values="-2;162;-2" dur="4s" repeatCount="indefinite"/>
-    <animate attributeName="fill-opacity" values="0;0.5;0" dur="4s" repeatCount="indefinite"/>
+
+  <!-- Main background -->
+  <rect width="860" height="180" rx="14" fill="url(#bg)" stroke="#1a4a2e" stroke-width="1.5" stroke-opacity="0.3"/>
+
+  <!-- Gingham corner — top left -->
+  <clipPath id="tlClip"><rect width="120" height="120" rx="14"/></clipPath>
+  <rect width="120" height="120" rx="14" fill="url(#gingham)" clip-path="url(#tlClip)" opacity="0.6"/>
+  <!-- Scalloped mask top left -->
+  <path d="M0,0 Q15,0 15,15 Q15,0 30,0 Q45,0 45,15 Q45,0 60,0 Q75,0 75,15 Q75,0 90,0 Q105,0 105,15 Q105,0 120,0 L120,120 L0,120 Z" fill="#ede8df"/>
+
+  <!-- Gingham corner — bottom right -->
+  <clipPath id="brClip"><rect x="740" y="60" width="120" height="120" rx="14"/></clipPath>
+  <rect x="740" y="60" width="120" height="120" rx="14" fill="url(#gingham)" clip-path="url(#brClip)" opacity="0.6"/>
+  <path d="M860,180 Q845,180 845,165 Q845,180 830,180 Q815,180 815,165 Q815,180 800,180 Q785,180 785,165 Q785,180 770,180 Q755,180 755,165 Q755,180 740,180 L740,60 L860,60 Z" fill="#ede8df"/>
+
+  <!-- TerraFlux wordmark -->
+  <text x="430" y="78" text-anchor="middle" font-family="'Georgia', 'Times New Roman', serif" font-size="52" font-weight="900" fill="url(#textGrad)" letter-spacing="6">TERRAFLUX</text>
+
+  <!-- Animated underline -->
+  <rect x="220" y="90" height="2" rx="1" fill="#2d6a4f" fill-opacity="0.5">
+    <animate attributeName="width" values="0;420;0" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="x" values="430;220;430" dur="3s" repeatCount="indefinite"/>
   </rect>
-  <path d="M0,20 L0,0 L20,0" stroke="#10b981" stroke-width="2" fill="none" stroke-opacity="0.6"/>
-  <path d="M840,0 L860,0 L860,20" stroke="#10b981" stroke-width="2" fill="none" stroke-opacity="0.6"/>
-  <path d="M0,140 L0,160 L20,160" stroke="#10b981" stroke-width="2" fill="none" stroke-opacity="0.6"/>
-  <path d="M840,160 L860,160 L860,140" stroke="#10b981" stroke-width="2" fill="none" stroke-opacity="0.6"/>
+
+  <!-- Subtitle -->
+  <text x="430" y="118" text-anchor="middle" font-family="'Georgia', serif" font-size="13" fill="#1a4a2e" letter-spacing="4" font-weight="400">WASTE-TO-CARBON INTELLIGENCE PLATFORM</text>
+
+  <!-- Hackathon tag pill -->
+  <rect x="280" y="135" width="300" height="26" rx="13" fill="#1a4a2e" fill-opacity="0.12" stroke="#1a4a2e" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="430" y="152" text-anchor="middle" font-family="'Georgia', serif" font-size="11" fill="#1a4a2e" fill-opacity="0.8" letter-spacing="2">HackOut 26 · PS11 · Team Last Commit</text>
+
+  <!-- Leaf decoration left -->
+  <text x="38" y="100" text-anchor="middle" font-size="32">🌾</text>
+  <!-- Leaf decoration right -->
+  <text x="822" y="100" text-anchor="middle" font-size="32">♻️</text>
+
+  <!-- Corner brackets -->
+  <path d="M0,30 L0,0 L30,0" stroke="#1a4a2e" stroke-width="2.5" fill="none" stroke-opacity="0.5"/>
+  <path d="M830,0 L860,0 L860,30" stroke="#1a4a2e" stroke-width="2.5" fill="none" stroke-opacity="0.5"/>
+  <path d="M0,150 L0,180 L30,180" stroke="#1a4a2e" stroke-width="2.5" fill="none" stroke-opacity="0.5"/>
+  <path d="M830,180 L860,180 L860,150" stroke="#1a4a2e" stroke-width="2.5" fill="none" stroke-opacity="0.5"/>
 </svg>
 
 <p>
-  <img src="https://img.shields.io/badge/HackOut_26-PS11-10b981?style=for-the-badge&logo=leaf&logoColor=white" alt="Hackathon"/>
-  <img src="https://img.shields.io/badge/Team-Last_Commit-059669?style=for-the-badge&logo=github&logoColor=white" alt="Team"/>
-  <img src="https://img.shields.io/badge/Track-Waste_to_Carbon-34d399?style=for-the-badge" alt="Track"/>
+  <img src="https://img.shields.io/badge/HackOut_26-PS11-2d6a4f?style=for-the-badge&logo=leaf&logoColor=white" alt="Hackathon"/>
+  <img src="https://img.shields.io/badge/Team-Last_Commit-1a4a2e?style=for-the-badge&logo=github&logoColor=white" alt="Team"/>
+  <img src="https://img.shields.io/badge/Track-Waste_to_Carbon-40916c?style=for-the-badge" alt="Track"/>
 </p>
 <p>
   <img src="https://img.shields.io/badge/Node.js-%E2%89%A522.6.0-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node"/>
   <img src="https://img.shields.io/badge/TypeScript-5.6-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
   <img src="https://img.shields.io/badge/React_+_Vite-Frontend-61dafb?style=for-the-badge&logo=react&logoColor=black" alt="React"/>
-  <img src="https://img.shields.io/badge/Zero-Runtime_Deps-10b981?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Zero Dependencies"/>
+  <img src="https://img.shields.io/badge/Zero-Runtime_Deps-52b788?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Zero Dependencies"/>
 </p>
 <p>
-  <img src="https://img.shields.io/badge/Engine-Deterministic_Twin-6366f1?style=for-the-badge" alt="Deterministic"/>
-  <img src="https://img.shields.io/badge/Monte_Carlo-2000_Draws-8b5cf6?style=for-the-badge" alt="Monte Carlo"/>
-  <img src="https://img.shields.io/badge/Optimiser-Branch_%26_Bound-f59e0b?style=for-the-badge" alt="Optimiser"/>
-  <img src="https://img.shields.io/badge/Screens-27_React_Pages-ef4444?style=for-the-badge" alt="Screens"/>
+  <img src="https://img.shields.io/badge/Engine-Deterministic_Twin-1a4a2e?style=for-the-badge" alt="Deterministic"/>
+  <img src="https://img.shields.io/badge/Monte_Carlo-2000_Draws-40916c?style=for-the-badge" alt="Monte Carlo"/>
+  <img src="https://img.shields.io/badge/Optimiser-Branch_%26_Bound-b5813a?style=for-the-badge" alt="Optimiser"/>
+  <img src="https://img.shields.io/badge/Screens-27_React_Pages-c05c1e?style=for-the-badge" alt="Screens"/>
 </p>
 
 <br/>
@@ -109,29 +118,29 @@
 
 <div align="center">
 <svg width="820" height="110" viewBox="0 0 820 110" xmlns="http://www.w3.org/2000/svg">
-  <rect width="820" height="110" rx="8" fill="#0a0208"/>
-  <text x="410" y="18" text-anchor="middle" font-family="monospace" font-size="10" fill="#ef4444" letter-spacing="2" font-weight="bold">CURRENT FRAGMENTED WORKFLOW — THE BROKEN STATE</text>
-  <rect x="10" y="28" width="145" height="70" rx="6" fill="#1a0505" stroke="#ef4444" stroke-width="1" stroke-opacity="0.6"/>
+  <rect width="820" height="110" rx="8" fill="#f5f1eb"/>
+  <text x="410" y="18" text-anchor="middle" font-family="monospace" font-size="10" fill="#c05c1e" letter-spacing="2" font-weight="bold">CURRENT FRAGMENTED WORKFLOW — THE BROKEN STATE</text>
+  <rect x="10" y="28" width="145" height="70" rx="6" fill="#fdf0ee" stroke="#ef4444" stroke-width="1" stroke-opacity="0.6"/>
   <text x="82" y="52" text-anchor="middle" font-family="monospace" font-size="9" fill="#fca5a5">FARMER/INDUSTRY</text>
-  <text x="82" y="67" text-anchor="middle" font-family="monospace" font-size="8" fill="#ef4444" fill-opacity="0.7">20 Mt paddy straw</text>
-  <text x="82" y="81" text-anchor="middle" font-family="monospace" font-size="8" fill="#ef4444" fill-opacity="0.5">burned/yr Punjab</text>
+  <text x="82" y="67" text-anchor="middle" font-family="monospace" font-size="8" fill="#c05c1e" fill-opacity="0.7">20 Mt paddy straw</text>
+  <text x="82" y="81" text-anchor="middle" font-family="monospace" font-size="8" fill="#c05c1e" fill-opacity="0.5">burned/yr Punjab</text>
   <path d="M155,63 L185,63" stroke="#ef4444" stroke-width="2"/>
   <text x="170" y="56" text-anchor="middle" font-family="monospace" font-size="7" fill="#f97316">volume-blind</text>
-  <rect x="185" y="28" width="155" height="70" rx="6" fill="#1a0a05" stroke="#f97316" stroke-width="1" stroke-opacity="0.6"/>
+  <rect x="185" y="28" width="155" height="70" rx="6" fill="#fdf5ee" stroke="#f97316" stroke-width="1" stroke-opacity="0.6"/>
   <text x="262" y="52" text-anchor="middle" font-family="monospace" font-size="9" fill="#fdba74">PROXIMITY MATCHING</text>
   <text x="262" y="67" text-anchor="middle" font-family="monospace" font-size="8" fill="#f97316" fill-opacity="0.7">"Tinder for Waste"</text>
   <text x="262" y="81" text-anchor="middle" font-family="monospace" font-size="8" fill="#f97316" fill-opacity="0.5">Ignores chemistry</text>
   <path d="M340,63 L370,63" stroke="#f97316" stroke-width="2"/>
   <text x="355" y="56" text-anchor="middle" font-family="monospace" font-size="7" fill="#f97316">40% cap</text>
-  <rect x="370" y="28" width="155" height="70" rx="6" fill="#1a1005" stroke="#eab308" stroke-width="1" stroke-opacity="0.6"/>
+  <rect x="370" y="28" width="155" height="70" rx="6" fill="#fdfbee" stroke="#eab308" stroke-width="1" stroke-opacity="0.6"/>
   <text x="447" y="52" text-anchor="middle" font-family="monospace" font-size="9" fill="#fde047">UNDERUTILIZED PLANT</text>
   <text x="447" y="67" text-anchor="middle" font-family="monospace" font-size="8" fill="#eab308" fill-opacity="0.7">~40% capacity only</text>
   <text x="447" y="81" text-anchor="middle" font-family="monospace" font-size="8" fill="#eab308" fill-opacity="0.5">Wrong feedstock</text>
   <path d="M525,63 L555,63" stroke="#ef4444" stroke-width="2"/>
-  <rect x="555" y="28" width="255" height="70" rx="6" fill="#1a0505" stroke="#ef4444" stroke-width="1.5" stroke-opacity="0.8"/>
+  <rect x="555" y="28" width="255" height="70" rx="6" fill="#fdf0ee" stroke="#ef4444" stroke-width="1.5" stroke-opacity="0.8"/>
   <text x="682" y="48" text-anchor="middle" font-family="monospace" font-size="9" fill="#fca5a5">LANDFILL / OPEN BURNING</text>
-  <text x="682" y="63" text-anchor="middle" font-family="monospace" font-size="8" fill="#ef4444">CH4 GWP100 = 27-30x CO2</text>
-  <text x="682" y="77" text-anchor="middle" font-family="monospace" font-size="8" fill="#ef4444" fill-opacity="0.7">N2O + PM2.5 plumes released</text>
+  <text x="682" y="63" text-anchor="middle" font-family="monospace" font-size="8" fill="#c05c1e">CH4 GWP100 = 27-30x CO2</text>
+  <text x="682" y="77" text-anchor="middle" font-family="monospace" font-size="8" fill="#c05c1e" fill-opacity="0.7">N2O + PM2.5 plumes released</text>
   <rect x="555" y="28" width="255" height="70" rx="6" fill="none" stroke="#ef4444" stroke-width="2">
     <animate attributeName="stroke-opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite"/>
   </rect>
@@ -166,13 +175,13 @@
       <stop offset="100%" style="stop-color:#041a14"/>
     </linearGradient>
   </defs>
-  <rect width="820" height="90" rx="8" fill="url(#insightBg)" stroke="#10b981" stroke-width="1" stroke-opacity="0.3"/>
-  <text x="410" y="22" text-anchor="middle" font-family="monospace" font-size="10" fill="#6ee7b7" letter-spacing="2">MULTI-OBJECTIVE SCORING — ENTIRE NETWORK SIMULTANEOUSLY</text>
-  <rect x="20" y="30" width="780" height="48" rx="6" fill="#0a1f0e" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.5"/>
-  <text x="410" y="52" text-anchor="middle" font-family="'Courier New', monospace" font-size="12" fill="#34d399">
+  <rect width="820" height="90" rx="8" fill="url(#insightBg)" stroke="#2d6a4f" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="410" y="22" text-anchor="middle" font-family="monospace" font-size="10" fill="#1a4a2e" letter-spacing="2">MULTI-OBJECTIVE SCORING — ENTIRE NETWORK SIMULTANEOUSLY</text>
+  <rect x="20" y="30" width="780" height="48" rx="6" fill="#0a1f0e" stroke="#2d6a4f" stroke-width="0.5" stroke-opacity="0.5"/>
+  <text x="410" y="52" text-anchor="middle" font-family="'Courier New', monospace" font-size="12" fill="#40916c">
     Score(i,j,p) = w_val*NetValue + w_carb*NetCarbon - w_log*LogisticsCost - w_proc*ProcessingCost - w_risk*RiskFactor
   </text>
-  <text x="410" y="70" text-anchor="middle" font-family="monospace" font-size="9" fill="#10b981" fill-opacity="0.6">Maximised simultaneously across entire network via Branch-and-Bound + Min-Cost Flow — not greedily per-tonne</text>
+  <text x="410" y="70" text-anchor="middle" font-family="monospace" font-size="9" fill="#2d6a4f" fill-opacity="0.6">Maximised simultaneously across entire network via Branch-and-Bound + Min-Cost Flow — not greedily per-tonne</text>
 </svg>
 </div>
 
@@ -196,52 +205,52 @@ The solver maximises this **across the entire network simultaneously** — not g
       <stop offset="100%" style="stop-color:#040f1a"/>
     </linearGradient>
     <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 z" fill="#10b981"/>
+      <path d="M0,0 L0,6 L8,3 z" fill="#2d6a4f"/>
     </marker>
   </defs>
-  <rect width="860" height="120" rx="10" fill="url(#platformBg)" stroke="#10b981" stroke-width="1" stroke-opacity="0.2"/>
-  <rect x="10" y="15" width="152" height="90" rx="7" fill="#0a1f10" stroke="#10b981" stroke-width="1.2"/>
-  <text x="86" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#6ee7b7">① CHARACTERIZE</text>
-  <line x1="25" y1="44" x2="148" y2="44" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
-  <text x="86" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Moisture / Ash / C:N</text>
-  <text x="86" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Lignin / Bulk Density</text>
-  <text x="86" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">BMP / H:C molar ratio</text>
-  <text x="86" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">streams.ts / types.ts</text>
-  <path d="M162,60 L178,60" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
-  <rect x="178" y="15" width="152" height="90" rx="7" fill="#0a1f10" stroke="#10b981" stroke-width="1.2"/>
-  <text x="254" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#6ee7b7">② GATE FILTER</text>
-  <line x1="193" y1="44" x2="316" y2="44" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
-  <text x="254" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Hard pathway gates</text>
-  <text x="254" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Suitability scoring</text>
-  <text x="254" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">5 conversion pathways</text>
-  <text x="254" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">pathways.ts</text>
-  <path d="M330,60 L346,60" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
-  <rect x="346" y="15" width="152" height="90" rx="7" fill="#0d1f12" stroke="#34d399" stroke-width="1.5"/>
-  <text x="422" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#a7f3d0">③ OPTIMIZE</text>
-  <line x1="361" y1="44" x2="484" y2="44" stroke="#34d399" stroke-width="0.5" stroke-opacity="0.3"/>
-  <text x="422" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">Branch-and-Bound</text>
-  <text x="422" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">Min-Cost Flow</text>
-  <text x="422" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">4 objective modes</text>
-  <text x="422" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399" fill-opacity="0.6">optimizer.ts</text>
-  <rect x="346" y="15" width="152" height="90" rx="7" fill="none" stroke="#34d399" stroke-width="1">
+  <rect width="860" height="120" rx="10" fill="url(#platformBg)" stroke="#2d6a4f" stroke-width="1" stroke-opacity="0.2"/>
+  <rect x="10" y="15" width="152" height="90" rx="7" fill="#eef5f0" stroke="#2d6a4f" stroke-width="1.2"/>
+  <text x="86" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#1a4a2e">① CHARACTERIZE</text>
+  <line x1="25" y1="44" x2="148" y2="44" stroke="#2d6a4f" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="86" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Moisture / Ash / C:N</text>
+  <text x="86" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Lignin / Bulk Density</text>
+  <text x="86" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">BMP / H:C molar ratio</text>
+  <text x="86" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">streams.ts / types.ts</text>
+  <path d="M162,60 L178,60" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <rect x="178" y="15" width="152" height="90" rx="7" fill="#eef5f0" stroke="#2d6a4f" stroke-width="1.2"/>
+  <text x="254" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#1a4a2e">② GATE FILTER</text>
+  <line x1="193" y1="44" x2="316" y2="44" stroke="#2d6a4f" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="254" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Hard pathway gates</text>
+  <text x="254" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Suitability scoring</text>
+  <text x="254" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">5 conversion pathways</text>
+  <text x="254" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">pathways.ts</text>
+  <path d="M330,60 L346,60" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <rect x="346" y="15" width="152" height="90" rx="7" fill="#eef5f0" stroke="#40916c" stroke-width="1.5"/>
+  <text x="422" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#52b788">③ OPTIMIZE</text>
+  <line x1="361" y1="44" x2="484" y2="44" stroke="#40916c" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="422" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">Branch-and-Bound</text>
+  <text x="422" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">Min-Cost Flow</text>
+  <text x="422" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">4 objective modes</text>
+  <text x="422" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c" fill-opacity="0.6">optimizer.ts</text>
+  <rect x="346" y="15" width="152" height="90" rx="7" fill="none" stroke="#40916c" stroke-width="1">
     <animate attributeName="stroke-opacity" values="1;0.2;1" dur="2.5s" repeatCount="indefinite"/>
   </rect>
-  <path d="M498,60 L514,60" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
-  <rect x="514" y="15" width="152" height="90" rx="7" fill="#0a1f10" stroke="#10b981" stroke-width="1.2"/>
-  <text x="590" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#6ee7b7">④ CONVERT</text>
-  <line x1="529" y1="44" x2="652" y2="44" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
-  <text x="590" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Biochar Pyrolysis</text>
-  <text x="590" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">CBG Digestion</text>
-  <text x="590" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Pellets / Gasification</text>
-  <text x="590" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">carbon.ts</text>
-  <path d="M666,60 L682,60" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
-  <rect x="682" y="15" width="168" height="90" rx="7" fill="#0a1f10" stroke="#10b981" stroke-width="1.2"/>
-  <text x="766" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#6ee7b7">⑤ MEASURE + CLOSE</text>
-  <line x1="697" y1="44" x2="836" y2="44" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
-  <text x="766" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Q10 Permanence</text>
-  <text x="766" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">P5/P50/P95 Monte Carlo</text>
-  <text x="766" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Digestate to Farmer NPK</text>
-  <text x="766" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">routing.ts / state.ts</text>
+  <path d="M498,60 L514,60" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <rect x="514" y="15" width="152" height="90" rx="7" fill="#eef5f0" stroke="#2d6a4f" stroke-width="1.2"/>
+  <text x="590" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#1a4a2e">④ CONVERT</text>
+  <line x1="529" y1="44" x2="652" y2="44" stroke="#2d6a4f" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="590" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Biochar Pyrolysis</text>
+  <text x="590" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">CBG Digestion</text>
+  <text x="590" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Pellets / Gasification</text>
+  <text x="590" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">carbon.ts</text>
+  <path d="M666,60 L682,60" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <rect x="682" y="15" width="168" height="90" rx="7" fill="#eef5f0" stroke="#2d6a4f" stroke-width="1.2"/>
+  <text x="766" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#1a4a2e">⑤ MEASURE + CLOSE</text>
+  <line x1="697" y1="44" x2="836" y2="44" stroke="#2d6a4f" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="766" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Q10 Permanence</text>
+  <text x="766" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">P5/P50/P95 Monte Carlo</text>
+  <text x="766" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Digestate to Farmer NPK</text>
+  <text x="766" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">routing.ts / state.ts</text>
 </svg>
 </div>
 
@@ -250,7 +259,7 @@ The solver maximises this **across the entire network simultaneously** — not g
 ### Stakeholder Ecosystem
 
 ```mermaid
-%%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor': '#10b981', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#059669', 'lineColor': '#34d399', 'tertiaryColor': '#1f2937'}}}%%
+%%{init: {'theme': 'forest', 'themeVariables': { 'primaryColor': '#2d6a4f', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#1a4a2e', 'lineColor': '#40916c', 'tertiaryColor': '#e8f0ec'}}}%%
 graph TD
     subgraph Waste Supply
         F[Farmer / Agronomic Producer]
@@ -331,6 +340,20 @@ graph TD
 |:---:|
 | ![Copilot — natural-language query interface powered by Gemini, calling the same 15 tools as the UI, answers numerically identical to dashboard screens](docs/screenshots/09_copilot.png) |
 | `/copilot` (requires `GEMINI_API_KEY`) |
+
+### Farmer / Waste Generator App
+
+> A dedicated **mobile-first, farmer-first** app with multi-language support (English, Hindi, Punjabi, Marathi). Guides any waste generator from language selection to waste intake wizard to pathway recommendation and the Follow My Tonne material journey in under 60 seconds. Route: `/generator`
+
+| Language Selector | Waste Category Intake |
+|:---:|:---:|
+| ![Farmer App language selection screen for English Hindi Punjabi Marathi](docs/screenshots/10_farmer_language.png) | ![Farmer App 2x2 waste category grid: Agricultural Municipal Livestock Industrial](docs/screenshots/11_farmer_intake.png) |
+| `lang` tab - multi-language support | `intake_cat` tab - category picker |
+
+| Pathway Recommendations | Follow My Tonne Material Journey |
+|:---:|:---:|
+| ![Farmer App pathway cards for biochar biogas and compost with payout and CO2 avoided](docs/screenshots/12_farmer_pathways.png) | ![Farmer App vertical connected timeline from MY WASTE through COLLECTION FACILITY PROCESSING CARBON to VALUE](docs/screenshots/13_farmer_journey.png) |
+| `pathways` tab - ranked recommendations | `journey` tab - material traceability |
 
 </div>
 
@@ -448,13 +471,13 @@ APSV/
       <stop offset="100%" style="stop-color:#040f1a"/>
     </linearGradient>
     <marker id="ag" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L6,3 z" fill="#10b981" fill-opacity="0.7"/>
+      <path d="M0,0 L0,6 L6,3 z" fill="#2d6a4f" fill-opacity="0.7"/>
     </marker>
     <marker id="ab" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L6,3 z" fill="#6366f1" fill-opacity="0.7"/>
+      <path d="M0,0 L0,6 L6,3 z" fill="#1a4a2e" fill-opacity="0.7"/>
     </marker>
   </defs>
-  <rect width="820" height="260" rx="10" fill="url(#archBg)" stroke="#10b981" stroke-width="1" stroke-opacity="0.15"/>
+  <rect width="820" height="260" rx="10" fill="url(#archBg)" stroke="#2d6a4f" stroke-width="1" stroke-opacity="0.15"/>
   <!-- Layer 1: Web -->
   <rect x="10" y="8" width="800" height="50" rx="6" fill="#0a1a2e" stroke="#6366f1" stroke-width="1" stroke-opacity="0.5"/>
   <text x="20" y="24" font-family="monospace" font-size="9" fill="#818cf8" letter-spacing="1">WEB LAYER — React + Vite</text>
@@ -470,69 +493,69 @@ APSV/
   <text x="670" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#a5b4fc">useTwin() hook — Single Source of Truth</text>
   <!-- Arrow down -->
   <path d="M410,58 L410,74" stroke="#6366f1" stroke-width="1.5" stroke-opacity="0.5" marker-end="url(#ab)"/>
-  <text x="420" y="70" font-family="monospace" font-size="7" fill="#6366f1" fill-opacity="0.5">JSON over HTTP (Vite proxy in dev)</text>
+  <text x="420" y="70" font-family="monospace" font-size="7" fill="#1a4a2e" fill-opacity="0.5">JSON over HTTP (Vite proxy in dev)</text>
   <!-- Layer 2: API -->
-  <rect x="10" y="76" width="800" height="40" rx="6" fill="#0a1a10" stroke="#10b981" stroke-width="1" stroke-opacity="0.5"/>
-  <text x="20" y="92" font-family="monospace" font-size="9" fill="#34d399" letter-spacing="1">API GATEWAY — Node.js Native HTTP (zero deps) — One Twin instance — Cold start ~150 ms</text>
-  <rect x="20" y="97" width="200" height="13" rx="3" fill="#0f1f14" stroke="#10b981" stroke-width="0.5"/>
-  <text x="120" y="107" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981">--experimental-strip-types · no build step</text>
-  <rect x="230" y="97" width="160" height="13" rx="3" fill="#0f1f14" stroke="#10b981" stroke-width="0.5"/>
-  <text x="310" y="107" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981">15 tool endpoints</text>
+  <rect x="10" y="76" width="800" height="40" rx="6" fill="#0a1a10" stroke="#2d6a4f" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="20" y="92" font-family="monospace" font-size="9" fill="#40916c" letter-spacing="1">API GATEWAY — Node.js Native HTTP (zero deps) — One Twin instance — Cold start ~150 ms</text>
+  <rect x="20" y="97" width="200" height="13" rx="3" fill="#0f1f14" stroke="#2d6a4f" stroke-width="0.5"/>
+  <text x="120" y="107" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f">--experimental-strip-types · no build step</text>
+  <rect x="230" y="97" width="160" height="13" rx="3" fill="#0f1f14" stroke="#2d6a4f" stroke-width="0.5"/>
+  <text x="310" y="107" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f">15 tool endpoints</text>
   <!-- Arrow down -->
-  <path d="M410,116 L410,130" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.5" marker-end="url(#ag)"/>
-  <text x="420" y="127" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">direct function calls</text>
+  <path d="M410,116 L410,130" stroke="#2d6a4f" stroke-width="1.5" stroke-opacity="0.5" marker-end="url(#ag)"/>
+  <text x="420" y="127" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">direct function calls</text>
   <!-- Layer 3: Engine -->
-  <rect x="10" y="132" width="800" height="120" rx="6" fill="#05140a" stroke="#34d399" stroke-width="1.5" stroke-opacity="0.6"/>
-  <text x="20" y="148" font-family="monospace" font-size="9" fill="#6ee7b7" letter-spacing="1">ENGINE — Pure TypeScript · Zero Runtime Dependencies · One Implementation consumed as source by both sides</text>
+  <rect x="10" y="132" width="800" height="120" rx="6" fill="#05140a" stroke="#40916c" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="20" y="148" font-family="monospace" font-size="9" fill="#1a4a2e" letter-spacing="1">ENGINE — Pure TypeScript · Zero Runtime Dependencies · One Implementation consumed as source by both sides</text>
   <!-- Twin box -->
-  <rect x="20" y="155" width="110" height="90" rx="5" fill="#0a1f10" stroke="#34d399" stroke-width="1"/>
-  <text x="75" y="170" text-anchor="middle" font-family="monospace" font-size="8" fill="#a7f3d0">state.ts</text>
-  <text x="75" y="182" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">Digital Twin</text>
-  <text x="75" y="194" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Memoised artefacts</text>
-  <text x="75" y="206" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Version counter</text>
-  <text x="75" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">In-process memory</text>
-  <text x="75" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">No DB needed</text>
-  <rect x="20" y="155" width="110" height="90" rx="5" fill="none" stroke="#34d399">
+  <rect x="20" y="155" width="110" height="90" rx="5" fill="#eef5f0" stroke="#40916c" stroke-width="1"/>
+  <text x="75" y="170" text-anchor="middle" font-family="monospace" font-size="8" fill="#52b788">state.ts</text>
+  <text x="75" y="182" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">Digital Twin</text>
+  <text x="75" y="194" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Memoised artefacts</text>
+  <text x="75" y="206" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Version counter</text>
+  <text x="75" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">In-process memory</text>
+  <text x="75" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">No DB needed</text>
+  <rect x="20" y="155" width="110" height="90" rx="5" fill="none" stroke="#40916c">
     <animate attributeName="stroke-opacity" values="0.6;0.15;0.6" dur="3s" repeatCount="indefinite"/>
   </rect>
-  <path d="M130,200 L145,200" stroke="#34d399" stroke-width="1" stroke-opacity="0.5" marker-end="url(#ag)"/>
+  <path d="M130,200 L145,200" stroke="#40916c" stroke-width="1" stroke-opacity="0.5" marker-end="url(#ag)"/>
   <!-- Engine modules grid -->
-  <rect x="145" y="155" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
-  <text x="195" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">optimizer.ts</text>
-  <text x="195" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Branch-and-Bound</text>
-  <rect x="145" y="200" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
-  <text x="195" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">mincostflow.ts</text>
-  <text x="195" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Johnson-Dijkstra</text>
-  <rect x="255" y="155" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
-  <text x="305" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">carbon.ts</text>
-  <text x="305" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Q10 + 2000 MC draws</text>
-  <rect x="255" y="200" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
-  <text x="305" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">routing.ts</text>
-  <text x="305" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Clarke-Wright+Or-opt</text>
-  <rect x="365" y="155" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
-  <text x="415" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">bottleneck.ts</text>
-  <text x="415" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Stranding + N-1</text>
-  <rect x="365" y="200" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
-  <text x="415" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">scenario.ts</text>
-  <text x="415" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Clone-mutate-resolve</text>
-  <rect x="475" y="155" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
-  <text x="525" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">economics.ts</text>
-  <text x="525" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">DCF/LCOP/MACC/LCC</text>
-  <rect x="475" y="200" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
-  <text x="525" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">forecast.ts</text>
-  <text x="525" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Ridge+Fourier+12-fold</text>
-  <rect x="585" y="155" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
-  <text x="635" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">copilot.ts</text>
-  <text x="635" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">15 tools over Twin</text>
-  <rect x="585" y="200" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
-  <text x="635" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">geo.ts / rng.ts</text>
-  <text x="635" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Haversine / mulberry32</text>
-  <rect x="695" y="155" width="110" height="90" rx="4" fill="#0a1f10" stroke="#f59e0b" stroke-width="0.8"/>
+  <rect x="145" y="155" width="100" height="40" rx="4" fill="#eef5f0" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="195" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">optimizer.ts</text>
+  <text x="195" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Branch-and-Bound</text>
+  <rect x="145" y="200" width="100" height="40" rx="4" fill="#eef5f0" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="195" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">mincostflow.ts</text>
+  <text x="195" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Johnson-Dijkstra</text>
+  <rect x="255" y="155" width="100" height="40" rx="4" fill="#eef5f0" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="305" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">carbon.ts</text>
+  <text x="305" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Q10 + 2000 MC draws</text>
+  <rect x="255" y="200" width="100" height="40" rx="4" fill="#eef5f0" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="305" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">routing.ts</text>
+  <text x="305" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Clarke-Wright+Or-opt</text>
+  <rect x="365" y="155" width="100" height="40" rx="4" fill="#eef5f0" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="415" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">bottleneck.ts</text>
+  <text x="415" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Stranding + N-1</text>
+  <rect x="365" y="200" width="100" height="40" rx="4" fill="#eef5f0" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="415" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">scenario.ts</text>
+  <text x="415" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Clone-mutate-resolve</text>
+  <rect x="475" y="155" width="100" height="40" rx="4" fill="#eef5f0" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="525" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">economics.ts</text>
+  <text x="525" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">DCF/LCOP/MACC/LCC</text>
+  <rect x="475" y="200" width="100" height="40" rx="4" fill="#eef5f0" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="525" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">forecast.ts</text>
+  <text x="525" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Ridge+Fourier+12-fold</text>
+  <rect x="585" y="155" width="100" height="40" rx="4" fill="#eef5f0" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="635" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">copilot.ts</text>
+  <text x="635" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">15 tools over Twin</text>
+  <rect x="585" y="200" width="100" height="40" rx="4" fill="#eef5f0" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="635" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">geo.ts / rng.ts</text>
+  <text x="635" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Haversine / mulberry32</text>
+  <rect x="695" y="155" width="110" height="90" rx="4" fill="#eef5f0" stroke="#f59e0b" stroke-width="0.8"/>
   <text x="750" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#fde68a">constants.ts</text>
-  <text x="750" y="187" text-anchor="middle" font-family="monospace" font-size="7" fill="#f59e0b">Every emission</text>
-  <text x="750" y="199" text-anchor="middle" font-family="monospace" font-size="7" fill="#f59e0b">factor + price</text>
-  <text x="750" y="211" text-anchor="middle" font-family="monospace" font-size="7" fill="#f59e0b">with source citation</text>
-  <text x="750" y="227" text-anchor="middle" font-family="monospace" font-size="7" fill="#f59e0b" fill-opacity="0.6">IPCC AR6 / Woolf 2021</text>
+  <text x="750" y="187" text-anchor="middle" font-family="monospace" font-size="7" fill="#b5813a">Every emission</text>
+  <text x="750" y="199" text-anchor="middle" font-family="monospace" font-size="7" fill="#b5813a">factor + price</text>
+  <text x="750" y="211" text-anchor="middle" font-family="monospace" font-size="7" fill="#b5813a">with source citation</text>
+  <text x="750" y="227" text-anchor="middle" font-family="monospace" font-size="7" fill="#b5813a" fill-opacity="0.6">IPCC AR6 / Woolf 2021</text>
 </svg>
 </div>
 
@@ -552,22 +575,22 @@ The engine is imported **as TypeScript source** by both the API (via Node's nati
 
 <div align="center">
 <svg width="820" height="82" viewBox="0 0 820 82" xmlns="http://www.w3.org/2000/svg">
-  <rect width="820" height="82" rx="8" fill="#030d06" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
-  <rect x="10" y="8" width="260" height="66" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
-  <text x="140" y="28" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">1 BIOGENIC CO2 NOT COUNTED</text>
-  <text x="140" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#34d399">Only CH4 and N2O counted</text>
-  <text x="140" y="57" text-anchor="middle" font-family="monospace" font-size="8" fill="#34d399">Avoided-burn = 0.082 tCO2e/dry t</text>
-  <text x="140" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.6">IPCC AR6 — not the ~1 t frequently claimed</text>
-  <rect x="280" y="8" width="260" height="66" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
-  <text x="410" y="28" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">2 REMOVAL != AVOIDANCE</text>
-  <text x="410" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#34d399">Separate ledger lines, priced separately</text>
-  <text x="410" y="57" text-anchor="middle" font-family="monospace" font-size="8" fill="#34d399">CDR ~Rs.10,800/t vs avoid ~Rs.520/t</text>
-  <text x="410" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.6">~20x price gap — never summed</text>
-  <rect x="550" y="8" width="260" height="66" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
-  <text x="680" y="28" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">3 INDIA-CALIBRATED PERMANENCE</text>
-  <text x="680" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#34d399">Q10-corrected 14.9C to 26C soil</text>
-  <text x="680" y="57" text-anchor="middle" font-family="monospace" font-size="8" fill="#34d399">Biochar decays 45% faster (fT=2.158)</text>
-  <text x="680" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.6">Woolf (2021) / Azzi et al. (2024)</text>
+  <rect width="820" height="82" rx="8" fill="#030d06" stroke="#2d6a4f" stroke-width="0.5" stroke-opacity="0.3"/>
+  <rect x="10" y="8" width="260" height="66" rx="6" fill="#eef5f0" stroke="#2d6a4f" stroke-width="1"/>
+  <text x="140" y="28" text-anchor="middle" font-family="monospace" font-size="9" fill="#1a4a2e">1 BIOGENIC CO2 NOT COUNTED</text>
+  <text x="140" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#40916c">Only CH4 and N2O counted</text>
+  <text x="140" y="57" text-anchor="middle" font-family="monospace" font-size="8" fill="#40916c">Avoided-burn = 0.082 tCO2e/dry t</text>
+  <text x="140" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.6">IPCC AR6 — not the ~1 t frequently claimed</text>
+  <rect x="280" y="8" width="260" height="66" rx="6" fill="#eef5f0" stroke="#2d6a4f" stroke-width="1"/>
+  <text x="410" y="28" text-anchor="middle" font-family="monospace" font-size="9" fill="#1a4a2e">2 REMOVAL != AVOIDANCE</text>
+  <text x="410" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#40916c">Separate ledger lines, priced separately</text>
+  <text x="410" y="57" text-anchor="middle" font-family="monospace" font-size="8" fill="#40916c">CDR ~Rs.10,800/t vs avoid ~Rs.520/t</text>
+  <text x="410" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.6">~20x price gap — never summed</text>
+  <rect x="550" y="8" width="260" height="66" rx="6" fill="#eef5f0" stroke="#2d6a4f" stroke-width="1"/>
+  <text x="680" y="28" text-anchor="middle" font-family="monospace" font-size="9" fill="#1a4a2e">3 INDIA-CALIBRATED PERMANENCE</text>
+  <text x="680" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#40916c">Q10-corrected 14.9C to 26C soil</text>
+  <text x="680" y="57" text-anchor="middle" font-family="monospace" font-size="8" fill="#40916c">Biochar decays 45% faster (fT=2.158)</text>
+  <text x="680" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.6">Woolf (2021) / Azzi et al. (2024)</text>
 </svg>
 </div>
 
@@ -708,82 +731,82 @@ All 27 screens read from the shared `Twin` via `useTwin()`. **No screen has its 
 
 <div align="center">
 <svg width="820" height="320" viewBox="0 0 820 320" xmlns="http://www.w3.org/2000/svg">
-  <rect width="820" height="320" rx="10" fill="#030d06" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.2"/>
-  <text x="410" y="18" text-anchor="middle" font-family="monospace" font-size="10" fill="#6ee7b7" letter-spacing="2">27 SCREENS — NAVIGATION MAP</text>
+  <rect width="820" height="320" rx="10" fill="#030d06" stroke="#2d6a4f" stroke-width="0.5" stroke-opacity="0.2"/>
+  <text x="410" y="18" text-anchor="middle" font-family="monospace" font-size="10" fill="#1a4a2e" letter-spacing="2">27 SCREENS — NAVIGATION MAP</text>
   <!-- Entry points -->
-  <rect x="10" y="28" width="95" height="26" rx="4" fill="#0a1f10" stroke="#6366f1" stroke-width="1"/>
+  <rect x="10" y="28" width="95" height="26" rx="4" fill="#eef5f0" stroke="#6366f1" stroke-width="1"/>
   <text x="57" y="45" text-anchor="middle" font-family="monospace" font-size="7" fill="#a5b4fc">Landing</text>
-  <rect x="115" y="28" width="95" height="26" rx="4" fill="#0a1f10" stroke="#6366f1" stroke-width="1"/>
+  <rect x="115" y="28" width="95" height="26" rx="4" fill="#eef5f0" stroke="#6366f1" stroke-width="1"/>
   <text x="162" y="45" text-anchor="middle" font-family="monospace" font-size="7" fill="#a5b4fc">TrueLanding</text>
-  <rect x="220" y="28" width="95" height="26" rx="4" fill="#0a1f10" stroke="#6366f1" stroke-width="1"/>
+  <rect x="220" y="28" width="95" height="26" rx="4" fill="#eef5f0" stroke="#6366f1" stroke-width="1"/>
   <text x="267" y="45" text-anchor="middle" font-family="monospace" font-size="7" fill="#a5b4fc">PersonaLanding</text>
   <!-- Row 1 main nav -->
-  <rect x="10" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="50" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Overview</text>
-  <rect x="98" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="138" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Map</text>
-  <rect x="186" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="226" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Optimization</text>
-  <rect x="274" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="314" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Scenarios</text>
-  <rect x="362" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="402" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Bottlenecks</text>
-  <rect x="450" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="490" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Facilities</text>
-  <rect x="538" y="64" width="100" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="588" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">FacilityCommand</text>
-  <rect x="646" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="686" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Sources</text>
+  <rect x="10" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="50" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Overview</text>
+  <rect x="98" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="138" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Map</text>
+  <rect x="186" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="226" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Optimization</text>
+  <rect x="274" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="314" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Scenarios</text>
+  <rect x="362" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="402" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Bottlenecks</text>
+  <rect x="450" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="490" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Facilities</text>
+  <rect x="538" y="64" width="100" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="588" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">FacilityCommand</text>
+  <rect x="646" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="686" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Sources</text>
   <!-- Row 2 -->
-  <rect x="10" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="50" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Logistics</text>
-  <rect x="98" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="138" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Economics</text>
-  <rect x="186" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="226" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Copilot</text>
-  <rect x="274" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="314" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Activity</text>
-  <rect x="362" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="402" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">System</text>
-  <rect x="450" y="98" width="100" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
-  <text x="500" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">CarbonCommand</text>
+  <rect x="10" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="50" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Logistics</text>
+  <rect x="98" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="138" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Economics</text>
+  <rect x="186" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="226" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Copilot</text>
+  <rect x="274" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="314" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Activity</text>
+  <rect x="362" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="402" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">System</text>
+  <rect x="450" y="98" width="100" height="26" rx="4" fill="#0a1a2e" stroke="#2d6a4f" stroke-width="0.8"/>
+  <text x="500" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">CarbonCommand</text>
   <rect x="558" y="98" width="100" height="26" rx="4" fill="#0a1a2e" stroke="#8b5cf6" stroke-width="0.8"/>
   <text x="608" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#c4b5fd">GeneratorModule</text>
   <!-- Carbon Hub -->
-  <rect x="10" y="134" width="800" height="148" rx="6" fill="#05100a" stroke="#34d399" stroke-width="1" stroke-opacity="0.5"/>
-  <text x="410" y="152" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7" letter-spacing="2">CARBON HUB — 7 DEDICATED SCREENS</text>
-  <rect x="20" y="158" width="100" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
-  <text x="70" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">Carbon</text>
-  <text x="70" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Hub overview</text>
-  <text x="70" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">Carbon.tsx</text>
-  <rect x="130" y="158" width="100" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
-  <text x="180" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonLedger</text>
-  <text x="180" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Per-arc traceable</text>
-  <text x="180" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">removal vs avoidance</text>
-  <rect x="240" y="158" width="100" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
-  <text x="290" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonPathways</text>
-  <text x="290" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Pathway carbon</text>
-  <text x="290" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">breakdown</text>
-  <rect x="350" y="158" width="100" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
-  <text x="400" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonFacilities</text>
-  <text x="400" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Facility carbon</text>
-  <text x="400" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">linked FacilityCmd</text>
-  <rect x="460" y="158" width="100" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
-  <text x="510" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonEvidence</text>
-  <text x="510" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Source citations</text>
-  <text x="510" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">P5/P50/P95 bands</text>
-  <rect x="570" y="158" width="100" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
-  <text x="620" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonReport</text>
-  <text x="620" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Printable summary</text>
-  <text x="620" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">carbon accounting</text>
-  <rect x="680" y="158" width="120" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
-  <text x="740" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonOpportunities</text>
-  <text x="740" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Highest-value</text>
-  <text x="740" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">unallocated tonnes</text>
-  <rect x="20" y="222" width="110" height="54" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
-  <text x="75" y="240" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonScenarios</text>
-  <text x="75" y="253" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Carbon what-if</text>
-  <text x="75" y="266" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">scenarios</text>
+  <rect x="10" y="134" width="800" height="148" rx="6" fill="#05100a" stroke="#40916c" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="410" y="152" text-anchor="middle" font-family="monospace" font-size="9" fill="#1a4a2e" letter-spacing="2">CARBON HUB — 7 DEDICATED SCREENS</text>
+  <rect x="20" y="158" width="100" height="56" rx="4" fill="#eef5f0" stroke="#40916c" stroke-width="0.8"/>
+  <text x="70" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">Carbon</text>
+  <text x="70" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Hub overview</text>
+  <text x="70" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">Carbon.tsx</text>
+  <rect x="130" y="158" width="100" height="56" rx="4" fill="#eef5f0" stroke="#40916c" stroke-width="0.8"/>
+  <text x="180" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">CarbonLedger</text>
+  <text x="180" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Per-arc traceable</text>
+  <text x="180" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">removal vs avoidance</text>
+  <rect x="240" y="158" width="100" height="56" rx="4" fill="#eef5f0" stroke="#40916c" stroke-width="0.8"/>
+  <text x="290" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">CarbonPathways</text>
+  <text x="290" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Pathway carbon</text>
+  <text x="290" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">breakdown</text>
+  <rect x="350" y="158" width="100" height="56" rx="4" fill="#eef5f0" stroke="#40916c" stroke-width="0.8"/>
+  <text x="400" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">CarbonFacilities</text>
+  <text x="400" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Facility carbon</text>
+  <text x="400" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">linked FacilityCmd</text>
+  <rect x="460" y="158" width="100" height="56" rx="4" fill="#eef5f0" stroke="#40916c" stroke-width="0.8"/>
+  <text x="510" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">CarbonEvidence</text>
+  <text x="510" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Source citations</text>
+  <text x="510" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">P5/P50/P95 bands</text>
+  <rect x="570" y="158" width="100" height="56" rx="4" fill="#eef5f0" stroke="#40916c" stroke-width="0.8"/>
+  <text x="620" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">CarbonReport</text>
+  <text x="620" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Printable summary</text>
+  <text x="620" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">carbon accounting</text>
+  <rect x="680" y="158" width="120" height="56" rx="4" fill="#eef5f0" stroke="#40916c" stroke-width="0.8"/>
+  <text x="740" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">CarbonOpportunities</text>
+  <text x="740" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Highest-value</text>
+  <text x="740" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">unallocated tonnes</text>
+  <rect x="20" y="222" width="110" height="54" rx="4" fill="#eef5f0" stroke="#40916c" stroke-width="0.8"/>
+  <text x="75" y="240" text-anchor="middle" font-family="monospace" font-size="7" fill="#1a4a2e">CarbonScenarios</text>
+  <text x="75" y="253" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c">Carbon what-if</text>
+  <text x="75" y="266" text-anchor="middle" font-family="monospace" font-size="7" fill="#2d6a4f" fill-opacity="0.5">scenarios</text>
   <!-- SVG charts label -->
   <rect x="10" y="292" width="800" height="22" rx="4" fill="#05100a" stroke="#f59e0b" stroke-width="0.8" stroke-opacity="0.4"/>
   <text x="410" y="307" text-anchor="middle" font-family="monospace" font-size="7" fill="#fde68a">CUSTOM HAND-WRITTEN SVG CHARTS (no library): FleetBar · CapacityGauge · AllocationFlow · FeedstockOutlookChart · WhatIfBars · SourceScoreBar · CapacityHeatmap · Pareto Frontier · Monte Carlo Bands · MACC Curve</text>
@@ -808,28 +831,28 @@ All 27 screens read from the shared `Twin` via `useTwin()`. **No screen has its 
 
 <div align="center">
 <svg width="820" height="110" viewBox="0 0 820 110" xmlns="http://www.w3.org/2000/svg">
-  <rect width="820" height="110" rx="8" fill="#030d06" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
-  <rect x="10" y="10" width="150" height="90" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
-  <text x="85" y="44" text-anchor="middle" font-family="monospace" font-size="28" font-weight="900" fill="#10b981">42</text>
-  <text x="85" y="60" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">Waste Sources</text>
-  <text x="85" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399" fill-opacity="0.6">Punjab+Haryana+Chandigarh</text>
-  <rect x="170" y="10" width="150" height="90" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
-  <text x="245" y="44" text-anchor="middle" font-family="monospace" font-size="28" font-weight="900" fill="#10b981">18</text>
-  <text x="245" y="60" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">Facilities</text>
-  <text x="245" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399" fill-opacity="0.6">CBG/Pyrolysis/Pellets/Gasif/Compost</text>
-  <rect x="330" y="10" width="150" height="90" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
-  <text x="405" y="44" text-anchor="middle" font-family="monospace" font-size="28" font-weight="900" fill="#10b981">9</text>
-  <text x="405" y="60" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">Feedstock Types</text>
-  <text x="405" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399" fill-opacity="0.6">Full proximate/ultimate analysis</text>
-  <rect x="490" y="10" width="150" height="90" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
-  <text x="565" y="40" text-anchor="middle" font-family="monospace" font-size="20" font-weight="900" fill="#10b981">57,700t</text>
-  <text x="565" y="57" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">Total Supply Modelled</text>
-  <text x="565" y="71" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399" fill-opacity="0.6">48,150t nameplate capacity</text>
-  <text x="565" y="84" text-anchor="middle" font-family="monospace" font-size="7" fill="#f59e0b" fill-opacity="0.7">41% structurally stranded</text>
-  <rect x="650" y="10" width="160" height="90" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
-  <text x="730" y="44" text-anchor="middle" font-family="monospace" font-size="28" font-weight="900" fill="#10b981">27</text>
-  <text x="730" y="60" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">Frontend Screens</text>
-  <text x="730" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399" fill-opacity="0.6">All custom SVG charts</text>
+  <rect width="820" height="110" rx="8" fill="#030d06" stroke="#2d6a4f" stroke-width="0.5" stroke-opacity="0.3"/>
+  <rect x="10" y="10" width="150" height="90" rx="6" fill="#eef5f0" stroke="#2d6a4f" stroke-width="1"/>
+  <text x="85" y="44" text-anchor="middle" font-family="monospace" font-size="28" font-weight="900" fill="#2d6a4f">42</text>
+  <text x="85" y="60" text-anchor="middle" font-family="monospace" font-size="9" fill="#1a4a2e">Waste Sources</text>
+  <text x="85" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c" fill-opacity="0.6">Punjab+Haryana+Chandigarh</text>
+  <rect x="170" y="10" width="150" height="90" rx="6" fill="#eef5f0" stroke="#2d6a4f" stroke-width="1"/>
+  <text x="245" y="44" text-anchor="middle" font-family="monospace" font-size="28" font-weight="900" fill="#2d6a4f">18</text>
+  <text x="245" y="60" text-anchor="middle" font-family="monospace" font-size="9" fill="#1a4a2e">Facilities</text>
+  <text x="245" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c" fill-opacity="0.6">CBG/Pyrolysis/Pellets/Gasif/Compost</text>
+  <rect x="330" y="10" width="150" height="90" rx="6" fill="#eef5f0" stroke="#2d6a4f" stroke-width="1"/>
+  <text x="405" y="44" text-anchor="middle" font-family="monospace" font-size="28" font-weight="900" fill="#2d6a4f">9</text>
+  <text x="405" y="60" text-anchor="middle" font-family="monospace" font-size="9" fill="#1a4a2e">Feedstock Types</text>
+  <text x="405" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c" fill-opacity="0.6">Full proximate/ultimate analysis</text>
+  <rect x="490" y="10" width="150" height="90" rx="6" fill="#eef5f0" stroke="#2d6a4f" stroke-width="1"/>
+  <text x="565" y="40" text-anchor="middle" font-family="monospace" font-size="20" font-weight="900" fill="#2d6a4f">57,700t</text>
+  <text x="565" y="57" text-anchor="middle" font-family="monospace" font-size="9" fill="#1a4a2e">Total Supply Modelled</text>
+  <text x="565" y="71" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c" fill-opacity="0.6">48,150t nameplate capacity</text>
+  <text x="565" y="84" text-anchor="middle" font-family="monospace" font-size="7" fill="#b5813a" fill-opacity="0.7">41% structurally stranded</text>
+  <rect x="650" y="10" width="160" height="90" rx="6" fill="#eef5f0" stroke="#2d6a4f" stroke-width="1"/>
+  <text x="730" y="44" text-anchor="middle" font-family="monospace" font-size="28" font-weight="900" fill="#2d6a4f">27</text>
+  <text x="730" y="60" text-anchor="middle" font-family="monospace" font-size="9" fill="#1a4a2e">Frontend Screens</text>
+  <text x="730" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#40916c" fill-opacity="0.6">All custom SVG charts</text>
 </svg>
 </div>
 
@@ -850,50 +873,50 @@ All timings measured on Node v22, cold start inclusive:
 
 <div align="center">
 <svg width="820" height="170" viewBox="0 0 820 170" xmlns="http://www.w3.org/2000/svg">
-  <rect width="820" height="170" rx="8" fill="#030d06" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
-  <text x="410" y="18" text-anchor="middle" font-family="monospace" font-size="10" fill="#6ee7b7" letter-spacing="2">PERFORMANCE BENCHMARKS</text>
-  <text x="10" y="42" font-family="monospace" font-size="8" fill="#34d399">Full Network Optimisation</text>
-  <text x="10" y="66" font-family="monospace" font-size="8" fill="#34d399">Shadow Prices (12-18 re-solves)</text>
-  <text x="10" y="90" font-family="monospace" font-size="8" fill="#34d399">Monte Carlo 2,000 draws</text>
-  <text x="10" y="114" font-family="monospace" font-size="8" fill="#34d399">Forecast 42 sources + backtests</text>
-  <text x="10" y="138" font-family="monospace" font-size="8" fill="#34d399">Scenario: baseline + mutate + diff</text>
-  <text x="10" y="162" font-family="monospace" font-size="8" fill="#34d399">N-1 Resilience / Cold API Start</text>
-  <rect x="290" y="28" width="470" height="16" rx="3" fill="#0a1f10"/>
-  <rect x="290" y="52" width="470" height="16" rx="3" fill="#0a1f10"/>
-  <rect x="290" y="76" width="470" height="16" rx="3" fill="#0a1f10"/>
-  <rect x="290" y="100" width="470" height="16" rx="3" fill="#0a1f10"/>
-  <rect x="290" y="124" width="470" height="16" rx="3" fill="#0a1f10"/>
-  <rect x="290" y="148" width="470" height="16" rx="3" fill="#0a1f10"/>
+  <rect width="820" height="170" rx="8" fill="#030d06" stroke="#2d6a4f" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="410" y="18" text-anchor="middle" font-family="monospace" font-size="10" fill="#1a4a2e" letter-spacing="2">PERFORMANCE BENCHMARKS</text>
+  <text x="10" y="42" font-family="monospace" font-size="8" fill="#40916c">Full Network Optimisation</text>
+  <text x="10" y="66" font-family="monospace" font-size="8" fill="#40916c">Shadow Prices (12-18 re-solves)</text>
+  <text x="10" y="90" font-family="monospace" font-size="8" fill="#40916c">Monte Carlo 2,000 draws</text>
+  <text x="10" y="114" font-family="monospace" font-size="8" fill="#40916c">Forecast 42 sources + backtests</text>
+  <text x="10" y="138" font-family="monospace" font-size="8" fill="#40916c">Scenario: baseline + mutate + diff</text>
+  <text x="10" y="162" font-family="monospace" font-size="8" fill="#40916c">N-1 Resilience / Cold API Start</text>
+  <rect x="290" y="28" width="470" height="16" rx="3" fill="#eef5f0"/>
+  <rect x="290" y="52" width="470" height="16" rx="3" fill="#eef5f0"/>
+  <rect x="290" y="76" width="470" height="16" rx="3" fill="#eef5f0"/>
+  <rect x="290" y="100" width="470" height="16" rx="3" fill="#eef5f0"/>
+  <rect x="290" y="124" width="470" height="16" rx="3" fill="#eef5f0"/>
+  <rect x="290" y="148" width="470" height="16" rx="3" fill="#eef5f0"/>
   <!-- 25-180ms full bar -->
-  <rect x="290" y="28" width="470" height="16" rx="3" fill="#10b981" fill-opacity="0.65">
+  <rect x="290" y="28" width="470" height="16" rx="3" fill="#2d6a4f" fill-opacity="0.65">
     <animate attributeName="width" from="0" to="470" dur="1.2s" fill="freeze"/>
   </rect>
-  <text x="768" y="40" font-family="monospace" font-size="8" fill="#6ee7b7">25-180 ms</text>
+  <text x="768" y="40" font-family="monospace" font-size="8" fill="#1a4a2e">25-180 ms</text>
   <!-- 50ms -->
-  <rect x="290" y="52" width="130" height="16" rx="3" fill="#10b981" fill-opacity="0.55">
+  <rect x="290" y="52" width="130" height="16" rx="3" fill="#2d6a4f" fill-opacity="0.55">
     <animate attributeName="width" from="0" to="130" dur="1s" fill="freeze"/>
   </rect>
-  <text x="768" y="64" font-family="monospace" font-size="8" fill="#6ee7b7">~50 ms</text>
+  <text x="768" y="64" font-family="monospace" font-size="8" fill="#1a4a2e">~50 ms</text>
   <!-- 25ms -->
-  <rect x="290" y="76" width="65" height="16" rx="3" fill="#34d399" fill-opacity="0.65">
+  <rect x="290" y="76" width="65" height="16" rx="3" fill="#40916c" fill-opacity="0.65">
     <animate attributeName="width" from="0" to="65" dur="0.8s" fill="freeze"/>
   </rect>
-  <text x="768" y="88" font-family="monospace" font-size="8" fill="#6ee7b7">~25 ms</text>
+  <text x="768" y="88" font-family="monospace" font-size="8" fill="#1a4a2e">~25 ms</text>
   <!-- 45ms -->
-  <rect x="290" y="100" width="117" height="16" rx="3" fill="#10b981" fill-opacity="0.55">
+  <rect x="290" y="100" width="117" height="16" rx="3" fill="#2d6a4f" fill-opacity="0.55">
     <animate attributeName="width" from="0" to="117" dur="1s" fill="freeze"/>
   </rect>
-  <text x="768" y="112" font-family="monospace" font-size="8" fill="#6ee7b7">~45 ms</text>
+  <text x="768" y="112" font-family="monospace" font-size="8" fill="#1a4a2e">~45 ms</text>
   <!-- 150ms -->
-  <rect x="290" y="124" width="391" height="16" rx="3" fill="#10b981" fill-opacity="0.45">
+  <rect x="290" y="124" width="391" height="16" rx="3" fill="#2d6a4f" fill-opacity="0.45">
     <animate attributeName="width" from="0" to="391" dur="1.1s" fill="freeze"/>
   </rect>
-  <text x="768" y="136" font-family="monospace" font-size="8" fill="#6ee7b7">~150 ms</text>
+  <text x="768" y="136" font-family="monospace" font-size="8" fill="#1a4a2e">~150 ms</text>
   <!-- 60+150ms -->
-  <rect x="290" y="148" width="391" height="16" rx="3" fill="#6ee7b7" fill-opacity="0.35">
+  <rect x="290" y="148" width="391" height="16" rx="3" fill="#1a4a2e" fill-opacity="0.35">
     <animate attributeName="width" from="0" to="391" dur="1.1s" fill="freeze"/>
   </rect>
-  <text x="768" y="160" font-family="monospace" font-size="8" fill="#6ee7b7">~60 / ~150 ms</text>
+  <text x="768" y="160" font-family="monospace" font-size="8" fill="#1a4a2e">~60 / ~150 ms</text>
 </svg>
 </div>
 
@@ -982,22 +1005,22 @@ Six repositories studied; no source code copied. Scientific formulae cited at po
       <stop offset="100%" style="stop-color:#040f1a"/>
     </linearGradient>
     <linearGradient id="footerText" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#10b981"/>
-      <stop offset="50%" style="stop-color:#34d399"/>
-      <stop offset="100%" style="stop-color:#6ee7b7"/>
+      <stop offset="0%" style="stop-color:#2d6a4f"/>
+      <stop offset="50%" style="stop-color:#40916c"/>
+      <stop offset="100%" style="stop-color:#1a4a2e"/>
     </linearGradient>
     <filter id="footerGlow">
       <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
       <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
-  <rect width="820" height="55" rx="8" fill="url(#footerBg)" stroke="#10b981" stroke-width="1" stroke-opacity="0.2"/>
+  <rect width="820" height="55" rx="8" fill="url(#footerBg)" stroke="#2d6a4f" stroke-width="1" stroke-opacity="0.2"/>
   <text x="410" y="24" text-anchor="middle" font-family="monospace" font-size="14" fill="url(#footerText)" letter-spacing="4" filter="url(#footerGlow)">TERRAFLUX</text>
-  <text x="410" y="42" text-anchor="middle" font-family="monospace" font-size="9" fill="#34d399" fill-opacity="0.7" letter-spacing="2">Built for High-Impact Circular Carbon Logistics · HackOut 26 · PS11</text>
-  <circle cx="60" cy="28" r="3" fill="#10b981" fill-opacity="0.5">
+  <text x="410" y="42" text-anchor="middle" font-family="monospace" font-size="9" fill="#40916c" fill-opacity="0.7" letter-spacing="2">Built for High-Impact Circular Carbon Logistics · HackOut 26 · PS11</text>
+  <circle cx="60" cy="28" r="3" fill="#2d6a4f" fill-opacity="0.5">
     <animate attributeName="fill-opacity" values="0.5;0.1;0.5" dur="2s" repeatCount="indefinite"/>
   </circle>
-  <circle cx="760" cy="28" r="3" fill="#10b981" fill-opacity="0.5">
+  <circle cx="760" cy="28" r="3" fill="#2d6a4f" fill-opacity="0.5">
     <animate attributeName="fill-opacity" values="0.1;0.5;0.1" dur="2s" repeatCount="indefinite"/>
   </circle>
 </svg>
