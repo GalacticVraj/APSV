@@ -21,7 +21,7 @@
     "test": "node --experimental-strip-types --test \"packages/engine/tests/*.test.ts\" \"packages/api/tests/*.test.ts\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:watch": "node --experimental-strip-types --test --watch \"packages/engine/tests/*.test.ts\" \"packages/api/tests/*.test.ts\"",
-    "prepare": "husky || true"
+    "prepare": "node scripts/install-hooks.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.20.2",
