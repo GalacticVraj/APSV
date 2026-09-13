@@ -27,7 +27,6 @@ import {
   ParameterRow,
 } from '../components/Primitives.tsx';
 import {
-  CapacityGauge,
   FeedstockOutlookChart,
   AllocationFlow,
   WhatIfBars,
@@ -39,7 +38,7 @@ import {
 import { PATHWAY_SHORT } from '../components/NetworkMap.tsx';
 import { num, pct, inr, inrExact, km, dateShort } from '../format.ts';
 import type { PathwayId, ScenarioInstance } from '../../../engine/src/types.ts';
-import { Package, Settings, Activity, ChevronDown, TrendingUp } from 'lucide-react';
+import { Package, Settings, Activity, TrendingUp } from 'lucide-react';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -638,13 +637,6 @@ export default function FacilityCommand() {
           )}
         </div>
 
-        {/* Capacity gauge — dominant visual */}
-        <CapacityGauge
-          current={loadTpd}
-          nameplate={fac.capacityTpd}
-          minViable={fac.minFeedTpd}
-          height={30}
-        />
       </div>
 
       {/* ── Operator orientation strip — lucide icon tiles ── */}
@@ -681,19 +673,14 @@ export default function FacilityCommand() {
                 : 'Spare capacity available',
             valueColor: isBinding ? 'var(--warn)' : isIdle ? 'var(--neg)' : 'var(--green-500)',
           },
-          {
-            Icon: ChevronDown,
-            label: 'Next: explore',
-            value: isBinding ? 'Capacity opportunity ↓' : 'What-if scenarios ↓',
-            hint: 'Scroll down for analysis',
-          },
+
         ] as const).map((item, i) => (
           <div
             key={i}
             style={{
               flex: 1,
               padding: '10px 14px',
-              borderRight: i < 3 ? '1px solid var(--rule)' : 'none',
+              borderRight: i < 2 ? '1px solid var(--rule)' : 'none',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: 'var(--ink-3)', marginBottom: 3, letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 600 }}>
