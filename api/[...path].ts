@@ -16,13 +16,16 @@
  * is exactly one router and one set of routes — nothing here can drift from what
  * runs locally.
  *
- * The import is dynamic and inside a try/catch on purpose. It pulls in the whole
- * engine, and if any part of that fails to load on the host — a module format
- * disagreement, a path that resolves differently, a missing file — the platform
- * would otherwise answer with an HTML error page. The client parses every
- * response as JSON, so the reader would see "The API returned a response that
- * was not JSON" and learn nothing. Answering with the real message in JSON turns
- * a dead end into something you can act on.
+ * The import below must stay STATIC. A dynamic `await import()` is not bundled:
+ * the builder compiles this file to `api/[...path].js` and leaves the specifier
+ * as a literal, so at runtime it looks for `/var/task/packages/api/src/index.ts`
+ * — TypeScript source that was never deployed — and every request dies with
+ * ERR_MODULE_NOT_FOUND. A static import lets esbuild inline the whole engine
+ * into the compiled output, which is the only form that exists on the host.
+ *
+ * The try/catch therefore covers request handling rather than module loading.
+ * A failure to load now happens at cold start, before this code runs at all,
+ * and surfaces in the function's runtime logs.
  *
  * Two honest limitations of running the twin this way:
  *
@@ -37,25 +40,25 @@
  */
 
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { handleRequest } from '../packages/api/src/index.ts';
 
 export default async function handler(
   req: IncomingMessage,
   res: ServerResponse,
 ): Promise<void> {
   try {
-    const { handleRequest } = await import('../packages/api/src/index.ts');
     await handleRequest(req, res);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     const stack = err instanceof Error ? (err.stack ?? '').split('\n').slice(0, 6) : [];
-    console.error('[api] the engine failed to load or handle the request:', err);
+    console.error('[api] request failed:', err);
 
     if (res.headersSent) {
       res.end();
       return;
     }
     const body = JSON.stringify({
-      error: 'The carbon engine failed to start on this server.',
+      error: 'The carbon engine failed to handle this request.',
       detail: message,
       where: stack,
     });
