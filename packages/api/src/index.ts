@@ -85,7 +85,29 @@ const ASSUMPTION_BOUNDS = ASSUMPTION_META;
 // Static file serving (production build only; Vite serves the client in dev)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const WEB_DIST = resolve(fileURLToPath(new URL('../../web/dist', import.meta.url)));
+/**
+ * Where the built client lives — resolved on first use, not at import.
+ *
+ * `fileURLToPath` throws on anything that is not a file: URL, and a bundled
+ * serverless function cannot promise that `import.meta.url` is one. Running this
+ * at module scope therefore crashed the whole module before a single request was
+ * handled, which the platform reports only as FUNCTION_INVOCATION_FAILED.
+ *
+ * Nothing but the standalone server ever needs this: on a host, static files are
+ * served by the CDN and this function only ever sees /api paths. So it is lazy,
+ * and a failure to resolve disables static serving rather than the API.
+ */
+let webDist: string | null | undefined;
+
+function getWebDist(): string | null {
+  if (webDist !== undefined) return webDist;
+  try {
+    webDist = resolve(fileURLToPath(new URL('../../web/dist', import.meta.url)));
+  } catch {
+    webDist = null;
+  }
+  return webDist;
+}
 
 const MIME: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -98,17 +120,20 @@ const MIME: Record<string, string> = {
 };
 
 async function serveStatic(res: ServerResponse, urlPath: string): Promise<boolean> {
+  const dist = getWebDist();
+  if (!dist) return false;
+
   // Normalise and confine to the dist directory: never serve outside it.
   const rel = normalize(decodeURIComponent(urlPath)).replace(/^(\.\.[/\\])+/, '');
-  let file = join(WEB_DIST, rel === '/' || rel === '\\' ? 'index.html' : rel);
-  if (!file.startsWith(WEB_DIST)) return false;
+  let file = join(dist, rel === '/' || rel === '\\' ? 'index.html' : rel);
+  if (!file.startsWith(dist)) return false;
 
   try {
     const st = await stat(file);
     if (st.isDirectory()) file = join(file, 'index.html');
   } catch {
     // Single-page app: unknown paths fall back to the shell.
-    file = join(WEB_DIST, 'index.html');
+    file = join(dist, 'index.html');
   }
 
   try {
@@ -531,13 +556,26 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
   }
 }
 
-const server = createServer(handleRequest);
+/**
+ * True only when this file was run directly.
+ *
+ * Same hazard as getWebDist: `fileURLToPath` throws on a non-file URL, and this
+ * ran at module scope, so importing the module from a serverless function could
+ * take the whole module down at load. Wrapped, and false on any doubt — the
+ * wrong answer costs a local developer a server that does not start, which is
+ * obvious; the wrong answer the other way costs every request on a host.
+ */
+function isDirectRun(): boolean {
+  try {
+    if (process.argv[1] === undefined) return false;
+    return resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
 
-const IS_ENTRY =
-  process.argv[1] !== undefined &&
-  resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
-
-if (IS_ENTRY) {
+if (isDirectRun()) {
+  const server = createServer(handleRequest);
   server.listen(PORT, HOST, () => {
     const t = Date.now();
     // Warm the solver so the first UI request is not the one that pays for it.
