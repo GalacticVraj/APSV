@@ -1,601 +1,1009 @@
 <div align="center">
-  <h1>TERRAFLUX</h1>
-  <h3>Waste-to-Carbon Intelligence & Circular Value Chain Platform</h3>
-  <p><em>"WASTE IS NOT THE END OF A JOURNEY. IT IS THE BEGINNING OF A CARBON VALUE CHAIN."</em></p>
-  <p><strong>Team: Last Commit</strong> | <strong>Track: Waste-to-Carbon Value Chain Tracker</strong></p>
 
-```
-  ┌─────────────────┐      ┌────────────────────────┐      ┌────────────────────┐      ┌────────────────────────┐      ┌──────────────────────┐
-  │  WASTE STREAM   │ ───► │ WASTE CHARACTERIZATION │ ───► │ OPTIMAL CONVERSION │ ───► │ DURABLE CARBON REMOVAL │ ───► │ DOWNSTREAM VALUE LOG │
-  │ (Agro/Ind/Muni) │      │  (Proximate/Ultimate)  │      │ (Biochar / Biogas) │      │ (Q10 Soil Permanence)  │      │ (Farmer Digestate)   │
-  └─────────────────┘      └────────────────────────┘      └────────────────────┘      └────────────────────────┘      └──────────────────────┘
-```
+<!-- Animated Banner SVG -->
+<svg width="860" height="160" viewBox="0 0 860 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0f1e"/>
+      <stop offset="100%" style="stop-color:#0d1f0f"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10b981"/>
+      <stop offset="50%" style="stop-color:#34d399"/>
+      <stop offset="100%" style="stop-color:#6ee7b7"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="subtleGlow">
+      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="860" height="160" rx="12" fill="url(#bg)"/>
+  <g stroke="#10b981" stroke-opacity="0.07" stroke-width="1">
+    <line x1="0" y1="20" x2="860" y2="20"/><line x1="0" y1="40" x2="860" y2="40"/>
+    <line x1="0" y1="60" x2="860" y2="60"/><line x1="0" y1="80" x2="860" y2="80"/>
+    <line x1="0" y1="100" x2="860" y2="100"/><line x1="0" y1="120" x2="860" y2="120"/>
+    <line x1="0" y1="140" x2="860" y2="140"/>
+    <line x1="86" y1="0" x2="86" y2="160"/><line x1="172" y1="0" x2="172" y2="160"/>
+    <line x1="258" y1="0" x2="258" y2="160"/><line x1="344" y1="0" x2="344" y2="160"/>
+    <line x1="430" y1="0" x2="430" y2="160"/><line x1="516" y1="0" x2="516" y2="160"/>
+    <line x1="602" y1="0" x2="602" y2="160"/><line x1="688" y1="0" x2="688" y2="160"/>
+  </g>
+  <circle cx="50" cy="80" r="28" fill="none" stroke="#10b981" stroke-width="1" stroke-opacity="0.4">
+    <animate attributeName="r" values="28;36;28" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="50" cy="80" r="12" fill="#10b981" fill-opacity="0.15">
+    <animate attributeName="r" values="12;16;12" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <text x="50" y="85" text-anchor="middle" font-family="monospace" font-size="14" fill="#10b981" filter="url(#glow)">TF</text>
+  <text x="430" y="68" text-anchor="middle" font-family="'Courier New', monospace" font-size="46" font-weight="900" fill="url(#textGrad)" filter="url(#glow)" letter-spacing="8">TERRAFLUX</text>
+  <text x="430" y="96" text-anchor="middle" font-family="'Courier New', monospace" font-size="12" fill="#6ee7b7" letter-spacing="3" font-weight="400">WASTE-TO-CARBON INTELLIGENCE PLATFORM</text>
+  <text x="430" y="130" text-anchor="middle" font-family="'Courier New', monospace" font-size="10" fill="#34d399" fill-opacity="0.7" letter-spacing="2">HackOut 26 · PS11 · Team Last Commit</text>
+  <rect x="0" y="0" width="860" height="2" fill="#10b981" fill-opacity="0.5" rx="1">
+    <animate attributeName="y" values="-2;162;-2" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="fill-opacity" values="0;0.5;0" dur="4s" repeatCount="indefinite"/>
+  </rect>
+  <path d="M0,20 L0,0 L20,0" stroke="#10b981" stroke-width="2" fill="none" stroke-opacity="0.6"/>
+  <path d="M840,0 L860,0 L860,20" stroke="#10b981" stroke-width="2" fill="none" stroke-opacity="0.6"/>
+  <path d="M0,140 L0,160 L20,160" stroke="#10b981" stroke-width="2" fill="none" stroke-opacity="0.6"/>
+  <path d="M840,160 L860,160 L860,140" stroke="#10b981" stroke-width="2" fill="none" stroke-opacity="0.6"/>
+</svg>
+
+<p>
+  <img src="https://img.shields.io/badge/HackOut_26-PS11-10b981?style=for-the-badge&logo=leaf&logoColor=white" alt="Hackathon"/>
+  <img src="https://img.shields.io/badge/Team-Last_Commit-059669?style=for-the-badge&logo=github&logoColor=white" alt="Team"/>
+  <img src="https://img.shields.io/badge/Track-Waste_to_Carbon-34d399?style=for-the-badge" alt="Track"/>
+</p>
+<p>
+  <img src="https://img.shields.io/badge/Node.js-%E2%89%A522.6.0-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node"/>
+  <img src="https://img.shields.io/badge/TypeScript-5.6-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/React_+_Vite-Frontend-61dafb?style=for-the-badge&logo=react&logoColor=black" alt="React"/>
+  <img src="https://img.shields.io/badge/Zero-Runtime_Deps-10b981?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Zero Dependencies"/>
+</p>
+<p>
+  <img src="https://img.shields.io/badge/Engine-Deterministic_Twin-6366f1?style=for-the-badge" alt="Deterministic"/>
+  <img src="https://img.shields.io/badge/Monte_Carlo-2000_Draws-8b5cf6?style=for-the-badge" alt="Monte Carlo"/>
+  <img src="https://img.shields.io/badge/Optimiser-Branch_%26_Bound-f59e0b?style=for-the-badge" alt="Optimiser"/>
+  <img src="https://img.shields.io/badge/Screens-27_React_Pages-ef4444?style=for-the-badge" alt="Screens"/>
+</p>
+
+<br/>
+
+> **"Waste is not the end of a journey. It is the beginning of a carbon value chain."**
+
 </div>
 
 ---
 
-## 01 — HERO
+## 📋 Table of Contents
 
-Organic waste rotting in municipal landfills and agricultural stubble burning in open fields represent two of the largest unmitigated sources of atmospheric methane ($\text{CH}_4$) and nitrous oxide ($\text{N}_2\text{O}$). While thermochemical (pyrolysis) and biochemical (anaerobic digestion) pathways exist to transform these wastes into high-value biochar and compressed bio-gas (CBG), the underlying supply chain is fundamentally fragmented.
-
-**TerraFlux** is an enterprise-grade, deterministic **Waste-to-Carbon Intelligence Platform**. Rather than acting as a static marketplace or a simple lookup index, TerraFlux implements a **capacitated multi-objective optimization engine** that evaluates the entire physical, chemical, logistical, and agronomic lifecycle of organic biomass—from gate to grid, and from digester to farm soil.
-
-```
-       WASTE  ───►  CHARACTERIZE  ───►  EVALUATE  ───►  OPTIMIZE  ───►  CONVERT  ───►  MEASURE  ───►  CLOSE THE LOOP
-  (Residue/Food)   (Moisture/Ash/CN)   (Pathway Gates)  (Min-Cost Flow) (Biochar/CBG)  (Q10 Decays)   (Farmer Digestate)
-```
+| # | Section |
+|---|---------|
+| 01 | [The Problem](#01--the-problem) |
+| 02 | [The Core Insight](#02--the-core-insight) |
+| 03 | [Platform Overview](#03--platform-overview) |
+| 04 | [Gallery — Key Screens](#04--gallery--key-screens) |
+| 05 | [Quick Start](#05--quick-start) |
+| 06 | [Monorepo Structure](#06--monorepo-structure) |
+| 07 | [Engine Architecture](#07--engine-architecture) |
+| 08 | [Carbon Accounting](#08--carbon-accounting) |
+| 09 | [Feedstock Modelling](#09--feedstock-modelling) |
+| 10 | [Optimiser](#10--optimiser) |
+| 11 | [Logistics Engine](#11--logistics-engine) |
+| 12 | [Forecasting](#12--forecasting) |
+| 13 | [Frontend — 27 Screens](#13--frontend--27-screens) |
+| 14 | [Key Numbers](#14--key-numbers) |
+| 15 | [Performance Benchmarks](#15--performance-benchmarks) |
+| 16 | [Notable Model Findings](#16--notable-model-findings) |
+| 17 | [Design Decisions and Rejections](#17--design-decisions-and-rejections) |
+| 18 | [Scientific References](#18--scientific-references) |
+| 19 | [Production Roadmap](#19--production-roadmap) |
 
 ---
 
-## 02 — THE PROBLEM
+## 01 — The Problem
 
-### The Scale of Atmospheric Inefficiency
-According to the UN Environment Programme (UNEP) Food Waste Index and IPCC guidelines:
-* Organic waste decomposing in anaerobic landfill conditions generates **8–10% of global greenhouse gas emissions**.
-* Methane ($\text{CH}_4$) released during open decay possesses a Global Warming Potential ($GWP_{100}$) **27–30 times** that of $\text{CO}_2$, and over **80 times** higher over a 20-year horizon ($GWP_{20}$).
-* In agricultural corridors like the Punjab–Haryana belt, over **20 million tonnes of paddy straw** are burned within a narrow 20-day harvest window due to logistical friction, releasing toxic particulate matter ($\text{PM}_{2.5}$) and severe carbon spikes.
+<div align="center">
+<svg width="820" height="110" viewBox="0 0 820 110" xmlns="http://www.w3.org/2000/svg">
+  <rect width="820" height="110" rx="8" fill="#0a0208"/>
+  <text x="410" y="18" text-anchor="middle" font-family="monospace" font-size="10" fill="#ef4444" letter-spacing="2" font-weight="bold">CURRENT FRAGMENTED WORKFLOW — THE BROKEN STATE</text>
+  <rect x="10" y="28" width="145" height="70" rx="6" fill="#1a0505" stroke="#ef4444" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="82" y="52" text-anchor="middle" font-family="monospace" font-size="9" fill="#fca5a5">FARMER/INDUSTRY</text>
+  <text x="82" y="67" text-anchor="middle" font-family="monospace" font-size="8" fill="#ef4444" fill-opacity="0.7">20 Mt paddy straw</text>
+  <text x="82" y="81" text-anchor="middle" font-family="monospace" font-size="8" fill="#ef4444" fill-opacity="0.5">burned/yr Punjab</text>
+  <path d="M155,63 L185,63" stroke="#ef4444" stroke-width="2"/>
+  <text x="170" y="56" text-anchor="middle" font-family="monospace" font-size="7" fill="#f97316">volume-blind</text>
+  <rect x="185" y="28" width="155" height="70" rx="6" fill="#1a0a05" stroke="#f97316" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="262" y="52" text-anchor="middle" font-family="monospace" font-size="9" fill="#fdba74">PROXIMITY MATCHING</text>
+  <text x="262" y="67" text-anchor="middle" font-family="monospace" font-size="8" fill="#f97316" fill-opacity="0.7">"Tinder for Waste"</text>
+  <text x="262" y="81" text-anchor="middle" font-family="monospace" font-size="8" fill="#f97316" fill-opacity="0.5">Ignores chemistry</text>
+  <path d="M340,63 L370,63" stroke="#f97316" stroke-width="2"/>
+  <text x="355" y="56" text-anchor="middle" font-family="monospace" font-size="7" fill="#f97316">40% cap</text>
+  <rect x="370" y="28" width="155" height="70" rx="6" fill="#1a1005" stroke="#eab308" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="447" y="52" text-anchor="middle" font-family="monospace" font-size="9" fill="#fde047">UNDERUTILIZED PLANT</text>
+  <text x="447" y="67" text-anchor="middle" font-family="monospace" font-size="8" fill="#eab308" fill-opacity="0.7">~40% capacity only</text>
+  <text x="447" y="81" text-anchor="middle" font-family="monospace" font-size="8" fill="#eab308" fill-opacity="0.5">Wrong feedstock</text>
+  <path d="M525,63 L555,63" stroke="#ef4444" stroke-width="2"/>
+  <rect x="555" y="28" width="255" height="70" rx="6" fill="#1a0505" stroke="#ef4444" stroke-width="1.5" stroke-opacity="0.8"/>
+  <text x="682" y="48" text-anchor="middle" font-family="monospace" font-size="9" fill="#fca5a5">LANDFILL / OPEN BURNING</text>
+  <text x="682" y="63" text-anchor="middle" font-family="monospace" font-size="8" fill="#ef4444">CH4 GWP100 = 27-30x CO2</text>
+  <text x="682" y="77" text-anchor="middle" font-family="monospace" font-size="8" fill="#ef4444" fill-opacity="0.7">N2O + PM2.5 plumes released</text>
+  <rect x="555" y="28" width="255" height="70" rx="6" fill="none" stroke="#ef4444" stroke-width="2">
+    <animate attributeName="stroke-opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite"/>
+  </rect>
+</svg>
+</div>
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                       CURRENT FRAGMENTED WORKFLOW                                       │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+### Scale of Atmospheric Inefficiency
 
-  [ FARMER / INDUSTRY ]               [ WASTE TRUCK ]                   [ LANDFILL / OPEN FIELD ]
-   Produces Paddy Straw/   ───►  Indiscriminate Mass Haul  ───►  Open Burning / Anaerobic Rot
-   Food Sludge                   (Volume-Blind Payload)         (Methane & N2O Plumes Released)
-
-                                         VS.
-
-  [ BIOGAS / BIOCHAR PLANT ] ───► Operates at 40% Capacity  ───► High Idle Fixed Costs
-   (Expensive Infrastructure)      (Feedstock Unchecked)          (Disjointed Downstream Products)
-```
+- **~20 million tonnes** of paddy straw burned annually in the Punjab–Haryana belt within a narrow **20-day harvest window**
+- Methane ($\text{CH}_4$) has $GWP_{100}$ = **27–30×** that of $\text{CO}_2$; $GWP_{20}$ **> 80×**
+- Existing biochar/biogas plants operate at only **~40% capacity** due to feedstock incompatibility and logistical blindness
+- Organic waste in landfills contributes **8–10% of global greenhouse gas emissions**
 
 ### Why Existing Approaches Fail
-Most current software solutions attempt to build a simple "Tinder for Waste"—a marketplace matching sellers to nearby buyers. This approach fails fundamentally because:
-1. **Chemical Incompatibility**: High-moisture waste ($>70\%$) destroys pyrolysis energy balances; low C:N ratios ($<15$) induce ammonia toxicity in anaerobic digesters.
-2. **Volumetric Logistics Bottlenecks**: Baled paddy straw has a bulk density of $\sim 0.15\text{ t/m}^3$. A standard 16-tonne truck hits its deck volume ceiling at just **8.7 tonnes**. Mass-only routing overestimates transport capacity by over $40\%$.
-3. **Decay Permanence Miscalculations**: Biochar permanence is parameterised by its $H/C_{\text{org}}$ molar ratio and target soil temperature. Standard European accounting models ($14.9^\circ\text{C}$) overestimate carbon stability when applied to warm tropical soils ($26^\circ\text{C}$).
-4. **Open-Loop Waste Chains**: Existing tools terminate tracking at the conversion facility, ignoring the hundreds of tonnes of residual **digestate / fermented organic manure (FOM)** produced daily, which must be returned to agricultural soils.
+
+| Failure Mode | Root Cause | Impact |
+|---|---|---|
+| **Chemical Incompatibility** | High-moisture waste (>70%) destroys pyrolysis energy balance; C:N <15 causes ammonia toxicity | Wrong waste to wrong facility |
+| **Volumetric Blindness** | Baled paddy straw = 0.15 t/m³; 16-tonne truck carries only **8.7 t** | Mass routing overstates capacity **>40%** |
+| **Permanence Miscalculation** | European biochar models assume 14.9 °C; Indian soils average 26 °C | Carbon credits **overstated ~45%** |
+| **Open-Loop Chains** | Tracking terminates at conversion gate; digestate/FOM ignored | Downstream nutrient runoff + methane slip |
 
 ---
 
-## 03 — THE INSIGHT
+## 02 — The Core Insight
+
+<div align="center">
+<svg width="820" height="90" viewBox="0 0 820 90" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="insightBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#021a0a"/>
+      <stop offset="100%" style="stop-color:#041a14"/>
+    </linearGradient>
+  </defs>
+  <rect width="820" height="90" rx="8" fill="url(#insightBg)" stroke="#10b981" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="410" y="22" text-anchor="middle" font-family="monospace" font-size="10" fill="#6ee7b7" letter-spacing="2">MULTI-OBJECTIVE SCORING — ENTIRE NETWORK SIMULTANEOUSLY</text>
+  <rect x="20" y="30" width="780" height="48" rx="6" fill="#0a1f0e" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.5"/>
+  <text x="410" y="52" text-anchor="middle" font-family="'Courier New', monospace" font-size="12" fill="#34d399">
+    Score(i,j,p) = w_val*NetValue + w_carb*NetCarbon - w_log*LogisticsCost - w_proc*ProcessingCost - w_risk*RiskFactor
+  </text>
+  <text x="410" y="70" text-anchor="middle" font-family="monospace" font-size="9" fill="#10b981" fill-opacity="0.6">Maximised simultaneously across entire network via Branch-and-Bound + Min-Cost Flow — not greedily per-tonne</text>
+</svg>
+</div>
 
 > ### *"THE NEAREST FACILITY IS NOT NECESSARILY THE BEST DESTINATION."*
 
-Distance alone is a dangerously incomplete metric for waste allocation. A biochar facility located $5\text{ km}$ away may reject a waste stream due to $65\%$ moisture content, while an anaerobic digestion plant $35\text{ km}$ away can convert that exact stream into vehicle-grade CBG and nitrogen-rich digestate with a net positive economic margin and higher carbon abatement.
-
-### The Decision Model
-
-For every candidate pathway $p$ connecting waste stream $i$ to facility $j$, TerraFlux evaluates a multi-objective scalar utility function:
+Distance alone is a dangerously incomplete metric. A biochar facility 5 km away may **reject** a 65% moisture stream while an anaerobic digestion plant 35 km away converts that exact stream into vehicle-grade CBG with a net positive margin and higher carbon abatement.
 
 $$\text{Score}_{ijp} = w_{\text{val}} \cdot \text{NetValue}_{ijp} + w_{\text{carb}} \cdot \text{NetCarbon}_{ijp} - w_{\text{log}} \cdot \text{LogisticsCost}_{ij} - w_{\text{proc}} \cdot \text{ProcessingCost}_{j} - w_{\text{risk}} \cdot \text{RiskFactor}_{j}$$
 
-Where:
-* $\text{NetValue}_{ijp}$: Gross market revenue from primary bio-products (biochar, CBG, electricity) and co-products (digestate).
-* $\text{NetCarbon}_{ijp}$: Sum of durable carbon sequestered ($C_{\text{perm}}$) plus avoided landfill/burning emissions ($E_{\text{avoid}}$) minus transport and conversion emissions ($E_{\text{trans}} + E_{\text{proc}}$).
-* $\text{LogisticsCost}_{ij}$: Transport cost accounting for vehicle payload limits and road network circuity ($1.28 \times \text{Haversine}$).
-* $\text{RiskFactor}_{j}$: Operational penalty based on facility capacity utilization, downtime history, and feed gate compatibility.
+The solver maximises this **across the entire network simultaneously** — not greedily per-tonne.
 
 ---
 
-## 04 — TERRAFLUX PLATFORM
+## 03 — Platform Overview
 
-TerraFlux is a unified, multi-tenant platform designed to optimize organic waste value chains end-to-end.
+<div align="center">
+<svg width="860" height="120" viewBox="0 0 860 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="platformBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#030d06"/>
+      <stop offset="100%" style="stop-color:#040f1a"/>
+    </linearGradient>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#10b981"/>
+    </marker>
+  </defs>
+  <rect width="860" height="120" rx="10" fill="url(#platformBg)" stroke="#10b981" stroke-width="1" stroke-opacity="0.2"/>
+  <rect x="10" y="15" width="152" height="90" rx="7" fill="#0a1f10" stroke="#10b981" stroke-width="1.2"/>
+  <text x="86" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#6ee7b7">① CHARACTERIZE</text>
+  <line x1="25" y1="44" x2="148" y2="44" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="86" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Moisture / Ash / C:N</text>
+  <text x="86" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Lignin / Bulk Density</text>
+  <text x="86" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">BMP / H:C molar ratio</text>
+  <text x="86" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">streams.ts / types.ts</text>
+  <path d="M162,60 L178,60" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <rect x="178" y="15" width="152" height="90" rx="7" fill="#0a1f10" stroke="#10b981" stroke-width="1.2"/>
+  <text x="254" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#6ee7b7">② GATE FILTER</text>
+  <line x1="193" y1="44" x2="316" y2="44" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="254" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Hard pathway gates</text>
+  <text x="254" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Suitability scoring</text>
+  <text x="254" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">5 conversion pathways</text>
+  <text x="254" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">pathways.ts</text>
+  <path d="M330,60 L346,60" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <rect x="346" y="15" width="152" height="90" rx="7" fill="#0d1f12" stroke="#34d399" stroke-width="1.5"/>
+  <text x="422" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#a7f3d0">③ OPTIMIZE</text>
+  <line x1="361" y1="44" x2="484" y2="44" stroke="#34d399" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="422" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">Branch-and-Bound</text>
+  <text x="422" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">Min-Cost Flow</text>
+  <text x="422" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">4 objective modes</text>
+  <text x="422" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399" fill-opacity="0.6">optimizer.ts</text>
+  <rect x="346" y="15" width="152" height="90" rx="7" fill="none" stroke="#34d399" stroke-width="1">
+    <animate attributeName="stroke-opacity" values="1;0.2;1" dur="2.5s" repeatCount="indefinite"/>
+  </rect>
+  <path d="M498,60 L514,60" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <rect x="514" y="15" width="152" height="90" rx="7" fill="#0a1f10" stroke="#10b981" stroke-width="1.2"/>
+  <text x="590" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#6ee7b7">④ CONVERT</text>
+  <line x1="529" y1="44" x2="652" y2="44" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="590" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Biochar Pyrolysis</text>
+  <text x="590" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">CBG Digestion</text>
+  <text x="590" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Pellets / Gasification</text>
+  <text x="590" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">carbon.ts</text>
+  <path d="M666,60 L682,60" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <rect x="682" y="15" width="168" height="90" rx="7" fill="#0a1f10" stroke="#10b981" stroke-width="1.2"/>
+  <text x="766" y="38" text-anchor="middle" font-family="monospace" font-size="8" fill="#6ee7b7">⑤ MEASURE + CLOSE</text>
+  <line x1="697" y1="44" x2="836" y2="44" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="766" y="58" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Q10 Permanence</text>
+  <text x="766" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">P5/P50/P95 Monte Carlo</text>
+  <text x="766" y="82" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Digestate to Farmer NPK</text>
+  <text x="766" y="98" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">routing.ts / state.ts</text>
+</svg>
+</div>
 
-```
-                                  ┌────────────────────────────────────────┐
-                                  │            TERRAFLUX ENGINE            │
-                                  └───────────────────┬────────────────────┘
-                                                      │
-         ┌──────────────────────┬─────────────────────┼─────────────────────┬──────────────────────┐
-         ▼                      ▼                     ▼                     ▼                      ▼
-  ┌──────────────┐      ┌──────────────┐      ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
-  │ CHARACTERIZE │      │   EVALUATE   │      │   OPTIMIZE   │      │   CONVERT    │      │  CLOSE LOOP  │
-  │ Feedstock C, │ ───► │ Hard Gate &  │ ───► │ Min-Cost &   │ ───► │ Thermochem & │ ───► │ Agronomic    │
-  │ Ash, N, H2O, │      │ Suitability  │      │ Branch-Bound │      │ Biochemical  │      │ Farmer NPK   │
-  │ Bulk Density │      │ Filtering    │      │ Multi-Obj    │      │ Processing   │      │ Matching     │
-  └──────────────┘      └──────────────┘      └──────────────┘      └──────────────┘      └──────────────┘
-```
+**TerraFlux** is an enterprise-grade, deterministic Waste-to-Carbon Intelligence Platform — not a marketplace or dashboard, but a full **operating system for organic-waste networks**. It takes every tonne of biomass from gate to grid: chemical characterisation, pathway filtering, multi-objective optimisation, carbon permanence accounting, logistics routing, and downstream digestate matching in a single deterministic pass.
 
----
-
-## 05 — STAKEHOLDER ECOSYSTEM
-
-TerraFlux synchronizes four primary operational roles in a closed-loop carbon network:
+### Stakeholder Ecosystem
 
 ```mermaid
-%%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor': '#10b981', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#059669', 'lineColor': '#34d1bf', 'tertiaryColor': '#1f2937'}}}%%
+%%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor': '#10b981', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#059669', 'lineColor': '#34d399', 'tertiaryColor': '#1f2937'}}}%%
 graph TD
     subgraph Waste Supply
         F[Farmer / Agronomic Producer]
-        I[Food & Industrial Waste Generator]
+        I[Food and Industrial Waste Generator]
         M[Municipal Waste Aggregator]
     end
-
-    subgraph Core Platform Engine
-        TE[TerraFlux Decision Twin Engine]
-        TE -->|1. Characterize & Filter| CF[Chemical Pathway Gating]
-        TE -->|2. Optimize Allocation| MO[Branch & Bound + Min-Cost Flow]
+    subgraph TerraFlux Decision Twin Engine
+        TE[Digital Twin Orchestrator]
+        TE -->|1. Characterize and Filter| CF[Chemical Pathway Gating]
+        TE -->|2. Optimize Allocation| MO[Branch and Bound + Min-Cost Flow]
         TE -->|3. Calculate Permanence| CE[Q10 Soil Carbon Engine]
         TE -->|4. Downstream Matching| DM[Agronomic NPK Matcher]
     end
-
-    subgraph Conversion & Logistics
-        L[Logistics & Transport Fleet]
+    subgraph Conversion and Logistics
+        L[Volume-Limited Fleet Router]
         BC[Biochar Pyrolysis Facility]
         AD[Anaerobic Digestion CBG Plant]
+        PE[Pellet Mill / Gasifier / Compost]
     end
-
     subgraph End-User Loop
         EU[Agronomic End-User / Farm Soil]
+        G[Energy Grid]
     end
-
     F -->|Raw Straw / Residue| TE
     I -->|Sludge / Organic Waste| TE
     M -->|MSW Segregated Organics| TE
-
     TE -->|Dispatched Manifests| L
     L -->|Volume-Optimized Transport| BC
     L -->|Volume-Optimized Transport| AD
-
-    BC -->|Durable Biochar| EU
-    AD -->|Compressed Bio-Gas| G[Energy Grid]
-    AD -->|Fermented Digestate / FOM| DM
+    L -->|Volume-Optimized Transport| PE
+    BC -->|Durable Biochar CDR| EU
+    AD -->|Compressed Bio-Gas| G
+    AD -->|Fermented Digestate FOM| DM
     DM -->|Bio-Fertiliser Match| EU
 ```
 
 ---
 
-## 06 — END-TO-END WORKFLOW
+## 04 — Gallery — Key Screens
 
-```mermaid
-%%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor': '#059669', 'lineColor': '#10b981'}}}%%
-flowchart LR
-    A[1. Waste Listing Created] --> B[2. Proximate/Ultimate Analysis]
-    B --> C[3. Pathway Gate Filtering]
-    C --> D[4. Volume-Constrained CVRP]
-    D --> E[5. Min-Cost Flow Allocation]
-    E --> F[6. Conversion & Product Yield]
-    F --> G[7. Q10 Carbon Permanence Ledger]
-    G --> H[8. Downstream Digestate Matching]
-    H --> I[9. Farmer Soil Application & Settlement]
+
+> All 9 key screen screenshots below are captured directly from the live deterministic engine running at `http://localhost:5173`.
+
+
+<div align="center">
+
+### Landing & Overview
+
+| Landing Page | Network Overview |
+|:---:|:---:|
+| ![Landing — role-selection hero with animated particles and persona cards](docs/screenshots/01_landing.png) | ![Overview — before/after baseline comparison, network KPIs, allocation summary](docs/screenshots/02_overview.png) |
+| `/ (Landing)` | `/overview` |
+
+### Interactive Map & Optimization
+
+| SVG Spatial Map | Optimization — Pareto Frontier |
+|:---:|:---:|
+| ![Map — real Punjab/Haryana/Chandigarh district SVG, animated flow arcs coloured by pathway, source and facility hover panels](docs/screenshots/03_map.png) | ![Optimization — objective mode switcher (Carbon/Profit/Balanced/Logistics), live Pareto frontier chart, solver stats, shadow price table](docs/screenshots/04_optimization.png) |
+| `/map` | `/optimization` |
+
+### Facilities & Facility Command
+
+| Facilities — Fleet View | Facility Command — Drill-Down |
+|:---:|:---:|
+| ![Facilities — Fleet Health Ring donut, FleetBar capacity bars, Pathway x District heatmap, facility card grid with utilisation and binding-constraint flags](docs/screenshots/05_facilities.png) | ![FacilityCommand — Capacity Gauge arc, Allocation Flow ranked bar chart, 12-week supply forecast, What-If supply shock and derate sliders with live re-optimisation](docs/screenshots/06_facility_command.png) |
+| `/facilities` | `/facility-command?id=<id>` |
+
+### Carbon Hub & Bottlenecks
+
+| Carbon Ledger | Bottlenecks — Stranding Analysis |
+|:---:|:---:|
+| ![Carbon Ledger — per-arc traceable ledger separating removal (CDR) from avoidance credits, P5/P50/P95 Monte Carlo bands, source citations](docs/screenshots/07_carbon_ledger.png) | ![Bottlenecks — stranded tonnes with attributed causes, N-1 resilience table, shadow prices per binding facility](docs/screenshots/08_bottlenecks.png) |
+| `/carbon` → CarbonLedger | `/bottlenecks` |
+
+### AI Copilot
+
+| Gemini AI Copilot |
+|:---:|
+| ![Copilot — natural-language query interface powered by Gemini, calling the same 15 tools as the UI, answers numerically identical to dashboard screens](docs/screenshots/09_copilot.png) |
+| `/copilot` (requires `GEMINI_API_KEY`) |
+
+</div>
+
+---
+
+## 05 — Quick Start
+
+> **Zero external dependencies. No Python. No Docker. No PostgreSQL. No Redis. No tile server. No credentials required.**
+
+```bash
+# Clone
+git clone <repo-url>
+cd APSV
+
+# Install and run (one command)
+npm install
+npm run dev
+```
+
+| Service | URL | Description |
+|---|---|---|
+| Web Dashboard | http://localhost:5173 | Full 27-screen React frontend |
+| API Gateway | http://127.0.0.1:5174 | Node.js native HTTP, zero dependencies |
+
+### Optional: Gemini AI Copilot
+
+```bash
+# Create .env at project root
+echo "GEMINI_API_KEY=your_key_here" > .env
+```
+
+The copilot calls the same 15 tools the UI does — every answer is numerically identical to what the dashboard screens show.
+
+### Available Scripts
+
+```bash
+npm run dev          # Start both API + Web concurrently (recommended)
+npm run dev:api      # API only (port 5174)
+npm run dev:web      # Web only (port 5173)
+npm run test         # Run engine + API test suite
+npm run typecheck    # TypeScript strict check across monorepo
+npm run build        # Production web bundle
 ```
 
 ---
 
-## 07 — SYSTEM ARCHITECTURE
+## 05 — Monorepo Structure
 
-TerraFlux is built as a zero-dependency monorepo that executes natively on standard Node environments.
-
-```mermaid
-graph TD
-    subgraph Client Layer
-        W[React + Vite Web Dashboard]
-        HUD[Interactive Spatial Map & Visual HUD]
-        MACC[Live MACC & Economics Dashboard]
-    end
-
-    subgraph API Gateway & Service Layer
-        API[Node.js Native HTTP Gateway]
-        AUTH[JWT & Role Authorization]
-        COPILOT[Gemini AI Natural Language Agent]
-    end
-
-    subgraph Decision Twin Engine TypeScript
-        ST[State & Twin Orchestrator]
-        OPT[Branch-and-Bound Optimizer]
-        MCF[Johnson-Dijkstra Min-Cost Flow]
-        CARB[Q10 Carbon Accounting Engine]
-        ROUT[Volume-Constrained Routing Solver]
-        AGRO[Agronomic Digestate Matcher]
-    end
-
-    subgraph Data & Storage Layer
-        PG[(PostgreSQL + PostGIS)]
-        REDIS[(Redis Cache / In-Memory Twin)]
-    end
-
-    W <--> API
-    HUD <--> API
-    MACC <--> API
-    API <--> ST
-    API <--> COPILOT
-    ST <--> OPT
-    OPT <--> MCF
-    ST <--> CARB
-    ST <--> ROUT
-    ST <--> AGRO
-    API <--> PG
-    API <--> REDIS
+```
+APSV/
+├── packages/
+│   ├── engine/                    # Pure TypeScript deterministic twin engine (zero runtime deps)
+│   │   └── src/
+│   │       ├── types.ts           # Full domain model — all interfaces and enums
+│   │       ├── streams.ts         # 9 feedstocks with full proximate/ultimate analysis
+│   │       ├── pathways.ts        # 5 conversion pathways, hard gates + soft suitability
+│   │       ├── network.ts         # 42 sources, 18 facilities (Punjab/Haryana/Chandigarh)
+│   │       ├── optimizer.ts       # Branch-and-bound + min-cost flow, 4 objective modes
+│   │       ├── mincostflow.ts     # Successive shortest paths, Johnson potentials
+│   │       ├── carbon.ts          # Q10-corrected two-pool decay, Monte Carlo uncertainty
+│   │       ├── economics.ts       # Per-tonne revenue/cost, DCF, LCOP, MACC, ABC, LCC
+│   │       ├── routing.ts         # Volume-limited CVRP, Clarke-Wright + Or-opt
+│   │       ├── forecast.ts        # Ridge regression, Fourier harmonics, walk-forward MAPE
+│   │       ├── bottleneck.ts      # Stranding with attributed causes, N-1 resilience
+│   │       ├── scenario.ts        # Clone-and-re-solve, flow diff attribution
+│   │       ├── state.ts           # Twin: memoised derived artefacts, version counter
+│   │       ├── copilot.ts         # 15 tools over the Twin, intent classification
+│   │       ├── geo.ts             # Haversine, circuity, Web-Mercator projection
+│   │       ├── rng.ts             # Seeded mulberry32, Box-Muller, lognormal draws
+│   │       ├── constants.ts       # Every emission factor + price with source citation
+│   │       ├── brief.ts           # Narrative generation from engine state
+│   │       ├── evidence.ts        # Source citation registry
+│   │       ├── facility.ts        # Facility profiles and capacity models
+│   │       ├── opportunity.ts     # Unallocated tonne ranking by carbon value
+│   │       ├── trace.ts           # Decision audit trail
+│   │       ├── shock.ts           # Supply/demand shock simulation
+│   │       ├── history.ts         # Optimisation run history
+│   │       └── pathwaychoice.ts   # Pathway preference engine
+│   │
+│   ├── api/                       # Node.js native HTTP gateway (zero dependencies)
+│   │   └── src/
+│   │       └── index.ts           # Hand-rolled router, holds one Twin instance
+│   │
+│   └── web/                       # React + Vite frontend
+│       └── src/
+│           ├── pages/             # 27 screens (see Section 12)
+│           ├── components/        # Shared UI components
+│           ├── styles.css         # Full design system (~163 KB)
+│           ├── store.tsx          # Global state, useTwin() hook
+│           ├── router.tsx         # 60-line client-side router
+│           └── i18n.ts            # Internationalisation strings
+│
+├── scripts/
+│   └── dev.mjs                   # Concurrent API + Vite launcher (no concurrently package)
+├── .env.example                  # Optional env vars (GEMINI_API_KEY, SMTP, DB)
+├── tsconfig.json                 # Strict TypeScript, path aliases
+├── package.json                  # Workspace root, Node >=22.6 requirement
+├── README.md                     # This file
+├── ARCHITECTURE.md               # Detailed system design rationale
+├── ANALYSIS.md                   # Modelling decisions and reasoning
+├── RESEARCH.md                   # Reference repository study, adopt/reject decisions
+├── CHANGELOG.md                  # Build-order implementation milestones
+└── CONTEXT.md                    # Complete project context document
 ```
 
 ---
 
-## 08 — DATA FLOW
+## 06 — Engine Architecture
 
-Every tonne of biomass follows a 10-phase deterministic lifecycle:
+<div align="center">
+<svg width="820" height="260" viewBox="0 0 820 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="archBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#030d06"/>
+      <stop offset="100%" style="stop-color:#040f1a"/>
+    </linearGradient>
+    <marker id="ag" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#10b981" fill-opacity="0.7"/>
+    </marker>
+    <marker id="ab" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#6366f1" fill-opacity="0.7"/>
+    </marker>
+  </defs>
+  <rect width="820" height="260" rx="10" fill="url(#archBg)" stroke="#10b981" stroke-width="1" stroke-opacity="0.15"/>
+  <!-- Layer 1: Web -->
+  <rect x="10" y="8" width="800" height="50" rx="6" fill="#0a1a2e" stroke="#6366f1" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="20" y="24" font-family="monospace" font-size="9" fill="#818cf8" letter-spacing="1">WEB LAYER — React + Vite</text>
+  <rect x="20" y="28" width="120" height="24" rx="4" fill="#0f2244" stroke="#6366f1" stroke-width="0.7"/>
+  <text x="80" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#a5b4fc">27 React Screens</text>
+  <rect x="150" y="28" width="120" height="24" rx="4" fill="#0f2244" stroke="#6366f1" stroke-width="0.7"/>
+  <text x="210" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#a5b4fc">Custom SVG Charts</text>
+  <rect x="280" y="28" width="120" height="24" rx="4" fill="#0f2244" stroke="#6366f1" stroke-width="0.7"/>
+  <text x="340" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#a5b4fc">Interactive SVG Map</text>
+  <rect x="410" y="28" width="120" height="24" rx="4" fill="#0f2244" stroke="#6366f1" stroke-width="0.7"/>
+  <text x="470" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#a5b4fc">Gemini AI Copilot</text>
+  <rect x="540" y="28" width="260" height="24" rx="4" fill="#0f2244" stroke="#6366f1" stroke-width="0.7"/>
+  <text x="670" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#a5b4fc">useTwin() hook — Single Source of Truth</text>
+  <!-- Arrow down -->
+  <path d="M410,58 L410,74" stroke="#6366f1" stroke-width="1.5" stroke-opacity="0.5" marker-end="url(#ab)"/>
+  <text x="420" y="70" font-family="monospace" font-size="7" fill="#6366f1" fill-opacity="0.5">JSON over HTTP (Vite proxy in dev)</text>
+  <!-- Layer 2: API -->
+  <rect x="10" y="76" width="800" height="40" rx="6" fill="#0a1a10" stroke="#10b981" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="20" y="92" font-family="monospace" font-size="9" fill="#34d399" letter-spacing="1">API GATEWAY — Node.js Native HTTP (zero deps) — One Twin instance — Cold start ~150 ms</text>
+  <rect x="20" y="97" width="200" height="13" rx="3" fill="#0f1f14" stroke="#10b981" stroke-width="0.5"/>
+  <text x="120" y="107" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981">--experimental-strip-types · no build step</text>
+  <rect x="230" y="97" width="160" height="13" rx="3" fill="#0f1f14" stroke="#10b981" stroke-width="0.5"/>
+  <text x="310" y="107" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981">15 tool endpoints</text>
+  <!-- Arrow down -->
+  <path d="M410,116 L410,130" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.5" marker-end="url(#ag)"/>
+  <text x="420" y="127" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">direct function calls</text>
+  <!-- Layer 3: Engine -->
+  <rect x="10" y="132" width="800" height="120" rx="6" fill="#05140a" stroke="#34d399" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="20" y="148" font-family="monospace" font-size="9" fill="#6ee7b7" letter-spacing="1">ENGINE — Pure TypeScript · Zero Runtime Dependencies · One Implementation consumed as source by both sides</text>
+  <!-- Twin box -->
+  <rect x="20" y="155" width="110" height="90" rx="5" fill="#0a1f10" stroke="#34d399" stroke-width="1"/>
+  <text x="75" y="170" text-anchor="middle" font-family="monospace" font-size="8" fill="#a7f3d0">state.ts</text>
+  <text x="75" y="182" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">Digital Twin</text>
+  <text x="75" y="194" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Memoised artefacts</text>
+  <text x="75" y="206" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Version counter</text>
+  <text x="75" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">In-process memory</text>
+  <text x="75" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">No DB needed</text>
+  <rect x="20" y="155" width="110" height="90" rx="5" fill="none" stroke="#34d399">
+    <animate attributeName="stroke-opacity" values="0.6;0.15;0.6" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <path d="M130,200 L145,200" stroke="#34d399" stroke-width="1" stroke-opacity="0.5" marker-end="url(#ag)"/>
+  <!-- Engine modules grid -->
+  <rect x="145" y="155" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
+  <text x="195" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">optimizer.ts</text>
+  <text x="195" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Branch-and-Bound</text>
+  <rect x="145" y="200" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
+  <text x="195" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">mincostflow.ts</text>
+  <text x="195" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Johnson-Dijkstra</text>
+  <rect x="255" y="155" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
+  <text x="305" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">carbon.ts</text>
+  <text x="305" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Q10 + 2000 MC draws</text>
+  <rect x="255" y="200" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
+  <text x="305" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">routing.ts</text>
+  <text x="305" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Clarke-Wright+Or-opt</text>
+  <rect x="365" y="155" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
+  <text x="415" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">bottleneck.ts</text>
+  <text x="415" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Stranding + N-1</text>
+  <rect x="365" y="200" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
+  <text x="415" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">scenario.ts</text>
+  <text x="415" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Clone-mutate-resolve</text>
+  <rect x="475" y="155" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
+  <text x="525" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">economics.ts</text>
+  <text x="525" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">DCF/LCOP/MACC/LCC</text>
+  <rect x="475" y="200" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
+  <text x="525" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">forecast.ts</text>
+  <text x="525" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Ridge+Fourier+12-fold</text>
+  <rect x="585" y="155" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
+  <text x="635" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">copilot.ts</text>
+  <text x="635" y="185" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">15 tools over Twin</text>
+  <rect x="585" y="200" width="100" height="40" rx="4" fill="#0a1f10" stroke="#10b981" stroke-width="0.8"/>
+  <text x="635" y="218" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">geo.ts / rng.ts</text>
+  <text x="635" y="230" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Haversine / mulberry32</text>
+  <rect x="695" y="155" width="110" height="90" rx="4" fill="#0a1f10" stroke="#f59e0b" stroke-width="0.8"/>
+  <text x="750" y="173" text-anchor="middle" font-family="monospace" font-size="7" fill="#fde68a">constants.ts</text>
+  <text x="750" y="187" text-anchor="middle" font-family="monospace" font-size="7" fill="#f59e0b">Every emission</text>
+  <text x="750" y="199" text-anchor="middle" font-family="monospace" font-size="7" fill="#f59e0b">factor + price</text>
+  <text x="750" y="211" text-anchor="middle" font-family="monospace" font-size="7" fill="#f59e0b">with source citation</text>
+  <text x="750" y="227" text-anchor="middle" font-family="monospace" font-size="7" fill="#f59e0b" fill-opacity="0.6">IPCC AR6 / Woolf 2021</text>
+</svg>
+</div>
 
-```
-  [ 1. INPUT ] ──► [ 2. VALIDATE ] ──► [ 3. NORMALIZE ] ──► [ 4. EXTRACT FEATURES ] ──► [ 5. MATCH PATHWAY ]
-  GPS & Volume      Schema Check        Dry Matter Basis     C, N, Ash, Moisture, Lignin   Gate Hard-Filtering
+### One Engine, Two Consumers
 
-  [ 6. OPTIMIZE ] ◄── [ 7. SCORE ] ◄── [ 8. EXPLAIN ] ◄── [ 9. ACTION DISPATCH ] ◄── [ 10. RECORD IMPACT ]
-  Min-Cost Flow       Multi-Objective   Copilot Rationale    Truck Routing & Gate Pass   MACC Ledger & Credits
-```
+The engine is imported **as TypeScript source** by both the API (via Node's native `--experimental-strip-types` — no build step) and the web client (compiled by Vite). **One implementation, no compiled artefact between them that can go stale.** Editing a model file hot-reloads both processes.
+
+### Digital Twin (`state.ts`)
+
+`Twin` holds authoritative network state and memoises every derived artefact against a version counter. Changing the objective, an assumption, or committing a scenario bumps the version and invalidates the cache. **In-process memory** — no database, because the network seeds deterministically.
 
 ---
 
-## 09 — WASTE CHARACTERIZATION
+## 07 — Carbon Accounting
 
-Rather than relying on static lookup tables, TerraFlux models waste streams by their fundamental thermochemical properties:
+### Three Core Commitments
 
-### Feedstock Analytical Schema
-
-| Property | Symbol | Unit | Description | Impact on Conversion |
-|---|---|---|---|---|
-| **Moisture Content** | $MC$ | $\%$ | Water fraction in wet feedstock | Moisture $>25\%$ invalidates pyrolysis; moisture $<55\%$ requires dilution water in AD |
-| **Ash Content** | $Ash$ | $\%$ (dry) | Inorganic mineral silica/alkali fraction | High ash reduces biochar carbon purity ($C_{\text{char}}$) and slags boiler pellets |
-| **Carbon Content** | $C_{\text{feed}}$ | $\%$ (dry) | Elemental organic carbon | Primary driver of yield and carbon permanence |
-| **Hydrogen Content** | $H_{\text{feed}}$ | $\%$ (dry) | Elemental hydrogen | Determines $H/C_{\text{org}}$ molar stability ratio |
-| **Lignin Content** | $Lignin$ | $\%$ (dry) | Recalcitrant structural polymer | High lignin boosts biochar yield ($Y_{\text{char}}$) and char stability |
-| **Carbon-to-Nitrogen** | $C:N$ | ratio | Molar ratio of organic C to N | Optimum AD range $15–40$; $<15$ causes ammonia inhibition |
-| **Bulk Density** | $\rho_{\text{bulk}}$ | $\text{t/m}^3$ | Mass per volumetric unit | Determines truck volume limits ($\text{Payload} = \min(M_{\text{rated}}, V_{\text{deck}} \cdot \rho_{\text{bulk}})$) |
-| **Biochemical Methane Potential** | $BMP$ | $\text{m}^3\text{ CH}_4/\text{t VS}$ | Anaerobic digestion yield parameter | Direct driver of biogas cubic metre production per volatile solid tonne |
-
-### Derived Chemical Relations
-
-$$\text{Biochar Yield (Dry)} = 0.20 + 0.0055 \cdot Lignin\% + 0.0045 \cdot Ash\%$$
-
-$$\text{Char Carbon Content } (C_{\text{char}}) = \frac{C_{\text{feed}} \cdot 0.50}{\text{Biochar Yield}}$$
-
-$$\text{Char } H/C_{\text{org}} = H:C_{\text{molar}} \cdot (0.19 - 0.0022 \cdot Lignin\%)$$
-
-$$\text{Achievable Truck Payload} = \min\left(M_{\text{max}}, V_{\text{deck}} \cdot \rho_{\text{bulk}}\right)$$
-
-### Hard Suitability Gates
-
-```
-  Feedstock Stream ──► [ Moisture Gate ≤ 25% ] ──► Pyrolysis Viable
-                   ──► [ Moisture Gate ≥ 55% ] ──► Digestion Viable
-                   ──► [ C:N Ratio 15 – 40   ] ──► Stable Methane Fermentation
-                   ──► [ Ash Gate ≤ 16%      ] ──► Pelleting / Gasification Viable
-```
-
----
-
-## 10 — FACILITY MATCHING ENGINE
-
-Candidate facilities are generated via PostGIS spatial filtering and ranked using a multi-criteria scoring algorithm.
-
-### Transparent Scoring Matrix Example
-
-| Facility ID | Facility Type | Distance (km) | Distance Score | Capacity Score | Pathway Fit | Economic Score | Carbon Score | Risk Score | **Final Score** |
-|---|---|---|---|---|---|---|---|---|---|
-| **FAC-PB-01** (Ludhiana CBG) | Anaerobic Digestion | $18.4$ | $92$ | $96$ | $98$ | $88$ | $94$ | $91$ | **93.2** |
-| **FAC-PB-04** (Jalandhar Pyrolysis) | Biochar Pyrolysis | $42.1$ | $74$ | $85$ | $62$ (High $H_2O$) | $71$ | $89$ | $85$ | **75.4** |
-| **FAC-PB-08** (Patiala Pellets) | Pellet Plant | $68.0$ | $51$ | $40$ | $35$ (High Ash) | $45$ | $60$ | $70$ | **48.8** |
-
----
-
-## 11 — ROUTE OPTIMIZATION
-
-Logistics optimization solves a **Capacitated Vehicle Routing Problem with Volume Constraints (CVRP-V)**.
-
-```
-       [ GENERATOR SITE ]
-     (120 tonnes Baled Straw)
-                │
-                │ Volume-Bound Haul (8.7 t per 16t Truck)
-                ▼
-      ┌───────────────────┐
-      │  COLLECTION POINT │
-      └─────────┬─────────┘
-                │
-        Road Network (Circuity Factor = 1.28)
-                │
-                ├──► Route A (18.4 km) ──► Facility 1 (Active, High Margin)
-                └──► Route B (42.1 km) ──► Facility 2 (Offline, Contingency)
-```
-
-### Routing Formulations
-* **Road Distance**: $D_{\text{road}} = 1.28 \times D_{\text{Haversine}}$
-* **Trip Count**: $N_{\text{trips}} = \left\lceil \frac{\text{Total Volume}}{\text{Achievable Payload}} \right\rceil$
-* **Transport Emissions**: $E_{\text{trans}} = N_{\text{trips}} \cdot D_{\text{road}} \cdot E_{\text{vehicle, km}}$
-
----
-
-## 12 — CARBON ENGINE
-
-### Biogenic CO₂ Exclusion & Avoided Emissions
-Residue carbon returning to the atmosphere via natural aerobic decomposition is considered biogenic carbon-neutral. TerraFlux strictly counts avoided **non-$\text{CO}_2$ warming gases** ($\text{CH}_4$ and $\text{N}_2\text{O}$) based on IPCC AR6 GWP values:
-
-$$E_{\text{avoided}} = \text{DM}_{\text{diverted}} \cdot \left[ (EF_{\text{CH4, burn}} \cdot GWP_{\text{CH4}}) + (EF_{\text{N2O, burn}} \cdot GWP_{\text{N2O}}) \right] \cdot C_{\text{factor}}$$
-
-For agricultural paddy straw, avoided open-burning credit equals **$0.082 \text{ tCO}_2\text{e}$ per dry tonne**.
+<div align="center">
+<svg width="820" height="82" viewBox="0 0 820 82" xmlns="http://www.w3.org/2000/svg">
+  <rect width="820" height="82" rx="8" fill="#030d06" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
+  <rect x="10" y="8" width="260" height="66" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
+  <text x="140" y="28" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">1 BIOGENIC CO2 NOT COUNTED</text>
+  <text x="140" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#34d399">Only CH4 and N2O counted</text>
+  <text x="140" y="57" text-anchor="middle" font-family="monospace" font-size="8" fill="#34d399">Avoided-burn = 0.082 tCO2e/dry t</text>
+  <text x="140" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.6">IPCC AR6 — not the ~1 t frequently claimed</text>
+  <rect x="280" y="8" width="260" height="66" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
+  <text x="410" y="28" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">2 REMOVAL != AVOIDANCE</text>
+  <text x="410" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#34d399">Separate ledger lines, priced separately</text>
+  <text x="410" y="57" text-anchor="middle" font-family="monospace" font-size="8" fill="#34d399">CDR ~Rs.10,800/t vs avoid ~Rs.520/t</text>
+  <text x="410" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.6">~20x price gap — never summed</text>
+  <rect x="550" y="8" width="260" height="66" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
+  <text x="680" y="28" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">3 INDIA-CALIBRATED PERMANENCE</text>
+  <text x="680" y="44" text-anchor="middle" font-family="monospace" font-size="8" fill="#34d399">Q10-corrected 14.9C to 26C soil</text>
+  <text x="680" y="57" text-anchor="middle" font-family="monospace" font-size="8" fill="#34d399">Biochar decays 45% faster (fT=2.158)</text>
+  <text x="680" y="70" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.6">Woolf (2021) / Azzi et al. (2024)</text>
+</svg>
+</div>
 
 ### Q10 Soil-Temperature Corrected Biochar Permanence
 
-Biochar carbon persistence ($BC_{100}$) is evaluated using a two-pool first-order exponential decay model:
+Two-pool first-order exponential decay model:
 
 $$C_{\text{rem}}(t) = (1 - f_{\text{pers}}) \cdot e^{-k_{\text{labile}} \cdot f_T \cdot t} + f_{\text{pers}} \cdot e^{-k_{\text{pers}} \cdot f_T \cdot t}$$
 
-Where:
-* $f_{\text{pers}} = 1 - \frac{H/C_{\text{org}}}{0.7}$ (Persistent carbon pool fraction)
-* $k_{\text{labile}} = 0.035\text{ yr}^{-1}, \quad k_{\text{pers}} = 0.0003\text{ yr}^{-1}$
-* **Woolf (2021) / Azzi et al. (2024) Q10 Soil Temperature Correction**:
+**Q10 Temperature Correction** (Woolf 2021 / Azzi et al. 2024 *Geoderma 441, 116761*):
 
-$$f_T = Q_{10}^{\frac{T_{\text{soil}} - T_{\text{ref}}}{10}}$$
+$$f_T = Q_{10}^{\frac{T_{\text{soil}} - T_{\text{ref}}}{10}} = 2.0^{\frac{26.0 - 14.9}{10}} = 2.0^{1.11} \approx 2.158$$
 
-Applying an Indian mean annual soil temperature $T_{\text{soil}} = 26.0^\circ\text{C}$ against the European reference baseline $T_{\text{ref}} = 14.9^\circ\text{C}$ with $Q_{10} = 2.0$:
+> **Key Result**: Biochar carbon decays **~2.16× faster in Indian agricultural soils** than European default models assume.
 
-$$f_T = 2.0^{\frac{26.0 - 14.9}{10}} = 2.0^{1.11} \approx 2.158$$
+| Feedstock | $BC_{100}$ @ 14.9 °C | $BC_{100}$ @ 26 °C | Delta |
+|---|---:|---:|---:|
+| Paddy straw | 82.0% | **77.1%** | −4.9 pp |
+| Wheat straw | 80.5% | **75.7%** | −4.8 pp |
+| Rice husk | 85.1% | **80.0%** | −5.1 pp |
 
-> **Key Result**: Biochar carbon decays **$2.16\times$ faster in Indian agricultural soils** than European default models assume. TerraFlux accurately reflects this empirical reality in its MACC accounting.
+### Monte Carlo Uncertainty
 
----
+2,000 seeded **lognormal** draws over every emission factor and yield parameter → UI reports **P5 / P50 / P95**, never a fake-precision point estimate. Never normal draws — emission factors are strictly positive, normal draws can go silently negative.
 
-## 13 — TWO-WAY MATCHING ENGINE
+### Avoided Emissions Formula (IPCC AR6)
 
-### Closing the Downstream Loop: Biogas Facility $\rightarrow$ Digestate $\rightarrow$ Farmer
+$$E_{\text{avoided}} = \text{DM}_{\text{diverted}} \cdot \left[ (EF_{\text{CH4}} \cdot GWP_{\text{CH4}}) + (EF_{\text{N2O}} \cdot GWP_{\text{N2O}}) \right] \cdot C_{\text{factor}}$$
 
-Anaerobic digestion produces large quantities of liquid and solid **Fermented Organic Manure (FOM) / Digestate**. Indiscriminate dumping of digestate creates localized nutrient runoff and methane slip. TerraFlux closes the loop by matching digestate production to candidate farmland:
-
-```
-  ┌─────────────────────────────────┐
-  │     BIO-GAS PLANT (CBG)         │ ───► Produces 45 tonnes/day Digestate (FOM)
-  └────────────────┬────────────────┘
-                   │
-                   ▼
-  ┌─────────────────────────────────┐
-  │ DOWNSTREAM MATCHING ENGINE      │
-  │  - Soil NPK Deficit Analysis    │
-  │  - Crop Salt Tolerance Check    │
-  │  - Application Timing Window    │
-  │  - Transport Radius & Cost      │
-  └────────────────┬────────────────┘
-                   │
-                   ├──► Match Score: 96.4% ──► Farm Site Alpha (Wheat, High N Deficit, 6.2 km)
-                   └──► Match Score: 81.2% ──► Farm Site Beta (Mustard, Moderate N Deficit, 14.5 km)
-```
-
-### Agronomic Decision Support Guardrails
-> [!NOTE]
-> Downstream digestate recommendations serve as **agronomic decision support**. All matched applications recommend localized soil testing and consultation with Krishi Vigyan Kendra (KVK) / Certified Agronomists before bulk soil application.
+For paddy straw open-burning: **0.082 tCO₂e per dry tonne** (CH₄ 2.7 g/kg DM, N₂O 0.07 g/kg DM, combustion factor 0.89).
 
 ---
 
-## 14 — WHAT-IF SIMULATOR
+## 08 — Feedstock Modelling
 
-TerraFlux features a real-time network perturbation simulator to test supply chain resilience under extreme events:
+Every feedstock carries **full proximate/ultimate analysis** — not a lookup table. Pathway yields are derived from first principles:
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                   REAL-TIME SIMULATION COMPARISON                                       │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+$$\text{Biochar Yield (Dry)} = 0.20 + 0.0055 \cdot Lignin\% + 0.0045 \cdot Ash\%$$
 
-   METRIC                     BASELINE SCENARIO             FACILITY OUTAGE (-40% CAP)     VARIANCE
-  ───────────────────────────────────────────────────────────────────────────────────────────────────
-   Allocated Volume           4,500 t/day                   3,820 t/day                    -15.1%
-   Stranded Biomass           120 t/day                     800 t/day                      +566.7%
-   Avg Logistics Cost         ₹420 / tonne                  ₹585 / tonne                   +39.3%
-   Net Carbon Abatement       384 tCO2e/day                 312 tCO2e/day                  -18.75%
-   Shadow Price Surge         ₹0 / tonne headroom           ₹1,850 / tonne headroom        +₹1,850
-```
+$$C_{\text{char}} = \frac{C_{\text{feed}} \cdot 0.50}{\text{Biochar Yield}}, \quad H/C_{\text{org}} = H:C_{\text{molar}} \cdot (0.19 - 0.0022 \cdot Lignin\%), \quad \text{Payload} = \min(M_{\text{rated}},\ V_{\text{deck}} \cdot \rho_{\text{bulk}})$$
 
----
+### 9 Modelled Feedstocks
 
-## 15 — CITY-SCALE MODE
+| Feedstock | Key Properties | Primary Pathway |
+|---|---|---|
+| Paddy straw | MC 14%, C:N 65, rho 0.15 t/m3 | Pyrolysis / Pellets |
+| Wheat straw | MC 12%, C:N 80, rho 0.17 t/m3 | Pyrolysis / Pellets |
+| Rice husk | MC 10%, Ash 20%, C:N 50 | Gasification |
+| Dairy dung | MC 78%, C:N 18, BMP high | Anaerobic Digestion |
+| Sugarcane bagasse | MC 50%, Lignin 22% | Pyrolysis / Composting |
+| Cotton stalk | MC 13%, C:N 35, Lignin 28% | Pyrolysis |
+| Food waste | MC 75%, C:N 22, BMP very high | Anaerobic Digestion |
+| Municipal wet waste | MC 70%, C:N 20 | Anaerobic Digestion |
+| Poultry litter | MC 55%, C:N 9 WARNING | **No viable pathway** |
 
-City-Scale Mode aggregates hundreds of municipal wet-waste collection points, industrial food processing facilities, and regional farms across an entire district network (e.g. Punjab–Haryana corridor: Ludhiana, Patiala, Sangrur, Karnal).
+### Hard Pathway Gates
 
-```
-   [ LUDHIANA MSW WET WASTE ] ──────┐
-   [ SANGRUR PADDY STRAW ]    ──────┼──► [ TERRAFLUX CENTRAL ENGINE ] ──► Multi-Facility Allocation
-   [ PATIALA DAIRY SLUDGE ]   ──────┘                                     & Network MACC Optimization
-```
-
----
-
-## 16 — EXPLAINABLE AI
-
-TerraFlux combines deterministic engine state with Gemini AI Copilot logic to generate natural-language rationale for every optimization decision:
-
-```
-  USER QUERY: "Why was Facility B chosen over Facility A for Listing #892?"
-
-  AI COPILOT RESPONSE:
-  "Facility B (Ludhiana CBG) was selected over Facility A (Patiala Pyrolysis) because:
-   1. Feedstock Moisture Content (68%) violated Facility A's maximum thermal gate (≤ 25%).
-   2. Facility B has 2.1× available capacity headroom (450 tonnes remaining vs 80 tonnes).
-   3. Even though Facility B is 11.2 km further, its net carbon abatement is 0.14 tCO2e/t higher
-      due to biogenic methane capture displacing fossil CNG."
-```
+| Gate | Pathway | Reason |
+|---|---|---|
+| Moisture <= 25% | Pyrolysis | Drying 70%-moisture feed costs more energy than char yields |
+| Moisture >= 55% | Digestion | Below this, digester needs costly dilution water |
+| C:N 15–40 | Digestion | <15 = ammonia inhibition; >40 = nitrogen-limited |
+| Ash <= 20% | Pellets | High-silica straw slags boiler tubes |
+| Ash <= 16% | Gasification | Ash and tar loading exceeds threshold |
+| C:N 12–45 | Composting | Outside range, windrow won't establish |
 
 ---
 
-## 17 — DETAILED TECHNICAL ARCHITECTURE
+## 09 — Optimiser
 
-### Monorepo Structure
+**Problem:** Capacitated facility-location with semi-continuous throughput — facilities run above minimum viable feed or not at all (binary), then continuous allocation across operating facilities.
+
+### Method: Branch-and-Bound + Min-Cost Flow
 
 ```
-carbonloop/
-├── packages/
-│   ├── web/           # React + Vite Frontend (Custom SVG Mapping & HUD)
-│   ├── api/           # Node.js Zero-Dependency HTTP API Gateway
-│   ├── engine/        # Pure TypeScript Deterministic Twin Engine
-│   └── backend/       # PostgreSQL + PostGIS Knex Services
-├── docs/              # Technical Specifications & System Diagrams
-└── package.json       # Workspace Root Configuration
+root: every facility available
+  └─ solve relaxation by min-cost flow → LP bound
+     └─ any facility below minimum viable feed?
+          no  → integer-feasible, candidate incumbent
+          yes → branch on worst violator:
+                  child A: facility does not run (forced off)
+                  child B: facility must reach minimum feed (forced on)
 ```
+
+Converges in **1–7 nodes** on this network. Best-first search, pruned against incumbent.
+
+**Why not a metaheuristic?** Once the operating set is fixed, allocation is a transportation LP — linear, with an integral optimal solution guaranteed by the integrality theorem. Min-cost flow solves it **exactly**. A GA solves the same problem approximately, more slowly, with no optimality bound.
+
+**Min-Cost Flow:** Successive shortest paths with Johnson potentials. SPFA seeds initial potentials; Dijkstra finds subsequent paths on non-negative reduced costs.
+
+### 4 Objective Modes
+
+| Mode | Objective | Use Case |
+|---|---|---|
+| Carbon First | max net tCO2e | Maximise emissions avoided + CDR |
+| Profit First | max operating margin | Maximise Rs. per planning window |
+| Balanced | 0.5 x normalised carbon + 0.5 x normalised margin | Default balanced operation |
+| Logistics First | normalised carbon − 0.55 x tonne-km + 0.15 x margin | Minimise transport intensity |
+
+### Shadow Prices
+
+For each binding facility, TerraFlux adds 1 t/day headroom, re-solves the entire network, and records the objective delta. Deliberately **not LP dual read-off** — with binary decisions in play, duals describe current basis only. The Pareto frontier prices the carbon–profit trade-off at **~Rs. 2,600/tCO₂e**.
 
 ---
 
-## 18 — DATABASE SCHEMA
+## 10 — Logistics Engine
 
-```mermaid
-erDiagram
-    USERS ||--o{ GENERATORS : owns
-    USERS ||--o{ FACILITIES : operates
-    GENERATORS ||--o{ WASTE_LISTINGS : creates
-    WASTE_LISTINGS ||--o{ MATCHES : receives
-    FACILITIES ||--o{ MATCHES : accepts
-    MATCHES ||--o{ PICKUPS : schedules
-    PICKUPS ||--o{ CARBON_CREDITS : issues
-    FACILITIES ||--o{ DIGESTATE_PROFILES : generates
-    DIGESTATE_PROFILES ||--o{ FARMER_MATCHES : allocates
-    USERS ||--o{ FARMER_MATCHES : applies
+> Baled paddy straw = 0.15 t/m³. A 16-tonne truck with 58 m³ deck carries only **8.7 t** — mass-only routing overstates fleet capacity by **>40%**.
 
-    USERS {
-        uuid id PK
-        string email
-        string role
-        boolean verified
-    }
+$$\text{Payload} = \min\left(M_{\text{max}},\ V_{\text{deck}} \cdot \rho_{\text{bulk}}\right), \quad D_{\text{road}} = 1.28 \times D_{\text{Haversine}}, \quad N_{\text{trips}} = \left\lceil \frac{\text{Total Volume}}{\text{Payload}} \right\rceil$$
 
-    GENERATORS {
-        uuid id PK
-        uuid user_id FK
-        string site_name
-        float lat
-        float lng
-        geometry location
-    }
+### CVRP-V Solver
 
-    FACILITIES {
-        uuid id PK
-        uuid user_id FK
-        string name
-        string conversion_type
-        float capacity_t_month
-        float remaining_capacity_t
-        geometry location
-    }
+- **Full truckloads** go direct (single pass)
+- **Residual part-loads** consolidated by **Clarke-Wright savings** under both mass and volume constraints, improved with **Or-opt** local search
+- All tours return to receiving facility
+- **Vehicle selection emerges**: tractor-trolleys win short rural hauls, trucks win highway hauls — as a result of cost minimisation, not hard-coded rules
 
-    WASTE_LISTINGS {
-        uuid id PK
-        uuid generator_id FK
-        string waste_type
-        float volume_t
-        string status
-    }
-
-    MATCHES {
-        uuid id PK
-        uuid listing_id FK
-        uuid facility_id FK
-        float score
-        jsonb match_breakdown
-    }
-
-    PICKUPS {
-        uuid id PK
-        uuid match_id FK
-        string status
-        float co2_sequestered_t
-    }
-
-    CARBON_CREDITS {
-        uuid id PK
-        uuid pickup_id FK
-        float tonnes_co2
-        string methodology
-    }
-```
+**Road distance:** Haversine × 1.28 circuity factor (India rural road correction). Live routing API not used — demo cannot depend on external service availability.
 
 ---
 
-## 19 — API DESIGN
+## 11 — Forecasting
 
-### Core RESTful Specifications
-
-#### `POST /api/waste-streams`
-Creates a new characterized waste stream manifest.
-```json
-// Request Payload
-{
-  "generator_id": "gen-pb-8812",
-  "waste_type": "agricultural_biomass",
-  "volume_t": 150.0,
-  "properties": {
-    "moisture_pct": 14.5,
-    "ash_pct": 11.2,
-    "carbon_pct": 42.8,
-    "hydrogen_pct": 5.1,
-    "lignin_pct": 18.4,
-    "cn_ratio": 32.0,
-    "bulk_density_t_m3": 0.15
-  },
-  "location": { "lat": 30.9010, "lng": 75.8573 }
-}
-```
-
-#### `POST /api/match/facility`
-Triggers multi-criteria facility evaluation for a manifest.
-```json
-// Response Payload
-{
-  "listing_id": "list-9918",
-  "matches": [
-    {
-      "facility_id": "fac-cbg-01",
-      "facility_name": "Ludhiana Bio-CNG Facility",
-      "score": 93.2,
-      "breakdown": {
-        "distance_km": 18.4,
-        "capacity_headroom_t": 850.0,
-        "pathway_fit": 0.98,
-        "net_carbon_tco2e": 12.3,
-        "economic_margin_inr": 18500.0
-      }
-    }
-  ]
-}
-```
-
----
-
-## 20 — ALGORITHMIC SPECIFICATIONS
-
-### 1. Geospatial Haversine & Circuity Distance Model
-$$\Delta \sigma = 2 \arcsin \sqrt{\sin^2\left(\frac{\Delta \phi}{2}\right) + \cos \phi_1 \cos \phi_2 \sin^2\left(\frac{\Delta \lambda}{2}\right)}$$
-$$D_{\text{road}} = 1.28 \cdot R_{\text{earth}} \cdot \Delta \sigma$$
-
-### 2. Multi-Property Yield & Gate Filtering Algorithm
-```typescript
-function evaluatePathwayGates(feed: FeedstockProps, pathway: Pathway): GateResult {
-  if (feed.moisturePct > pathway.maxMoisture) {
-    return { viable: false, reason: `Moisture ${feed.moisturePct}% exceeds maximum gate ${pathway.maxMoisture}%` };
-  }
-  if (feed.cnRatio < pathway.minCN || feed.cnRatio > pathway.maxCN) {
-    return { viable: false, reason: `C:N ratio ${feed.cnRatio} outside viable window [${pathway.minCN}, ${pathway.maxCN}]` };
-  }
-  return { viable: true, reason: 'Passed all thermochemical gates' };
-}
-```
-
-### 3. Min-Cost Flow Transportation Solver
-Solves linear continuous allocation over candidate network arcs using Successive Shortest Path with Johnson Potentials (SPFA + Dijkstra).
-
-### 4. Branch-and-Bound Semi-Continuous Solver
-Solves binary facility on/off decisions subject to minimum operational throughput constraints ($\text{Throughput}_j \ge \text{MinViableFeed}_j \text{ OR } 0$).
-
-### 5. Q10 Soil-Temperature Corrected Carbon Permanence
-$$f_T = 2.0^{\frac{T_{\text{soil}} - 14.9}{10}}, \quad BC_{100} = (1 - f_{\text{pers}}) e^{-k_{\text{labile}} f_T \cdot 100} + f_{\text{pers}} e^{-k_{\text{pers}} f_T \cdot 100}$$
-
-### 6. Agronomic Downstream Digestate Matcher
-Matches digestate volume to crop NPK deficit, soil pH, and transport radius.
-
-### 7. Perturbation Shadow Pricing Solver
-Re-solves the network with $+1\text{ t/day}$ headroom on binding facility constraints to compute shadow prices ($\lambda_j = \frac{\Delta \text{Objective}}{\Delta \text{Capacity}}$).
-
-### 8. Closed-Form Ridge Regression Supply Forecaster
-Fits Fourier seasonal harmonics and lag features using Cholesky decomposition:
+Ridge regression on three Fourier seasonal harmonics + linear trend + two AR lags, solved in closed form via **Cholesky decomposition** of regularised normal equations:
 
 $$\hat{\beta} = (X^T X + \lambda I)^{-1} X^T Y$$
+
+- Trains in **< 1 ms per source** (42 sources total)
+- Accuracy measured by **walk-forward backtest over 12 folds**, reported as MAPE
+- Nothing asserts accuracy it hasn't earned
+
+---
+
+## 12 — Frontend — 27 Screens
+
+All 27 screens read from the shared `Twin` via `useTwin()`. **No screen has its own data model.** Every chart is hand-written SVG — no charting library.
+
+<div align="center">
+<svg width="820" height="320" viewBox="0 0 820 320" xmlns="http://www.w3.org/2000/svg">
+  <rect width="820" height="320" rx="10" fill="#030d06" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.2"/>
+  <text x="410" y="18" text-anchor="middle" font-family="monospace" font-size="10" fill="#6ee7b7" letter-spacing="2">27 SCREENS — NAVIGATION MAP</text>
+  <!-- Entry points -->
+  <rect x="10" y="28" width="95" height="26" rx="4" fill="#0a1f10" stroke="#6366f1" stroke-width="1"/>
+  <text x="57" y="45" text-anchor="middle" font-family="monospace" font-size="7" fill="#a5b4fc">Landing</text>
+  <rect x="115" y="28" width="95" height="26" rx="4" fill="#0a1f10" stroke="#6366f1" stroke-width="1"/>
+  <text x="162" y="45" text-anchor="middle" font-family="monospace" font-size="7" fill="#a5b4fc">TrueLanding</text>
+  <rect x="220" y="28" width="95" height="26" rx="4" fill="#0a1f10" stroke="#6366f1" stroke-width="1"/>
+  <text x="267" y="45" text-anchor="middle" font-family="monospace" font-size="7" fill="#a5b4fc">PersonaLanding</text>
+  <!-- Row 1 main nav -->
+  <rect x="10" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="50" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Overview</text>
+  <rect x="98" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="138" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Map</text>
+  <rect x="186" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="226" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Optimization</text>
+  <rect x="274" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="314" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Scenarios</text>
+  <rect x="362" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="402" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Bottlenecks</text>
+  <rect x="450" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="490" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Facilities</text>
+  <rect x="538" y="64" width="100" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="588" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">FacilityCommand</text>
+  <rect x="646" y="64" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="686" y="81" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Sources</text>
+  <!-- Row 2 -->
+  <rect x="10" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="50" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Logistics</text>
+  <rect x="98" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="138" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Economics</text>
+  <rect x="186" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="226" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Copilot</text>
+  <rect x="274" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="314" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Activity</text>
+  <rect x="362" y="98" width="80" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="402" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">System</text>
+  <rect x="450" y="98" width="100" height="26" rx="4" fill="#0a1a2e" stroke="#10b981" stroke-width="0.8"/>
+  <text x="500" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">CarbonCommand</text>
+  <rect x="558" y="98" width="100" height="26" rx="4" fill="#0a1a2e" stroke="#8b5cf6" stroke-width="0.8"/>
+  <text x="608" y="115" text-anchor="middle" font-family="monospace" font-size="7" fill="#c4b5fd">GeneratorModule</text>
+  <!-- Carbon Hub -->
+  <rect x="10" y="134" width="800" height="148" rx="6" fill="#05100a" stroke="#34d399" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="410" y="152" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7" letter-spacing="2">CARBON HUB — 7 DEDICATED SCREENS</text>
+  <rect x="20" y="158" width="100" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
+  <text x="70" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">Carbon</text>
+  <text x="70" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Hub overview</text>
+  <text x="70" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">Carbon.tsx</text>
+  <rect x="130" y="158" width="100" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
+  <text x="180" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonLedger</text>
+  <text x="180" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Per-arc traceable</text>
+  <text x="180" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">removal vs avoidance</text>
+  <rect x="240" y="158" width="100" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
+  <text x="290" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonPathways</text>
+  <text x="290" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Pathway carbon</text>
+  <text x="290" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">breakdown</text>
+  <rect x="350" y="158" width="100" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
+  <text x="400" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonFacilities</text>
+  <text x="400" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Facility carbon</text>
+  <text x="400" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">linked FacilityCmd</text>
+  <rect x="460" y="158" width="100" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
+  <text x="510" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonEvidence</text>
+  <text x="510" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Source citations</text>
+  <text x="510" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">P5/P50/P95 bands</text>
+  <rect x="570" y="158" width="100" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
+  <text x="620" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonReport</text>
+  <text x="620" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Printable summary</text>
+  <text x="620" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">carbon accounting</text>
+  <rect x="680" y="158" width="120" height="56" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
+  <text x="740" y="176" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonOpportunities</text>
+  <text x="740" y="189" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Highest-value</text>
+  <text x="740" y="202" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">unallocated tonnes</text>
+  <rect x="20" y="222" width="110" height="54" rx="4" fill="#0a1f10" stroke="#34d399" stroke-width="0.8"/>
+  <text x="75" y="240" text-anchor="middle" font-family="monospace" font-size="7" fill="#6ee7b7">CarbonScenarios</text>
+  <text x="75" y="253" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399">Carbon what-if</text>
+  <text x="75" y="266" text-anchor="middle" font-family="monospace" font-size="7" fill="#10b981" fill-opacity="0.5">scenarios</text>
+  <!-- SVG charts label -->
+  <rect x="10" y="292" width="800" height="22" rx="4" fill="#05100a" stroke="#f59e0b" stroke-width="0.8" stroke-opacity="0.4"/>
+  <text x="410" y="307" text-anchor="middle" font-family="monospace" font-size="7" fill="#fde68a">CUSTOM HAND-WRITTEN SVG CHARTS (no library): FleetBar · CapacityGauge · AllocationFlow · FeedstockOutlookChart · WhatIfBars · SourceScoreBar · CapacityHeatmap · Pareto Frontier · Monte Carlo Bands · MACC Curve</text>
+</svg>
+</div>
+
+### Key Screen Details
+
+**`/map`** — Interactive SVG spatial map with real district geometry for Punjab, Haryana, Chandigarh (131 KB, Douglas-Peucker simplified, embedded in bundle). Flow arcs animate between sources and facilities, coloured by pathway. No tile server — cannot fail in front of an audience.
+
+**`/facilities`** — Fleet Health Ring (SVG donut: Healthy/Constrained/Idle), FleetBar, Pathway×District utilisation heatmap, card/table toggle. Embedded Municipal Siting Screener.
+
+**`/facility-command?id=<id>`** — Per-facility operational control: Capacity Gauge (SVG arc), Allocation Flow ranked bar, 12-week supply forecast, What-If sliders with debounced re-optimisation (live twin untouched), shadow prices.
+
+**`/optimization`** — Objective mode switcher, Pareto frontier chart, solver stats (nodes explored, bound gap), shadow price table.
+
+**Loading states name the computation**: *"Running 2,000 Monte Carlo draws over every emission factor"* — not a spinner.
+
+---
+
+## 13 — Key Numbers
+
+<div align="center">
+<svg width="820" height="110" viewBox="0 0 820 110" xmlns="http://www.w3.org/2000/svg">
+  <rect width="820" height="110" rx="8" fill="#030d06" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
+  <rect x="10" y="10" width="150" height="90" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
+  <text x="85" y="44" text-anchor="middle" font-family="monospace" font-size="28" font-weight="900" fill="#10b981">42</text>
+  <text x="85" y="60" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">Waste Sources</text>
+  <text x="85" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399" fill-opacity="0.6">Punjab+Haryana+Chandigarh</text>
+  <rect x="170" y="10" width="150" height="90" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
+  <text x="245" y="44" text-anchor="middle" font-family="monospace" font-size="28" font-weight="900" fill="#10b981">18</text>
+  <text x="245" y="60" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">Facilities</text>
+  <text x="245" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399" fill-opacity="0.6">CBG/Pyrolysis/Pellets/Gasif/Compost</text>
+  <rect x="330" y="10" width="150" height="90" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
+  <text x="405" y="44" text-anchor="middle" font-family="monospace" font-size="28" font-weight="900" fill="#10b981">9</text>
+  <text x="405" y="60" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">Feedstock Types</text>
+  <text x="405" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399" fill-opacity="0.6">Full proximate/ultimate analysis</text>
+  <rect x="490" y="10" width="150" height="90" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
+  <text x="565" y="40" text-anchor="middle" font-family="monospace" font-size="20" font-weight="900" fill="#10b981">57,700t</text>
+  <text x="565" y="57" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">Total Supply Modelled</text>
+  <text x="565" y="71" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399" fill-opacity="0.6">48,150t nameplate capacity</text>
+  <text x="565" y="84" text-anchor="middle" font-family="monospace" font-size="7" fill="#f59e0b" fill-opacity="0.7">41% structurally stranded</text>
+  <rect x="650" y="10" width="160" height="90" rx="6" fill="#0a1f10" stroke="#10b981" stroke-width="1"/>
+  <text x="730" y="44" text-anchor="middle" font-family="monospace" font-size="28" font-weight="900" fill="#10b981">27</text>
+  <text x="730" y="60" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">Frontend Screens</text>
+  <text x="730" y="74" text-anchor="middle" font-family="monospace" font-size="7" fill="#34d399" fill-opacity="0.6">All custom SVG charts</text>
+</svg>
+</div>
+
+### Central Trade-off: Carbon vs. Profit
+
+| Pathway | Net Carbon (per tonne straw) | Margin | Why |
+|---|---:|---:|---|
+| Pyrolysis to Biochar | ~0.69 tCO2e | ~Rs. 6,100 | Locks ~40% feedstock C; earns CDR at Rs. 10,800/t |
+| Pellets to Co-firing | ~1.15 tCO2e | ~Rs. 2,500 | Displaces coal 1:1 on energy; only avoidance at Rs. 520/t |
+
+Co-firing wins on **carbon**. Pyrolysis wins on **money**. Switching objective mode visibly re-routes the entire network. The Pareto frontier prices the trade-off at **~Rs. 2,600/tCO₂e**.
+
+---
+
+## 14 — Performance Benchmarks
+
+All timings measured on Node v22, cold start inclusive:
+
+<div align="center">
+<svg width="820" height="170" viewBox="0 0 820 170" xmlns="http://www.w3.org/2000/svg">
+  <rect width="820" height="170" rx="8" fill="#030d06" stroke="#10b981" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="410" y="18" text-anchor="middle" font-family="monospace" font-size="10" fill="#6ee7b7" letter-spacing="2">PERFORMANCE BENCHMARKS</text>
+  <text x="10" y="42" font-family="monospace" font-size="8" fill="#34d399">Full Network Optimisation</text>
+  <text x="10" y="66" font-family="monospace" font-size="8" fill="#34d399">Shadow Prices (12-18 re-solves)</text>
+  <text x="10" y="90" font-family="monospace" font-size="8" fill="#34d399">Monte Carlo 2,000 draws</text>
+  <text x="10" y="114" font-family="monospace" font-size="8" fill="#34d399">Forecast 42 sources + backtests</text>
+  <text x="10" y="138" font-family="monospace" font-size="8" fill="#34d399">Scenario: baseline + mutate + diff</text>
+  <text x="10" y="162" font-family="monospace" font-size="8" fill="#34d399">N-1 Resilience / Cold API Start</text>
+  <rect x="290" y="28" width="470" height="16" rx="3" fill="#0a1f10"/>
+  <rect x="290" y="52" width="470" height="16" rx="3" fill="#0a1f10"/>
+  <rect x="290" y="76" width="470" height="16" rx="3" fill="#0a1f10"/>
+  <rect x="290" y="100" width="470" height="16" rx="3" fill="#0a1f10"/>
+  <rect x="290" y="124" width="470" height="16" rx="3" fill="#0a1f10"/>
+  <rect x="290" y="148" width="470" height="16" rx="3" fill="#0a1f10"/>
+  <!-- 25-180ms full bar -->
+  <rect x="290" y="28" width="470" height="16" rx="3" fill="#10b981" fill-opacity="0.65">
+    <animate attributeName="width" from="0" to="470" dur="1.2s" fill="freeze"/>
+  </rect>
+  <text x="768" y="40" font-family="monospace" font-size="8" fill="#6ee7b7">25-180 ms</text>
+  <!-- 50ms -->
+  <rect x="290" y="52" width="130" height="16" rx="3" fill="#10b981" fill-opacity="0.55">
+    <animate attributeName="width" from="0" to="130" dur="1s" fill="freeze"/>
+  </rect>
+  <text x="768" y="64" font-family="monospace" font-size="8" fill="#6ee7b7">~50 ms</text>
+  <!-- 25ms -->
+  <rect x="290" y="76" width="65" height="16" rx="3" fill="#34d399" fill-opacity="0.65">
+    <animate attributeName="width" from="0" to="65" dur="0.8s" fill="freeze"/>
+  </rect>
+  <text x="768" y="88" font-family="monospace" font-size="8" fill="#6ee7b7">~25 ms</text>
+  <!-- 45ms -->
+  <rect x="290" y="100" width="117" height="16" rx="3" fill="#10b981" fill-opacity="0.55">
+    <animate attributeName="width" from="0" to="117" dur="1s" fill="freeze"/>
+  </rect>
+  <text x="768" y="112" font-family="monospace" font-size="8" fill="#6ee7b7">~45 ms</text>
+  <!-- 150ms -->
+  <rect x="290" y="124" width="391" height="16" rx="3" fill="#10b981" fill-opacity="0.45">
+    <animate attributeName="width" from="0" to="391" dur="1.1s" fill="freeze"/>
+  </rect>
+  <text x="768" y="136" font-family="monospace" font-size="8" fill="#6ee7b7">~150 ms</text>
+  <!-- 60+150ms -->
+  <rect x="290" y="148" width="391" height="16" rx="3" fill="#6ee7b7" fill-opacity="0.35">
+    <animate attributeName="width" from="0" to="391" dur="1.1s" fill="freeze"/>
+  </rect>
+  <text x="768" y="160" font-family="monospace" font-size="8" fill="#6ee7b7">~60 / ~150 ms</text>
+</svg>
+</div>
+
+---
+
+## 15 — Notable Model Findings
+
+> [!IMPORTANT]
+> These are **real outputs of the deterministic engine**, not crafted narratives.
+
+1. **Poultry litter has no viable pathway** — C:N of 9 falls below the stable window for digestion and composting; moisture rules out every thermal route. The bottleneck engine names this explicitly and recommends co-digestion with press mud (1:2.5 ratio lifts C:N above 15).
+
+2. **Optimiser diverts less tonnage than proximity heuristic — and this is correct.** Sending every lot to the closest willing facility includes loss-making tonnes. Dropping them yields **+27% net carbon and +41% margin on 17% less transport**.
+
+3. **41% of supply is structurally stranded** — not a modelling failure. Crop residue can only go to pellets/pyrolysis/gasification (~22,950 t capacity) but represents ~37,000 t of supply. Shadow price of the most constrained plant: **0.80 tCO₂e and Rs. 5,637 per additional tonne of throughput per day**.
+
+4. **Composting cattle dung is carbon-negative** — windrow composting emits more CH₄ and N₂O than the open heap it replaces avoids. Model strands dung once digestion capacity is full. Finding: **digest dung, do not compost it**.
+
+---
+
+## 16 — Design Decisions and Rejections
+
+| Chosen | Rejected | Reason |
+|---|---|---|
+| Min-cost flow + Branch-and-Bound | Genetic algorithm, PSO, ACO | Inner problem is a transportation LP — exact beats approximate, gives bound + duals |
+| Shadow prices by re-optimisation | LP duals from single basis | Binary facility decisions make single-basis duals misleading |
+| Ridge regression (Cholesky) | XGBoost / LightGBM | No dependency-free JS equivalent; inspectable coefficients > marginal MAPE gain |
+| Clarke-Wright + Or-opt | OR-Tools CVRP | No Python runtime; residual part-load problem is small after full loads removed |
+| Lognormal Monte Carlo | Normal draws | Emission factors strictly positive; normal draws can go negative silently |
+| Integer objective scaling | Float comparison | Float tie-breaks cause non-reproducible optimal answers |
+| Haversine x circuity factor | Live routing API | Demo cannot depend on external service availability |
+| In-process seeded state | PostgreSQL + Redis | Nothing to persist; restart = same deterministic baseline |
+| Embedded SVG map (131 KB) | Tile server / Leaflet | Tile server cannot fail in front of an audience |
+| --experimental-strip-types | tsc compile step for API | Single source, no stale compiled artefact between engine and API |
+
+---
+
+## 17 — Scientific References
+
+All demo data is **synthetic and seeded**. Every emission factor and price is drawn from peer-reviewed or regulatory sources, cited at point of use in `constants.ts`:
+
+| Reference | Used For |
+|---|---|
+| IPCC 2006/2019 Guidelines | CH4, N2O emission factors for open burning and landfill |
+| Woolf (2021) ES&T | Q10 biochar permanence relation, two-pool model parameterisation |
+| Azzi et al. (2024) Geoderma 441 116761 | Harmonised two-pool decay model calibration |
+| CEA CO2 Baseline Database | Indian grid emission factor for displacement credits |
+| MNRE / SATAT Tariffs | CBG purchase price, off-take obligations |
+| European Biochar Certificate (EBC) | H/C(org) permanence thresholds for CDR classification |
+| IPCC AR6 GWP values | CH4 GWP100 = 28 (fossil), N2O GWP100 = 273 |
+
+### Reference Repository Study
+
+Six repositories studied; no source code copied. Scientific formulae cited at point of use.
+
+| Repo | Licence | Key Insight Adopted |
+|---|---|---|
+| puro-earth/PuroBiocharPersistenceEdition2025 | CC BY-SA 4.0 | Q10 two-pool decay, re-calibrated to Indian soil temperature |
+| aws-samples/wastecollector-planner | MIT-0 | Volume-limited CVRP (not just mass) |
+| RishvinReddy/EcoBin-Smart-Waste-Management-System | NOASSERTION | Forecast-then-optimise architecture; stranding-with-reason |
+| akshaya-borugadda/intelligent-waste-management | None | Mandatory baseline comparison on every result |
+| SwolfPy-Project/swolfpy | GPL-2.0 | Seeded Monte Carlo uncertainty; removal != avoidance |
+| pimct/MIRA_project | MIT | Multi-objective mode switching; feedstock-specific yields; Pareto frontier |
+
+---
+
+## 18 — Production Roadmap
+
+| # | Change | Current Demo | Production |
+|---|---|---|---|
+| 1 | Road Routing | Haversine x 1.28 circuity | OSRM over OSM extract |
+| 2 | Supply Telemetry | Seeded synthetic data | Real IoT / weighbridge feeds |
+| 3 | Persistence | In-process memory | PostgreSQL for scenarios and plan versions |
+| 4 | Char Analysis | H/C(org) modelled from proximate | Measured H/C(org) on actual biochar for verified credits |
+| 5 | Process Models | Property-derived yield equations | ANN surrogates over thermodynamic simulations |
+| 6 | Temporal Coupling | Spot allocation per window | Contracted feedstock with temporal windows |
 
 ---
 
 <div align="center">
-  <p><strong>TerraFlux — Built for High-Impact Circular Carbon Logistics</strong></p>
+
+<svg width="820" height="55" viewBox="0 0 820 55" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="footerBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#030d06"/>
+      <stop offset="100%" style="stop-color:#040f1a"/>
+    </linearGradient>
+    <linearGradient id="footerText" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10b981"/>
+      <stop offset="50%" style="stop-color:#34d399"/>
+      <stop offset="100%" style="stop-color:#6ee7b7"/>
+    </linearGradient>
+    <filter id="footerGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="820" height="55" rx="8" fill="url(#footerBg)" stroke="#10b981" stroke-width="1" stroke-opacity="0.2"/>
+  <text x="410" y="24" text-anchor="middle" font-family="monospace" font-size="14" fill="url(#footerText)" letter-spacing="4" filter="url(#footerGlow)">TERRAFLUX</text>
+  <text x="410" y="42" text-anchor="middle" font-family="monospace" font-size="9" fill="#34d399" fill-opacity="0.7" letter-spacing="2">Built for High-Impact Circular Carbon Logistics · HackOut 26 · PS11</text>
+  <circle cx="60" cy="28" r="3" fill="#10b981" fill-opacity="0.5">
+    <animate attributeName="fill-opacity" values="0.5;0.1;0.5" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="760" cy="28" r="3" fill="#10b981" fill-opacity="0.5">
+    <animate attributeName="fill-opacity" values="0.1;0.5;0.1" dur="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>
+
+<br/>
+
+**Team: Last Commit** | Track: Waste-to-Carbon Value Chain Tracker | HackOut '26 PS11
+
 </div>
