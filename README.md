@@ -1,66 +1,6 @@
 <div align="center">
 
-<!-- Animated Banner SVG — warm earth / forest-green theme matching /generator -->
-<svg width="860" height="180" viewBox="0 0 860 180" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#e8e3d8"/>
-      <stop offset="50%" style="stop-color:#ede8df"/>
-      <stop offset="100%" style="stop-color:#ddd8ce"/>
-    </linearGradient>
-    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#1a4a2e"/>
-      <stop offset="50%" style="stop-color:#2d6a4f"/>
-      <stop offset="100%" style="stop-color:#40916c"/>
-    </linearGradient>
-    <pattern id="gingham" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
-      <rect width="12" height="12" fill="#ede8df"/>
-      <rect width="6" height="6" fill="#1a4a2e" fill-opacity="0.12"/>
-      <rect x="6" y="6" width="6" height="6" fill="#1a4a2e" fill-opacity="0.12"/>
-    </pattern>
-  </defs>
-
-  <!-- Main background -->
-  <rect width="860" height="180" rx="14" fill="url(#bg)" stroke="#1a4a2e" stroke-width="1.5" stroke-opacity="0.3"/>
-
-  <!-- Gingham corner — top left -->
-  <clipPath id="tlClip"><rect width="120" height="120" rx="14"/></clipPath>
-  <rect width="120" height="120" rx="14" fill="url(#gingham)" clip-path="url(#tlClip)" opacity="0.6"/>
-  <!-- Scalloped mask top left -->
-  <path d="M0,0 Q15,0 15,15 Q15,0 30,0 Q45,0 45,15 Q45,0 60,0 Q75,0 75,15 Q75,0 90,0 Q105,0 105,15 Q105,0 120,0 L120,120 L0,120 Z" fill="#ede8df"/>
-
-  <!-- Gingham corner — bottom right -->
-  <clipPath id="brClip"><rect x="740" y="60" width="120" height="120" rx="14"/></clipPath>
-  <rect x="740" y="60" width="120" height="120" rx="14" fill="url(#gingham)" clip-path="url(#brClip)" opacity="0.6"/>
-  <path d="M860,180 Q845,180 845,165 Q845,180 830,180 Q815,180 815,165 Q815,180 800,180 Q785,180 785,165 Q785,180 770,180 Q755,180 755,165 Q755,180 740,180 L740,60 L860,60 Z" fill="#ede8df"/>
-
-  <!-- TerraFlux wordmark -->
-  <text x="430" y="78" text-anchor="middle" font-family="'Georgia', 'Times New Roman', serif" font-size="52" font-weight="900" fill="url(#textGrad)" letter-spacing="6">TERRAFLUX</text>
-
-  <!-- Animated underline -->
-  <rect x="220" y="90" height="2" rx="1" fill="#2d6a4f" fill-opacity="0.5">
-    <animate attributeName="width" values="0;420;0" dur="3s" repeatCount="indefinite"/>
-    <animate attributeName="x" values="430;220;430" dur="3s" repeatCount="indefinite"/>
-  </rect>
-
-  <!-- Subtitle -->
-  <text x="430" y="118" text-anchor="middle" font-family="'Georgia', serif" font-size="13" fill="#1a4a2e" letter-spacing="4" font-weight="400">WASTE-TO-CARBON INTELLIGENCE PLATFORM</text>
-
-  <!-- Hackathon tag pill -->
-  <rect x="280" y="135" width="300" height="26" rx="13" fill="#1a4a2e" fill-opacity="0.12" stroke="#1a4a2e" stroke-width="1" stroke-opacity="0.3"/>
-  <text x="430" y="152" text-anchor="middle" font-family="'Georgia', serif" font-size="11" fill="#1a4a2e" fill-opacity="0.8" letter-spacing="2">HackOut 26 · PS11 · Team Last Commit</text>
-
-  <!-- Leaf decoration left -->
-  <text x="38" y="100" text-anchor="middle" font-size="32">🌾</text>
-  <!-- Leaf decoration right -->
-  <text x="822" y="100" text-anchor="middle" font-size="32">♻️</text>
-
-  <!-- Corner brackets -->
-  <path d="M0,30 L0,0 L30,0" stroke="#1a4a2e" stroke-width="2.5" fill="none" stroke-opacity="0.5"/>
-  <path d="M830,0 L860,0 L860,30" stroke="#1a4a2e" stroke-width="2.5" fill="none" stroke-opacity="0.5"/>
-  <path d="M0,150 L0,180 L30,180" stroke="#1a4a2e" stroke-width="2.5" fill="none" stroke-opacity="0.5"/>
-  <path d="M830,180 L860,180 L860,150" stroke="#1a4a2e" stroke-width="2.5" fill="none" stroke-opacity="0.5"/>
-</svg>
+<img src="docs/banner.png" alt="TerraFlux — Waste-to-Carbon Intelligence Platform" width="860"/>
 
 <p>
   <img src="https://img.shields.io/badge/HackOut_26-PS11-2d6a4f?style=for-the-badge&logo=leaf&logoColor=white" alt="Hackathon"/>
