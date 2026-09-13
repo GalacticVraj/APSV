@@ -184,33 +184,8 @@ export function TornFabricSideStrip({ style = {} }: { style?: React.CSSPropertie
 }
 
 export function ContourLinesBg({ style = {} }: { style?: React.CSSProperties }) {
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        width: 380,
-        height: 320,
-        pointerEvents: 'none',
-        zIndex: 2,
-        opacity: 0.5,
-        ...style,
-      }}
-    >
-      <svg viewBox="0 0 380 320" style={{ width: '100%', height: '100%', display: 'block' }}>
-        <g fill="none" stroke="#3D6B4E" strokeWidth="1.2" strokeOpacity="0.22">
-          <path d="M 120 0 C 180 40, 240 70, 380 90" />
-          <path d="M 80 0 C 150 50, 220 90, 380 120" />
-          <path d="M 40 0 C 130 65, 200 115, 380 150" />
-          <path d="M 0 0 C 100 80, 180 140, 380 180" />
-          <path d="M 0 40 C 90 110, 170 170, 380 210" />
-          <path d="M 0 90 C 80 150, 160 210, 380 240" />
-          <path d="M 0 150 C 70 200, 150 250, 380 275" />
-        </g>
-      </svg>
-    </div>
-  );
+  // Disregard contour-line decorations per CHANGE 21 final background spec
+  return null;
 }
 
 export function RegionalChoroplethMap({ style = {} }: { style?: React.CSSProperties }) {
@@ -231,31 +206,31 @@ export function RegionalChoroplethMap({ style = {} }: { style?: React.CSSPropert
           </linearGradient>
         </defs>
 
-        <g filter="url(#mapShadow)" stroke="#FFFFFF" strokeWidth="1.2" strokeLinejoin="round">
+        <g filter="url(#mapShadow)" stroke="#FFFFFF" strokeWidth="1.2" strokeLinejoin="round" style={{ cursor: 'pointer' }}>
           {/* District Polygons - Punjab North (Gurdaspur, Amritsar, Hoshiarpur) */}
-          <path d="M 280 80 L 330 40 L 390 55 L 420 95 L 370 120 L 310 110 Z" fill="url(#mapGrad1)" />
-          <path d="M 220 110 L 280 80 L 310 110 L 290 160 L 230 150 Z" fill="url(#mapGrad2)" />
-          <path d="M 310 110 L 370 120 L 410 165 L 360 185 L 310 160 Z" fill="url(#mapGrad1)" />
+          <path className="map-district-poly" d="M 280 80 L 330 40 L 390 55 L 420 95 L 370 120 L 310 110 Z" fill="url(#mapGrad1)" />
+          <path className="map-district-poly" d="M 220 110 L 280 80 L 310 110 L 290 160 L 230 150 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 310 110 L 370 120 L 410 165 L 360 185 L 310 160 Z" fill="url(#mapGrad1)" />
           
           {/* Punjab Central (Ludhiana, Jalandhar, Firozpur, Kapurthala) */}
-          <path d="M 370 120 L 420 95 L 480 115 L 460 170 L 410 165 Z" fill="url(#mapGrad2)" />
-          <path d="M 290 160 L 360 185 L 340 240 L 270 220 L 250 180 Z" fill="url(#mapGrad1)" />
-          <path d="M 360 185 L 440 170 L 450 230 L 390 250 L 340 240 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 370 120 L 420 95 L 480 115 L 460 170 L 410 165 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 290 160 L 360 185 L 340 240 L 270 220 L 250 180 Z" fill="url(#mapGrad1)" />
+          <path className="map-district-poly" d="M 360 185 L 440 170 L 450 230 L 390 250 L 340 240 Z" fill="url(#mapGrad2)" />
           
           {/* Punjab South & Chandigarh Hub (Patiala, Sangrur, Bathinda, Mohali, Chandigarh) */}
-          <path d="M 440 170 L 510 160 L 540 210 L 480 235 L 450 230 Z" fill="url(#mapGrad1)" />
-          <path d="M 480 115 L 560 110 L 580 165 L 510 160 Z" fill="url(#mapGrad2)" />
-          <path d="M 390 250 L 450 230 L 480 235 L 460 300 L 380 290 Z" fill="url(#mapGrad1)" />
+          <path className="map-district-poly" d="M 440 170 L 510 160 L 540 210 L 480 235 L 450 230 Z" fill="url(#mapGrad1)" />
+          <path className="map-district-poly" d="M 480 115 L 560 110 L 580 165 L 510 160 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 390 250 L 450 230 L 480 235 L 460 300 L 380 290 Z" fill="url(#mapGrad1)" />
 
           {/* Haryana North & Central (Ambala, Yamunanagar, Kurukshetra, Karnal, Panipat) */}
-          <path d="M 540 210 L 620 190 L 650 245 L 570 260 L 480 235 Z" fill="url(#mapGrad2)" />
-          <path d="M 560 110 L 640 120 L 680 175 L 620 190 L 580 165 Z" fill="url(#mapGrad1)" />
-          <path d="M 570 260 L 650 245 L 670 310 L 590 320 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 540 210 L 620 190 L 650 245 L 570 260 L 480 235 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 560 110 L 640 120 L 680 175 L 620 190 L 580 165 Z" fill="url(#mapGrad1)" />
+          <path className="map-district-poly" d="M 570 260 L 650 245 L 670 310 L 590 320 Z" fill="url(#mapGrad2)" />
           
           {/* Haryana West & South (Hisar, Sirsa, Rohtak, Jind, Sonipat) */}
-          <path d="M 340 240 L 390 250 L 380 290 L 310 290 Z" fill="url(#mapGrad2)" />
-          <path d="M 460 300 L 570 260 L 590 320 L 500 340 Z" fill="url(#mapGrad1)" />
-          <path d="M 380 290 L 460 300 L 500 340 L 420 350 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 340 240 L 390 250 L 380 290 L 310 290 Z" fill="url(#mapGrad2)" />
+          <path className="map-district-poly" d="M 460 300 L 570 260 L 590 320 L 500 340 Z" fill="url(#mapGrad1)" />
+          <path className="map-district-poly" d="M 380 290 L 460 300 L 500 340 L 420 350 Z" fill="url(#mapGrad2)" />
         </g>
 
         {/* Network Nodes / Active Location Indicators */}

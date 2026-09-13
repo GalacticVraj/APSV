@@ -23,7 +23,6 @@ import { CountUp } from '../components/Primitives.tsx';
 import {
   GinghamSideStrip,
   TornFabricSideStrip,
-  ContourLinesBg,
   RegionalChoroplethMap,
   TexturedHeadline,
 } from '../components/FarmerIcons.tsx';
@@ -63,31 +62,9 @@ export default function TrueLanding() {
         boxSizing: 'border-box',
       }}
     >
-      {/* SIDE ACCENTS SITEWIDE SYSTEM (Fix 3.2) */}
+      {/* SIDE ACCENTS SITEWIDE SYSTEM */}
       <GinghamSideStrip />
       <TornFabricSideStrip />
-
-      {/* BACKGROUND DECORATIVE CONTOUR LINES (Top-Right) */}
-      <ContourLinesBg />
-
-      {/* MAP LAYER POSITIONED BEHIND TEXT CONTENT (Fix 1) */}
-      <div
-        className="anim-fade-in-6"
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '100%',
-          maxWidth: 820,
-          opacity: 0.35,
-          filter: 'saturate(0.85)',
-          zIndex: 2,
-          pointerEvents: 'none',
-        }}
-      >
-        <RegionalChoroplethMap />
-      </div>
 
       {/* TOP NAVIGATION HEADER BAR */}
       <header
@@ -246,9 +223,9 @@ export default function TrueLanding() {
             letterSpacing: '0.22em',
             textTransform: 'uppercase',
             color: 'var(--g-forest)',
-            marginBottom: 12,
+            marginBottom: 8,
             background: 'rgba(235, 242, 237, 0.75)',
-            padding: '4px 14px',
+            padding: '3px 14px',
             borderRadius: 16,
             border: '1px solid rgba(61, 107, 78, 0.2)',
           }}
@@ -257,7 +234,7 @@ export default function TrueLanding() {
         </div>
 
         {/* TEXTURED HEADLINE (Stagger 2 & Fix 3.1) */}
-        <div className="anim-fade-in-2" style={{ width: '100%', marginBottom: 12 }}>
+        <div className="anim-fade-in-2" style={{ width: '100%', marginBottom: 6 }}>
           <TexturedHeadline text="TERRAFLUX" />
         </div>
 
@@ -265,12 +242,12 @@ export default function TrueLanding() {
         <p
           className="anim-fade-in-3"
           style={{
-            fontSize: 'clamp(14px, 1.5vw, 16px)',
+            fontSize: 'clamp(13px, 1.4vw, 15px)',
             fontWeight: 500,
             color: 'var(--g-ink-muted)',
             maxWidth: '56ch',
-            margin: '0 auto 20px',
-            lineHeight: 1.5,
+            margin: '0 auto 12px',
+            lineHeight: 1.45,
           }}
         >
           An operating system for turning crop residue into carbon. One network, four
@@ -279,7 +256,7 @@ export default function TrueLanding() {
         </p>
 
         {/* 4-STAT ROW (Stagger 4 & Fix 3.3 — Numbers in FLAT SOLID FOREST GREEN) */}
-        <div className="welcome-stat-row anim-fade-in-4" style={{ margin: '16px 0 20px', gap: 32 }}>
+        <div className="welcome-stat-row anim-fade-in-4" style={{ margin: '8px 0 12px', gap: 28 }}>
           <div className="welcome-stat-item">
             <div className="welcome-stat-val" style={{ color: 'var(--g-forest)' }}>
               <CountUp value={residueRouted} format={(v) => Math.round(v).toLocaleString()} /> t
@@ -315,14 +292,31 @@ export default function TrueLanding() {
           </div>
         </div>
 
-        {/* PRIMARY FARMER APP CTA BUTTON (Stagger 5 & Fix 1 Guardrail) */}
-        <div className="anim-fade-in-5" style={{ margin: '4px 0 0' }}>
+        {/* MAP POSITIONED CENTERED HORIZONTALLY BELOW STAT ROW (Fix 2 & Stagger 5) */}
+        <div
+          className="anim-fade-in-5"
+          style={{
+            width: '100%',
+            maxWidth: 520,
+            margin: '4px auto 14px',
+            display: 'flex',
+            justifyContent: 'center',
+            position: 'relative',
+            zIndex: 20,
+            pointerEvents: 'auto',
+          }}
+        >
+          <RegionalChoroplethMap />
+        </div>
+
+        {/* PRIMARY FARMER APP CTA BUTTON (Stagger 6 & Fix 1 Guardrail) */}
+        <div className="anim-fade-in-6" style={{ margin: '0 0 4px', position: 'relative', zIndex: 20 }}>
           <button
             className="btn-farmer"
             style={{
               width: 'auto',
-              minHeight: 48,
-              padding: '10px 28px',
+              minHeight: 46,
+              padding: '9px 26px',
               fontSize: 15,
               fontWeight: 800,
               borderRadius: 12,

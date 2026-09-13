@@ -21,21 +21,21 @@
 }
 
 :root {
-  /* Surfaces — warm off-white light ground sitewide (matching Image 1) */
-  --bg: #faf9f6;
+  /* Surfaces — warm smooth flat beige sitewide (#E8DCC8) */
+  --bg: #E8DCC8;
   --surface: #ffffff;
-  --surface-sunken: #f4f2ed;
+  --surface-sunken: #DDD0BA;
   --surface-raised: #ffffff;
 
-  /* Ink — crisp dark neutral text on light cream paper ground */
+  /* Ink — crisp dark neutral text on light beige ground */
   --ink: #14181a;
   --ink-2: #4e585c;
   --ink-3: #7c868a;
   --ink-4: #a7afb2;
 
   /* Rules — primary structural device in UI */
-  --rule: #e4e1d9;
-  --rule-2: #cfcbc1;
+  --rule: #cfcbc1;
+  --rule-2: #b8b3a7;
   --rule-strong: #14181a;
 
   /* The single accent */
@@ -80,9 +80,6 @@ html, body, #root { height: 100%; }
 body {
   margin: 0;
   background-color: var(--bg);
-  background-image: url('/paper-texture.jpg');
-  background-repeat: repeat;
-  background-size: 512px 512px;
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 13px;

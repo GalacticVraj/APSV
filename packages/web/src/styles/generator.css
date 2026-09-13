@@ -21,8 +21,8 @@
 :root {
   --g-forest: #3D6B4E;
   --g-forest-dark: #2E523B;
-  --g-paper: #F4F0E8;
-  --g-paper-sunken: #EBE5D9;
+  --g-paper: #E8DCC8;
+  --g-paper-sunken: #DDD0BA;
   --g-white: #FFFFFF;
   --g-gold: #F2B84C;
   --g-ink: #2A2A22;
@@ -34,9 +34,6 @@
 
 .generator-app {
   background-color: var(--g-paper);
-  background-image: url('/paper-texture.jpg');
-  background-repeat: repeat;
-  background-size: 512px 512px;
   color: var(--g-ink);
   min-height: 100vh;
   display: flex;
