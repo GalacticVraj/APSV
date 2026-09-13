@@ -16,12 +16,13 @@
     "dev": "node scripts/dev.mjs",
     "dev:api": "npm run dev -w @terraflux/api",
     "dev:web": "npm run dev -w @terraflux/web",
-    "build": "npm run build -w @terraflux/web",
+    "build": "node scripts/build-function.mjs && npm run build -w @terraflux/web",
     "start": "npm run build && node --experimental-strip-types packages/api/src/index.ts",
     "test": "node --experimental-strip-types --test \"packages/engine/tests/*.test.ts\" \"packages/api/tests/*.test.ts\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:watch": "node --experimental-strip-types --test --watch \"packages/engine/tests/*.test.ts\" \"packages/api/tests/*.test.ts\"",
-    "prepare": "node scripts/install-hooks.mjs"
+    "prepare": "node scripts/install-hooks.mjs",
+    "build:function": "node scripts/build-function.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.20.2",

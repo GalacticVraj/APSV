@@ -40,7 +40,7 @@
  */
 
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { handleRequest } from '../packages/api/src/index.ts';
+import { handleRequest } from './index.ts';
 
 export default async function handler(
   req: IncomingMessage,
