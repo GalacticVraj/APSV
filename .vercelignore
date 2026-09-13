@@ -1,0 +1,27 @@
+# What the deployment does not need.
+#
+# The deployed artefact is packages/web/dist plus the serverless API in api/,
+# which imports packages/engine and packages/api. Everything below is in the
+# repository for other reasons and only slows the upload — and, because Vercel
+# offers every directory containing a package.json when it asks you to pick a
+# Root Directory, having them present makes that question harder to answer than
+# it should be. The answer is always the repository root.
+
+# A separate React app, not part of this deployment and not a workspace.
+packages/frontend
+
+# A separate Express/Postgres service, not part of this deployment.
+packages/backend
+
+# Python. Cannot run on this Node deployment at all.
+packages/optimizer
+
+# Screenshots for the README — about 2.3 MB, and nothing serves them.
+docs/images
+
+# A reference file kept for its markup, never imported.
+template
+
+node_modules
+packages/*/node_modules
+packages/*/dist

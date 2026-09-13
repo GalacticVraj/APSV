@@ -19,7 +19,7 @@ auto-detection, which looks for `./dist` and would not find the output.
 | Production branch | `main` | Set in the Vercel dashboard, under Settings → Git. This cannot be set from the repository. |
 | Node version | **22.x** | `engines` requires `>=22.6.0`. A project pinned to 20.x fails with *Found invalid Node.js Version*. |
 | Install command | leave blank | `vercel.json` supplies it. A value typed into the dashboard **overrides** `vercel.json`. |
-| Root directory | leave blank | The repo root. `packages/frontend` and `packages/backend` are not part of this deployment. |
+| Root directory | **the repository root** | Selecting `packages/web` makes Vercel ignore the root `vercel.json`, which means no API function and an app that cannot boot. `.vercelignore` hides the other package directories so the picker stops offering them. |
 
 ## The one failure that keeps coming back
 
