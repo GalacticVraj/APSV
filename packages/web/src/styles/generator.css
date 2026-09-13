@@ -34,8 +34,9 @@
 
 .generator-app {
   background-color: var(--g-paper);
-  background-image: radial-gradient(rgba(61, 107, 78, 0.04) 1px, transparent 0);
-  background-size: 24px 24px;
+  background-image: url('/paper-texture.jpg');
+  background-repeat: repeat;
+  background-size: 512px 512px;
   color: var(--g-ink);
   min-height: 100vh;
   display: flex;

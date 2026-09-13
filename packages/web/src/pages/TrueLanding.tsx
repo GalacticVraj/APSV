@@ -76,11 +76,12 @@ export default function TrueLanding() {
         style={{
           position: 'absolute',
           left: '50%',
-          bottom: -20,
-          transform: 'translateX(-50%)',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
           width: '100%',
-          maxWidth: 880,
-          opacity: 0.65,
+          maxWidth: 820,
+          opacity: 0.35,
+          filter: 'saturate(0.85)',
           zIndex: 2,
           pointerEvents: 'none',
         }}
