@@ -72,8 +72,18 @@ function useReveal<T extends HTMLElement>() {
     // Anything already on screen when it mounts should be visible immediately,
     // not wait for a scroll event that may never come.
     const r = el.getBoundingClientRect();
-    if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('seen');
-    else io.current.observe(el);
+    if (r.top < window.innerHeight && r.bottom > 0) {
+      el.classList.add('seen');
+      return;
+    }
+    io.current.observe(el);
+
+    // Safety net. These sections start at opacity 0 and only the observer ever
+    // brings them back, so anything that stops it firing leaves the entire page
+    // below the hero permanently blank — and a browser throttles observers in a
+    // background tab, which is exactly how someone opening the site in a new
+    // tab would meet it. Late is fine; invisible is not.
+    window.setTimeout(() => el.classList.add('seen'), 4000);
   }, []);
 }
 
