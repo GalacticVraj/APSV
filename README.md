@@ -315,8 +315,8 @@ npm run dev
 
 | Service | URL | Description |
 |---|---|---|
-| Web Dashboard | http://localhost:5173 | Full 27-screen React frontend |
-| API Gateway | http://127.0.0.1:5174 | Node.js native HTTP, zero dependencies |
+| Live deployed link | https://apsv-web.vercel.app/ | Full 27-screen React frontend |
+
 
 ### Optional: Gemini AI Copilot
 
